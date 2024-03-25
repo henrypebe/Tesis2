@@ -1,0 +1,14 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+.loginTotal{
+    border: 2px solid black;
+    height: 100vh;
+    background-image: url(https://img.freepik.com/free-vector/circuit-board-neon-background_23-2148335792.jpg);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
