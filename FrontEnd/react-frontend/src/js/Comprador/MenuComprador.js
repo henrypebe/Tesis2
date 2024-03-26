@@ -26,7 +26,7 @@ export default function MenuComprador() {
           />
         {mostrarInicio && <InicioComprador />}
         {mostrarPedidos && <PedidoComprador />}
-        {mostrarPedidos && <ProductoComprador />}
+        {mostrarProductos && <ProductoComprador />}
       </Box>
     </Box>
   )

@@ -65,7 +65,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
     };
 
     return (
-    <Box sx={{display:"flex", flexDirection:"column", height:"100vh", backgroundColor:"#777575", marginTop:"-1.9px", padding:"10px"}}>
+    <Box sx={{display:"flex", flexDirection:"column", height:"112vh", backgroundColor:"#777575", marginTop:"-1.9px", padding:"10px"}}>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
             marginBottom:"10px", backgroundColor: mostrarInicio? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickInicio}
