@@ -9,15 +9,43 @@ import MarkChatReadIcon from '@mui/icons-material/MarkChatRead';
 import SavingsIcon from '@mui/icons-material/Savings';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 
-export default function InicioComprador() {
+export default function InicioComprador({onMostrarInicioChange, onMostrarPedidosChange, setMostrarProductos,
+  setMostrarSeguimiento, setMostrarEstadistica, setMostrarMetodoPago}) {
+  const handleClickPedido = () => {
+    onMostrarInicioChange(false);
+    onMostrarPedidosChange(true);
+  };
+
+  const handleClickProducto = () => {
+    onMostrarInicioChange(false);
+    setMostrarProductos(true);
+  };
+
+  const handleClickChat = () => {
+    onMostrarInicioChange(false);
+    setMostrarSeguimiento(true);
+  };
+
+  const handleClickEstadistica = () => {
+    onMostrarInicioChange(false);
+    setMostrarEstadistica(true);
+  };
+
+  const handleClickMetodoPago = () => {
+    onMostrarInicioChange(false);
+    setMostrarMetodoPago(true);
+  };
+  
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"84vh"}}>
       
       <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px"}}>Información</Typography>
       
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px", marginTop:"20px"}}>
         <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"930px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}>
+        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        onClick={handleClickPedido}
+        >
           
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%", marginRight:"0px"}}>
             <HandshakeIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
@@ -37,7 +65,9 @@ export default function InicioComprador() {
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
         <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"930px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}>
+        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        onClick={handleClickProducto}
+        >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <AssignmentTurnedInIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Productos disponibles:</Typography>
@@ -56,7 +86,9 @@ export default function InicioComprador() {
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
         <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"930px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}>
+        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        onClick={handleClickChat}
+        >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <ChatIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Chats creados:</Typography>
@@ -76,7 +108,9 @@ export default function InicioComprador() {
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
         
         <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"455px", marginRight:"20px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}>
+        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        onClick={handleClickEstadistica}
+        >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
             <ReceiptLongIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"248px"}}>Gastos totales:</Typography>
@@ -85,7 +119,9 @@ export default function InicioComprador() {
         </Button>
 
         <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"455px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}>
+        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        onClick={handleClickMetodoPago}
+        >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
             <SavingsIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>¿Método de pago incorporado?</Typography>

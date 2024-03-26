@@ -1,10 +1,27 @@
-import { Box, Typography } from '@mui/material'
-import React from 'react'
+import { Box, Button, Typography } from '@mui/material'
+import React from 'react';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CardProducto from './CardProducto';
 
-export default function ProductoComprador() {
+export default function ProductoComprador({setMostrarDetalleProducto, setMostrarProductos}) {
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px"}}>
-      <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px"}}>Productos</Typography>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
+      <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Productos</Typography>
+        
+        <Button variant="contained" sx={{backgroundColor:"white", color: "black", border:"2px solid black", borderRadius:"5px", padding:"8px", width:"9%", height:"50px",
+        '&:hover': {backgroundColor:"white"}}}>
+          <ShoppingCartIcon sx={{fontSize:"34px", marginRight:"12px"}}/>
+          <Typography sx={{fontWeight:"bold", fontSize:"30px"}}>10</Typography>
+        </Button>
+      </Box>
+
+      <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
+
+      <Box sx={{height:"91%"}}>
+        <CardProducto setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarProductos={setMostrarProductos}/>
+      </Box>
+
     </Box>
   )
 }

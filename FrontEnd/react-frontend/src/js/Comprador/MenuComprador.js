@@ -5,6 +5,8 @@ import BarraLateralComprador from './BarraLateralComprador'
 import InicioComprador from './InicioComprador';
 import PedidoComprador from './PedidoComprador';
 import ProductoComprador from './ProductoComprador';
+import DetalleProducto from './DetalleProducto';
+import CarritoCompra from './CarritoCompra';
 
 export default function MenuComprador() {
   const [mostrarInicio, setMostrarInicio] = useState(true);
@@ -13,6 +15,8 @@ export default function MenuComprador() {
   const [mostrarSeguimiento, setMostrarSeguimiento] = useState(false);
   const [mostrarEstadistica, setMostrarEstadistica] = useState(false);
   const [mostrarMetodoPago, setMostrarMetodoPago] = useState(false);
+  const [mostrarDetalleProducto, setMostrarDetalleProducto] = useState(false);
+  const [mostrarCarrito, setMostrarCarrito] = useState(false);
 
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
@@ -22,11 +26,17 @@ export default function MenuComprador() {
           mostrarPedidos={mostrarPedidos} onMostrarPedidosChange={setMostrarPedidos} mostrarProductos={mostrarProductos}
           setMostrarProductos={setMostrarProductos} mostrarSeguimiento={mostrarSeguimiento} setMostrarSeguimiento={setMostrarSeguimiento}
           mostrarEstadistica={mostrarEstadistica} setMostrarEstadistica={setMostrarEstadistica} mostrarMetodoPago={mostrarMetodoPago}
-          setMostrarMetodoPago={setMostrarMetodoPago}
+          setMostrarMetodoPago={setMostrarMetodoPago} mostrarDetalleProducto={mostrarDetalleProducto} setMostrarDetalleProducto={setMostrarDetalleProducto}
+          mostrarCarrito={mostrarCarrito} setMostrarCarrito={setMostrarCarrito}
           />
-        {mostrarInicio && <InicioComprador />}
+        {mostrarInicio && <InicioComprador onMostrarInicioChange={setMostrarInicio} onMostrarPedidosChange={setMostrarPedidos} 
+        setMostrarProductos={setMostrarProductos} setMostrarSeguimiento={setMostrarSeguimiento}
+        setMostrarEstadistica={setMostrarEstadistica} setMostrarMetodoPago={setMostrarMetodoPago}/>}
         {mostrarPedidos && <PedidoComprador />}
-        {mostrarProductos && <ProductoComprador />}
+        {mostrarProductos && <ProductoComprador setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarProductos={setMostrarProductos}/>}
+        {mostrarDetalleProducto && <DetalleProducto setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarProductos={setMostrarProductos}
+        setMostrarCarrito={setMostrarCarrito}/>}
+        {mostrarCarrito && <CarritoCompra />}
       </Box>
     </Box>
   )

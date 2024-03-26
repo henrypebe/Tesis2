@@ -62,7 +62,7 @@ export default function PedidoComprador() {
           <Typography sx={{color:"black", fontSize:"20px", marginRight:"20px"}}>Filtrar por fecha</Typography>
         </Box>
 
-        <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"20px", marginBottom:"15px"}} />
+        <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"15px", marginBottom:"15px"}} />
 
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", marginBottom:"10px"}}>Pedidos completados:</Typography>
 
