@@ -3,6 +3,13 @@ import '../../css/Login/LoginPage.css'
 import { Box, Button, Link, TextField, Typography } from "@mui/material";
 
 export default function LoginPage() {
+  const handleCreateUser = async () => {
+    try {
+        window.location.href = "/MenuComprador";
+    } catch (error) {
+        console.error('Error al enviar el correo electrónico:', error);
+    }
+  };
   return (
     <div className='loginTotal'>
       <Box
@@ -27,10 +34,12 @@ export default function LoginPage() {
 
         <Box sx={{marginBottom:"19px", display: "flex", justifyContent: "space-between"}}>
           <Link href="/CreateUser">¿Es usuario nuevo?</Link>
-          <Link href="#">¿Se olvidó la contraseña?</Link>
+          <Link href="/RecuperarContrasenhaPrimer">¿Se olvidó la contraseña?</Link>
         </Box>
 
-        <Button variant="contained" sx={{backgroundColor:"#1C2536",'&:hover': {backgroundColor:"#1C2536"}}}>Iniciar Sesión</Button>
+        <Button variant="contained" sx={{backgroundColor:"#1C2536", width:"100%",'&:hover': {backgroundColor:"#1C2536"}}}
+        onClick={handleCreateUser}
+        >Iniciar Sesión</Button>
 
       </Box>
     </div>

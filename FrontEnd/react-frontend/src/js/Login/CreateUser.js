@@ -13,17 +13,18 @@ export default function CreateUser() {
 
     const handleCreateUser = async () => {
         try {
-            const response = await fetch(`https://localhost:7240/emailToken?email=${email}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.ok) {
-                alert(`Correo electrónico enviado exitosamente`);
-            } else {
-                throw new Error('Error al enviar el correo electrónico');
-            }
+            // const response = await fetch(`https://localhost:7240/emailToken?email=${email}`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     }
+            // });
+            // if (response.ok) {
+            //     window.location.href = "/TokenPantalla";
+            // } else {
+            //     throw new Error('Error al enviar el correo electrónico');
+            // }
+            window.location.href = "/TokenPantalla";
         } catch (error) {
             console.error('Error al enviar el correo electrónico:', error);
             alert('Error al enviar el correo electrónico. Por favor, inténtalo de nuevo más tarde');
