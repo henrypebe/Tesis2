@@ -8,8 +8,9 @@ import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 export default function BarraLateralComprador({mostrarInicio, onMostrarInicioChange, mostrarPedidos, onMostrarPedidosChange, mostrarProductos,
-    setMostrarProductos, mostrarSeguimiento, setMostrarSeguimiento, mostrarEstadistica, setMostrarEstadistica, mostrarMetodoPago,
-    setMostrarMetodoPago, mostrarDetalleProducto, setMostrarDetalleProducto, mostrarCarrito, setMostrarCarrito}) {
+    setMostrarProductos, mostrarSeguimiento, setMostrarSeguimiento, mostrarEstadistica, setMostrarEstadistica, mostrarMetodoPagoAdicionar,
+    setMostrarMetodoPagoAdicionar, mostrarDetalleProducto, setMostrarDetalleProducto, mostrarMetodoPago, setMostrarMetodoPago, mostrarDetallePedido,
+    setMostrarDetallePedido, mostrarCarrito, setMostrarCarrito}) {
     const handleClickInicio = () => {
         onMostrarInicioChange(true);
         onMostrarPedidosChange(false);
@@ -18,6 +19,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarEstadistica(false);
         setMostrarMetodoPago(false);
         setMostrarDetalleProducto(false);
+        setMostrarMetodoPagoAdicionar(false);
+        setMostrarDetallePedido(false);
         setMostrarCarrito(false);
     };
 
@@ -29,6 +32,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarEstadistica(false);
         setMostrarMetodoPago(false);
         setMostrarDetalleProducto(false);
+        setMostrarMetodoPagoAdicionar(false);
+        setMostrarDetallePedido(false);
         setMostrarCarrito(false);
     };
 
@@ -40,6 +45,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarEstadistica(false);
         setMostrarMetodoPago(false);
         setMostrarDetalleProducto(false);
+        setMostrarMetodoPagoAdicionar(false);
+        setMostrarDetallePedido(false);
         setMostrarCarrito(false);
     };
 
@@ -51,6 +58,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarEstadistica(false);
         setMostrarMetodoPago(false);
         setMostrarDetalleProducto(false);
+        setMostrarMetodoPagoAdicionar(false);
+        setMostrarDetallePedido(false);
         setMostrarCarrito(false);
     };
   
@@ -62,6 +71,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarEstadistica(true);
         setMostrarMetodoPago(false);
         setMostrarDetalleProducto(false);
+        setMostrarMetodoPagoAdicionar(false);
+        setMostrarDetallePedido(false);
         setMostrarCarrito(false);
     };
 
@@ -73,6 +84,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarEstadistica(false);
         setMostrarMetodoPago(true);
         setMostrarDetalleProducto(false);
+        setMostrarMetodoPagoAdicionar(false);
+        setMostrarDetallePedido(false);
         setMostrarCarrito(false);
     };
 
@@ -86,14 +99,15 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
             <Typography sx={{color:"black", fontWeight:"bold"}}>Inicio</Typography>
         </Button>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start", marginBottom:"10px",
-            backgroundColor:mostrarPedidos?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+            backgroundColor:mostrarPedidos || mostrarDetallePedido?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickPedidos}
             >
             <ShoppingCartIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold"}}>Pedidos</Typography>
         </Button>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start", marginBottom:"10px",
-            backgroundColor:mostrarProductos || mostrarDetalleProducto || mostrarCarrito?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+            backgroundColor:mostrarProductos || mostrarDetalleProducto || mostrarMetodoPago || mostrarCarrito?
+            "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickProductos}
             >
             <CategoryIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
@@ -114,7 +128,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
             <Typography sx={{color:"black", fontWeight:"bold"}}>Estadistica</Typography>
         </Button>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start", marginBottom:"10px",
-            backgroundColor:mostrarMetodoPago?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+            backgroundColor:mostrarMetodoPagoAdicionar?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickMetodoPago}
             >
             <CreditCardIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>

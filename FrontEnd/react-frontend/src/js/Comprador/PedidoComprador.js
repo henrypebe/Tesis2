@@ -7,22 +7,22 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/L
 const columns = [
   { id: 'fechaEntregado', label: 'Fecha entregado', minWidth: 80, maxWidth: 100},
   { id: 'producto', label: 'Nombre de tienda', minWidth: 200, maxWidth: 200 },
-  { id: 'nombreProducto', label: 'Producto', minWidth: 200, maxWidth: 200 },
-  { id: 'boton', label: 'Acción', minWidth: 100, maxWidth: 100},
+  { id: 'costoTotal', label: 'Costo total', minWidth: 200, maxWidth: 200 },
+  { id: 'boton', label: '', minWidth: 100, maxWidth: 100},
 ];
 
 const rows = [
-  { fechaEntregado: 1, producto: 'Camiseta', nombreProducto: "Papel toalla"},
-  { fechaEntregado: 2, producto: 'Pantalón', nombreProducto: "Papel toalla"},
-  { fechaEntregado: 3, producto: 'Zapatos', nombreProducto: "Papel toalla"},
-  { fechaEntregado: 4, producto: 'Sombrero', nombreProducto: "Papel toalla"},
-  { fechaEntregado: 5, producto: 'Calcetines', nombreProducto: "Papel toalla"},
-  { fechaEntregado: 6, producto: 'Bufanda', nombreProducto: "Papel toalla"},
-  { fechaEntregado: 7, producto: 'Guantes', nombreProducto: "Papel toalla"},
+  { fechaEntregado: "20/04/2023", producto: 'Camiseta', costoTotal: "S/.200.00"},
+  { fechaEntregado: "20/04/2023", producto: 'Pantalón', costoTotal: "S/.200.00"},
+  { fechaEntregado: "20/04/2023", producto: 'Zapatos', costoTotal: "S/.200.00"},
+  { fechaEntregado: "20/04/2023", producto: 'Sombrero', costoTotal: "S/.200.00"},
+  { fechaEntregado: "20/04/2023", producto: 'Calcetines', costoTotal: "S/.200.00"},
+  { fechaEntregado: "20/04/2023", producto: 'Bufanda', costoTotal: "S/.200.00"},
+  { fechaEntregado: "20/04/2023", producto: 'Guantes', costoTotal: "S/.200.00"},
 ];
 
 
-export default function PedidoComprador() {
+export default function PedidoComprador({setMostrarDetallePedido, setMostrarPedidos}) {
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -36,8 +36,9 @@ export default function PedidoComprador() {
     setPage(0);
   };
 
-  const handleButtonClick = (pedidoId) => {
-    console.log(`Botón clickeado para el pedido ID: ${pedidoId}`);
+  const handleDetallePedido = () => {
+    setMostrarDetallePedido(true);
+    setMostrarPedidos(false);
   };
 
   return (
@@ -95,7 +96,7 @@ export default function PedidoComprador() {
                         <TableCell key={column.id} align={column.align}>
                           {column.id === 'boton' ? (
                             <Button variant="contained" sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
-                            onClick={() => handleButtonClick(row.pedidoId)}>Ver Detalles</Button>
+                            onClick={handleDetallePedido}>Ver Detalles</Button>
                           ) : (
                             value
                           )}
@@ -153,7 +154,7 @@ export default function PedidoComprador() {
                         <TableCell key={column.id} align={column.align}>
                           {column.id === 'boton' ? (
                             <Button variant="contained" sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
-                            onClick={() => handleButtonClick(row.pedidoId)}>Ver Detalles</Button>
+                            onClick={handleDetallePedido}>Ver Detalles</Button>
                           ) : (
                             value
                           )}

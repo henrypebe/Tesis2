@@ -2,15 +2,23 @@ import { Box, Button, Divider, Typography } from '@mui/material'
 import React from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
-export default function DetalleProducto({setMostrarDetalleProducto, setMostrarProductos, setMostrarCarrito}) {
+export default function DetalleProducto({setMostrarDetalleProducto, setMostrarProductos, setMostrarMetodoPago,
+    setMostrarOpcionCarrito, setMostrarCarrito}) {
     const handleChange = () =>{
         setMostrarDetalleProducto(false);
         setMostrarProductos(true);
     }
 
+    const handleChangeMétodoPago = () =>{
+        setMostrarDetalleProducto(false);
+        setMostrarProductos(false);
+        setMostrarMetodoPago(true);
+    }
+
     const handleChangeCarrito = () =>{
         setMostrarDetalleProducto(false);
         setMostrarProductos(false);
+        setMostrarOpcionCarrito(2);
         setMostrarCarrito(true);
     }
   
@@ -22,14 +30,16 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
             
             <Button variant="contained" sx={{backgroundColor:"white", color: "black", border:"2px solid black", borderRadius:"5px", padding:"8px",
                 width:"9%", height:"50px", marginRight:"10px",
-                '&:hover': {backgroundColor:"white"}}}>
+                '&:hover': {backgroundColor:"white"}}}
+                onClick={handleChangeCarrito}
+                >
                 <ShoppingCartIcon sx={{fontSize:"34px", marginRight:"12px"}}/>
                 <Typography sx={{fontWeight:"bold", fontSize:"30px"}}>10</Typography>
             </Button>
 
-            <Button variant="contained" sx={{backgroundColor:"#D9D9D9", color: "black", border:"2px solid black", borderRadius:"5px", padding:"8px",
-                width:"9%", height:"50px", '&:hover': {backgroundColor:"#D9D9D9"}}} onClick={handleChange}>
-                <Typography sx={{fontWeight:"bold", fontSize:"20px"}}>Atrás</Typography>
+            <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
+                fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleChange}>
+                Atrás
             </Button>
 
         </Box>
@@ -92,12 +102,11 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
 
         <Box sx={{display:"flex", flexDirection:"row", width:"100%", justifyContent:"space-between", marginTop:"20px"}}>
             <Button variant="contained" sx={{backgroundColor:"#1C2536", width:"50%", marginRight:"20px",'&:hover': {backgroundColor:"#1C2536"}}}
-            onClick={handleChangeCarrito}
             >
                 Agregar al carrito de compra
             </Button>
 
-            <Button variant="contained" color="success" sx={{width:"50%"}}>
+            <Button variant="contained" color="success" sx={{width:"50%"}} onClick={handleChangeMétodoPago}>
                 Pagar ahora
             </Button>
         </Box>

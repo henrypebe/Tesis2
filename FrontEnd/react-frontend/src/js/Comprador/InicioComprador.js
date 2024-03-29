@@ -8,6 +8,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import MarkChatReadIcon from '@mui/icons-material/MarkChatRead';
 import SavingsIcon from '@mui/icons-material/Savings';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 
 export default function InicioComprador({onMostrarInicioChange, onMostrarPedidosChange, setMostrarProductos,
   setMostrarSeguimiento, setMostrarEstadistica, setMostrarMetodoPago}) {
@@ -126,6 +127,19 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
             <SavingsIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>¿Método de pago incorporado?</Typography>
             <Typography sx={{color:"black", width:"60px", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>Si</Typography>
+          </Box>
+        </Button>
+      </Box>
+
+      <Box sx={{width:"100%", display:"flex", justifyContent:"center", height:"100px"}}>
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"455px", marginRight:"20px",
+        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        onClick={handleClickEstadistica}
+        >
+          <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
+            <RemoveShoppingCartIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Cantidad de reclamos:</Typography>
+            <Typography sx={{color:"black", width:"60px", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>20</Typography>
           </Box>
         </Button>
       </Box>
