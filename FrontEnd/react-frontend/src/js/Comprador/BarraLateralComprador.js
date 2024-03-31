@@ -6,11 +6,13 @@ import CategoryIcon from '@mui/icons-material/Category';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import NewReleasesIcon from '@mui/icons-material/NewReleases';
 
 export default function BarraLateralComprador({mostrarInicio, onMostrarInicioChange, mostrarPedidos, onMostrarPedidosChange, mostrarProductos,
     setMostrarProductos, mostrarSeguimiento, setMostrarSeguimiento, mostrarEstadistica, setMostrarEstadistica, mostrarMetodoPagoAdicionar,
     setMostrarMetodoPagoAdicionar, mostrarDetalleProducto, setMostrarDetalleProducto, mostrarMetodoPago, setMostrarMetodoPago, mostrarDetallePedido,
-    setMostrarDetallePedido, mostrarCarrito, setMostrarCarrito}) {
+    setMostrarDetallePedido, mostrarCarrito, setMostrarCarrito, mostrarDetalleSeguimiento, setMostrarDetalleSeguimiento, mostrarReclamo,
+    setMostrarReclamo, mostrarMetodoPagoAumento, setMetodoPagoAumento}) {
     const handleClickInicio = () => {
         onMostrarInicioChange(true);
         onMostrarPedidosChange(false);
@@ -22,6 +24,9 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarMetodoPagoAdicionar(false);
         setMostrarDetallePedido(false);
         setMostrarCarrito(false);
+        setMostrarDetalleSeguimiento(false);
+        setMostrarReclamo(false);
+        setMetodoPagoAumento(false);
     };
 
     const handleClickPedidos = () => {
@@ -35,6 +40,9 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarMetodoPagoAdicionar(false);
         setMostrarDetallePedido(false);
         setMostrarCarrito(false);
+        setMostrarDetalleSeguimiento(false);
+        setMostrarReclamo(false);
+        setMetodoPagoAumento(false);
     };
 
     const handleClickProductos = () => {
@@ -48,6 +56,9 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarMetodoPagoAdicionar(false);
         setMostrarDetallePedido(false);
         setMostrarCarrito(false);
+        setMostrarDetalleSeguimiento(false);
+        setMostrarReclamo(false);
+        setMetodoPagoAumento(false);
     };
 
     const handleClickSeguimiento = () => {
@@ -61,6 +72,24 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarMetodoPagoAdicionar(false);
         setMostrarDetallePedido(false);
         setMostrarCarrito(false);
+        setMostrarDetalleSeguimiento(false);
+        setMostrarReclamo(false);
+        setMetodoPagoAumento(false);
+    };
+
+    const handleClickReclamo = () => {
+        onMostrarInicioChange(false);
+        onMostrarPedidosChange(false);
+        setMostrarProductos(false);
+        setMostrarSeguimiento(false);
+        setMostrarEstadistica(false);
+        setMostrarMetodoPago(false);
+        setMostrarDetalleProducto(false);
+        setMostrarMetodoPagoAdicionar(false);
+        setMostrarDetallePedido(false);
+        setMostrarCarrito(false);
+        setMostrarDetalleSeguimiento(false);
+        setMostrarReclamo(true);
     };
   
     const handleClickEstadistica = () => {
@@ -74,6 +103,9 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarMetodoPagoAdicionar(false);
         setMostrarDetallePedido(false);
         setMostrarCarrito(false);
+        setMostrarDetalleSeguimiento(false);
+        setMostrarReclamo(false);
+        setMetodoPagoAumento(false);
     };
 
     const handleClickMetodoPago = () => {
@@ -82,11 +114,13 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarProductos(false);
         setMostrarSeguimiento(false);
         setMostrarEstadistica(false);
-        setMostrarMetodoPago(true);
+        setMostrarMetodoPagoAdicionar(true);
         setMostrarDetalleProducto(false);
-        setMostrarMetodoPagoAdicionar(false);
         setMostrarDetallePedido(false);
         setMostrarCarrito(false);
+        setMostrarDetalleSeguimiento(false);
+        setMostrarReclamo(false);
+        setMetodoPagoAumento(false);
     };
 
     return (
@@ -114,11 +148,18 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
             <Typography sx={{color:"black", fontWeight:"bold"}}>Productos</Typography>
         </Button>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start", marginBottom:"10px",
-            backgroundColor:mostrarSeguimiento?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+            backgroundColor:mostrarSeguimiento || mostrarDetalleSeguimiento?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickSeguimiento}
             >
             <ChatBubbleOutlineIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold"}}>Seguimiento</Typography>
+        </Button>
+        <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start", marginBottom:"10px",
+            backgroundColor:mostrarReclamo?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+            onClick={handleClickReclamo}
+            >
+            <NewReleasesIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
+            <Typography sx={{color:"black", fontWeight:"bold"}}>Reclamo</Typography>
         </Button>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start", marginBottom:"10px",
             backgroundColor:mostrarEstadistica?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
@@ -128,7 +169,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
             <Typography sx={{color:"black", fontWeight:"bold"}}>Estadistica</Typography>
         </Button>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start", marginBottom:"10px",
-            backgroundColor:mostrarMetodoPagoAdicionar?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+            backgroundColor:mostrarMetodoPagoAdicionar || mostrarMetodoPagoAumento?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickMetodoPago}
             >
             <CreditCardIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>

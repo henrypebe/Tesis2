@@ -9,19 +9,30 @@ import DetalleProducto from './DetalleProducto';
 import CarritoCompra from './CarritoCompra';
 import DetallePedido from './DetallePedido';
 import MetodoPago from './MetodoPago';
+import SeguimientoComprador from './SeguimientoComprador';
+import DetalleSeguimiento from './DetalleSeguimiento';
+import ReclamoComprador from './ReclamoComprador';
+import EstadisticaComprador from './EstadisticaComprador';
+import MetodoPagoAdicionar from './MetodoPagoAdicionar';
+import MetodoPagoAumento from './MetodoPagoAumento';
 
 export default function MenuComprador() {
   const [mostrarInicio, setMostrarInicio] = useState(true);
   const [mostrarPedidos, setMostrarPedidos] = useState(false);
   const [mostrarDetallePedido, setMostrarDetallePedido] = useState(false);
   const [mostrarProductos, setMostrarProductos] = useState(false);
-  const [mostrarSeguimiento, setMostrarSeguimiento] = useState(false);
   const [mostrarEstadistica, setMostrarEstadistica] = useState(false);
   const [mostrarMetodoPagoAdicionar, setMostrarMetodoPagoAdicionar] = useState(false);
   const [mostrarDetalleProducto, setMostrarDetalleProducto] = useState(false);
   const [mostrarMetodoPago, setMostrarMetodoPago] = useState(false);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [mostrarOpcionCarrito, setMostrarOpcionCarrito] = useState(0);
+  const [mostrarSeguimiento, setMostrarSeguimiento] = useState(false);
+  const [mostrarDetalleSeguimiento, setMostrarDetalleSeguimiento] = useState(false);
+  const [mostrarReclamo, setMostrarReclamo] = useState(false);
+  const [mostrarMetodoPagoAumento, setMetodoPagoAumento] = useState(false);
+
+  const [chatId, setChatId] = useState(false);
 
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
@@ -33,7 +44,10 @@ export default function MenuComprador() {
           mostrarEstadistica={mostrarEstadistica} setMostrarEstadistica={setMostrarEstadistica} mostrarMetodoPagoAdicionar={mostrarMetodoPagoAdicionar}
           setMostrarMetodoPagoAdicionar={setMostrarMetodoPagoAdicionar} mostrarDetalleProducto={mostrarDetalleProducto} setMostrarDetalleProducto={setMostrarDetalleProducto}
           mostrarMetodoPago={mostrarMetodoPago} setMostrarMetodoPago={setMostrarMetodoPago} mostrarDetallePedido={mostrarDetallePedido}
-          setMostrarDetallePedido={setMostrarDetallePedido} mostrarCarrito={mostrarCarrito} setMostrarCarrito={setMostrarCarrito}
+          setMostrarDetallePedido={setMostrarDetallePedido} mostrarCarrito={mostrarCarrito} setMostrarCarrito={setMostrarCarrito} 
+          mostrarDetalleSeguimiento={mostrarDetalleSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
+          mostrarReclamo={mostrarReclamo} setMostrarReclamo={setMostrarReclamo} mostrarMetodoPagoAumento={mostrarMetodoPagoAumento}
+          setMetodoPagoAumento={setMetodoPagoAumento}
           />
         {mostrarInicio && <InicioComprador onMostrarInicioChange={setMostrarInicio} onMostrarPedidosChange={setMostrarPedidos} 
         setMostrarProductos={setMostrarProductos} setMostrarSeguimiento={setMostrarSeguimiento}
@@ -55,6 +69,22 @@ export default function MenuComprador() {
         {mostrarCarrito && <CarritoCompra setMostrarCarrito={setMostrarCarrito} setMostrarProductos={setMostrarProductos}
         mostrarOpcionCarrito={mostrarOpcionCarrito} setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarMetodoPago={setMostrarMetodoPago}/>}
         
+        {mostrarSeguimiento && <SeguimientoComprador setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
+        setChatId={setChatId}/>}
+
+        {mostrarDetalleSeguimiento && <DetalleSeguimiento setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
+        chatId={chatId}/>}
+
+        {mostrarReclamo && <ReclamoComprador />}
+
+        {mostrarEstadistica && <EstadisticaComprador />}
+
+        {mostrarMetodoPagoAdicionar && <MetodoPagoAdicionar setMostrarMetodoPagoAdicionar={setMostrarMetodoPagoAdicionar}
+        setMetodoPagoAumento={setMetodoPagoAumento}/>}
+
+        {mostrarMetodoPagoAumento && <MetodoPagoAumento setMostrarMetodoPagoAdicionar={setMostrarMetodoPagoAdicionar}
+        setMetodoPagoAumento={setMetodoPagoAumento}/>}
+
       </Box>
     </Box>
   )

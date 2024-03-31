@@ -1,15 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../../css/Login/LoginPage.css'
 import { Box, Button, Link, TextField, Typography } from "@mui/material";
 
 export default function LoginPage() {
+  const [emailType, setEmailType] = useState('');
+
   const handleCreateUser = async () => {
     try {
+      if (emailType === '1') {
         window.location.href = "/MenuComprador";
+      } else if (emailType === '2') {
+        window.location.href = "/MenuVendedor";
+      } else {
+        console.error('Tipo de correo electrónico no válido');
+      }
     } catch (error) {
-        console.error('Error al enviar el correo electrónico:', error);
+      console.error('Error al enviar el correo electrónico:', error);
     }
   };
+
   return (
     <div className='loginTotal'>
       <Box
@@ -26,7 +35,8 @@ export default function LoginPage() {
           ¡Bienvenido!
         </Typography>
 
-        <TextField id="outlined-basic" label="Correo electrónico" variant="outlined" sx={{marginBottom:"19px"}}/>
+        <TextField id="outlined-basic" label="Correo electrónico" variant="outlined" sx={{marginBottom:"19px"}}
+        onChange={(e) => setEmailType(e.target.value)}/>
 
         <TextField id="outlined-basic" label="Contraseña" variant="outlined" sx={{marginBottom:"19px"}}/>
         

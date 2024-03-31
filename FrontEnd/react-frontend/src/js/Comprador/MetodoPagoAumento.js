@@ -1,18 +1,16 @@
 import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 
-export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos}) {
-
+export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMetodoPagoAumento}) {
     const handleBackPedido = () =>{
-        setMostrarMetodoPago(false);
-        setMostrarProductos(true);
-    }
+        setMostrarMetodoPagoAdicionar(true);
+        setMetodoPagoAumento(false);
+      }
 
-    const handleProducto = () =>{
-        setMostrarMetodoPago(false);
-        setMostrarProductos(true);
-    }
-    
+    const handleChangeAgregar = () =>{
+        setMostrarMetodoPagoAdicionar(true);
+        setMetodoPagoAumento(false);
+      }
   return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
         <Box
@@ -65,7 +63,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos}) 
         </Box>
 
         <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
-            onClick={handleProducto}
+            onClick={handleChangeAgregar}
         >
             Agregar método de pago
         </Button>

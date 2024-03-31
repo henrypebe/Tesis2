@@ -10,6 +10,7 @@ import TiendaInformacion from "./js/Login/TiendaInformacion";
 import MenuComprador from "./js/Comprador/MenuComprador";
 import RecuperarContrasenha from "./js/Login/RecuperarContrasenha";
 import EstablecerContrasenha from "./js/Login/EstablecerContrasenha";
+import MenuVendedor from "./js/Vendedor/MenuVendedor";
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
         <Route path="/RecuperarContrasenhaSegundo" element={<EstablecerContrasenha />} />
         {/* Pantallas de Comprador */}
         <Route path="/MenuComprador" element={<MenuComprador />} />
+        {/* Pantallas de Vendedor */}
+        <Route path="/MenuVendedor" element={<MenuVendedor />} />
       </Routes>
     </BrowserRouter>
   );
