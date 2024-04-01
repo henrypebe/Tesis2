@@ -3,28 +3,45 @@ import '../../css/Login/LoginPage.css'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
+import { SHA256 } from 'crypto-js';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function CreateUser() {
     const [email, setEmail] = useState('');
+    const [DNI, setDNI] = useState(0);
+    const [nombreApellido, setNombreApellido] = useState('');
+    const [contrasenha, setContrasenha] = useState('');
+    const [confirmarContrasenha, setConfirmarContrasenha] = useState('');
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
-      };
+    };
 
     const handleCreateUser = async () => {
         try {
-            // const response = await fetch(`https://localhost:7240/emailToken?email=${email}`, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     }
-            // });
-            // if (response.ok) {
-            //     window.location.href = "/TokenPantalla";
-            // } else {
-            //     throw new Error('Error al enviar el correo electrónico');
-            // }
-            window.location.href = "/TokenPantalla";
+          const hashedPassword = SHA256(contrasenha).toString();
+          const hashedPassword2 = SHA256(confirmarContrasenha).toString();
+
+          if(hashedPassword === hashedPassword2){
+            const token = uuidv4();
+
+            const response = await fetch(`https://localhost:7240/CreateUsuario?DNI=${DNI}&nombreApellido=${nombreApellido}&correo=${email}&contrasenha=${hashedPassword}&token=${token}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (response.ok) {
+              const idUsuario = await response.json();
+              window.location.href = `/TokenPantalla/${idUsuario}`;
+            } else {
+                throw new Error('Error al enviar el correo electrónico');
+            }
+          }else{
+            toast.error('Las contraseñas no coinciden, intente nuevamente.');
+          }
         } catch (error) {
             console.error('Error al enviar el correo electrónico:', error);
             alert('Error al enviar el correo electrónico. Por favor, inténtalo de nuevo más tarde');
@@ -54,15 +71,25 @@ export default function CreateUser() {
             </Typography>
         </Box>
 
-        <TextField id="outlined-basic" label="DNI" variant="outlined" sx={{marginBottom:"19px"}}/>
+        <TextField id="outlined-basic" label="DNI" variant="outlined" sx={{marginBottom:"19px"}}
+          onChange={(e) => setDNI(e.target.value)}
+        />
 
-        <TextField id="outlined-basic" label="Nombre y Apellido" variant="outlined" sx={{marginBottom:"19px"}}/>
+        <TextField id="outlined-basic" label="Nombre y Apellido" variant="outlined" sx={{marginBottom:"19px"}}
+          onChange={(e) => setNombreApellido(e.target.value)}
+        />
 
-        <TextField id="outlined-basic" label="Correo electrónico" variant="outlined" sx={{marginBottom:"19px"}} value={email} onChange={handleEmailChange}/>
+        <TextField id="outlined-basic" label="Correo electrónico" variant="outlined" sx={{marginBottom:"19px"}} value={email}
+          onChange={handleEmailChange}
+        />
 
-        <TextField id="outlined-basic" label="Contraseña" variant="outlined" sx={{marginBottom:"19px"}}/>
+        <TextField id="outlined-basic" label="Contraseña" variant="outlined" sx={{marginBottom:"19px"}}  type='password'
+          onChange={(e) => setContrasenha(e.target.value)}
+        />
 
-        <TextField id="outlined-basic" label="Confirmar contraseña" variant="outlined" sx={{marginBottom:"19px"}}/>
+        <TextField id="outlined-basic" label="Confirmar contraseña" variant="outlined" sx={{marginBottom:"19px"}}  type='password'
+          onChange={(e) => setConfirmarContrasenha(e.target.value)}
+        />
 
         <Button variant="contained" sx={{backgroundColor:"#1C2536",'&:hover': {backgroundColor:"#1C2536"}}}
         onClick={handleCreateUser}

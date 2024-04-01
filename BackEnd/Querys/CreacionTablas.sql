@@ -3,6 +3,8 @@ USE tesis2;
 DROP TABLE Usuario;
 DROP TABLE Comprador;
 DROP TABLE Vendedor;
+DROP TABLE mensajes;
+DROP TABLE chats;
 
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -15,6 +17,7 @@ CREATE TABLE Usuario (
     DNI int,
     Telefono int,
     Direccion text,
+    EsAdministrador boolean,
     EsComprador boolean,
     EsVendedor boolean
 );
@@ -46,3 +49,9 @@ CREATE TABLE Mensajes (
     FOREIGN KEY (EmisorId) REFERENCES Usuario(IdUsuario),
     FechaEnvio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO Usuario (Correo, contrasenha, Token, Nombre, Apellido, DNI, Telefono, Direccion, EsAdministrador, EsComprador, EsVendedor) 
+VALUES ('a20191425@pucp.edu.pe', 'henrypebe11', 'token123', 'Henry', 'Pebe', 12345678, 987654321, 'Calle 123', 1, 0, 0);
+
+SELECT * FROM Usuario;
+SELECT * FROM Vendedor;

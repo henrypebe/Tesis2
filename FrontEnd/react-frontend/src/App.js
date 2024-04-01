@@ -11,6 +11,7 @@ import MenuComprador from "./js/Comprador/MenuComprador";
 import RecuperarContrasenha from "./js/Login/RecuperarContrasenha";
 import EstablecerContrasenha from "./js/Login/EstablecerContrasenha";
 import MenuVendedor from "./js/Vendedor/MenuVendedor";
+import MenuAdministrador from "./js/Administrador/MenuAdministrador";
 
 function App() {
   return (
@@ -21,15 +22,17 @@ function App() {
         <Route path="/" element={<Navigate to="/Login" />} />
         <Route path="/Login" element={<LoginPage />} />
         <Route path="/CreateUser" element={<CreateUser />} />
-        <Route path="/TokenPantalla" element={<TokenPantalla />} />
-        <Route path="/Rol" element={<RolDeterminar />} />
+        <Route path="/TokenPantalla/:idUsuario" element={<TokenPantalla />} />
+        <Route path="/Rol/:idUsuario" element={<RolDeterminar />} />
         <Route path="/TiendaInformacion" element={<TiendaInformacion />} />
         <Route path="/RecuperarContrasenhaPrimer" element={<RecuperarContrasenha />} />
         <Route path="/RecuperarContrasenhaSegundo" element={<EstablecerContrasenha />} />
         {/* Pantallas de Comprador */}
-        <Route path="/MenuComprador" element={<MenuComprador />} />
+        <Route path="/MenuComprador/:idUsuario" element={<MenuComprador />} />
         {/* Pantallas de Vendedor */}
-        <Route path="/MenuVendedor" element={<MenuVendedor />} />
+        <Route path="/MenuVendedor/:idUsuario" element={<MenuVendedor />} />
+        {/* Pantallas de Administrador */}
+        <Route path="/MenuAdministrador/:idUsuario" element={<MenuAdministrador />} />
       </Routes>
     </BrowserRouter>
   );

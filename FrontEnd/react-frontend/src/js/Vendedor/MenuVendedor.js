@@ -14,6 +14,7 @@ import ReclamoVendedor from './ReclamoVendedor';
 import EstadisticaVendedor from './EstadisticaVendedor';
 import BilleteraVendedor from './BilleteraVendedor';
 import DetalleBilletera from './DetalleBilletera';
+import { useParams } from 'react-router-dom';
 
 export default function MenuVendedor() {
     const [mostrarInicio, setMostrarInicio] = useState(true);
@@ -30,9 +31,12 @@ export default function MenuVendedor() {
     const [opcionEditarProducto, setOpcionEditarProducto] = useState(0);
     const [mostrarDetalleSeguimiento, setMostrarnDetalleSeguimiento] = useState(false);
     const [mostrarDetalleBilletera, setMostrarnDetalleBilletera] = useState(false);
+
+    const { idUsuario } = useParams();
+
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
-        <BarraSuperior />
+        <BarraSuperior idUsuario={idUsuario}/>
         <Box sx={{display:"flex", flexDirection:"row"}}>
             
             <BarraLateralVendedor mostrarInicio={mostrarInicio} setMostrarInicio={setMostrarInicio} mostrarVentas={mostrarVentas}
