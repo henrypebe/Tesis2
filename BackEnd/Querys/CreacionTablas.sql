@@ -11,6 +11,7 @@ CREATE TABLE Usuario (
     Correo TEXT,
     contrasenha TEXT,
     Token Text,
+    ContrasenhaVariado Text,
     Foto BLOB,
     Nombre Text,
     Apellido Text,
@@ -50,8 +51,18 @@ CREATE TABLE Mensajes (
     FechaEnvio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE KeyEncript (
+    IdKey INT AUTO_INCREMENT PRIMARY KEY,
+    KeyVar Text
+);
+
+INSERT INTO KeyEncript (KeyVar) 
+VALUES ('tesis2');
+
 INSERT INTO Usuario (Correo, contrasenha, Token, Nombre, Apellido, DNI, Telefono, Direccion, EsAdministrador, EsComprador, EsVendedor) 
 VALUES ('a20191425@pucp.edu.pe', 'henrypebe11', 'token123', 'Henry', 'Pebe', 12345678, 987654321, 'Calle 123', 1, 0, 0);
 
 SELECT * FROM Usuario;
 SELECT * FROM Vendedor;
+SELECT * FROM Comprador;
+SELECT * FROM KeyEncript;

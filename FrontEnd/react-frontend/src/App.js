@@ -24,7 +24,7 @@ function App() {
         <Route path="/CreateUser" element={<CreateUser />} />
         <Route path="/TokenPantalla/:idUsuario" element={<TokenPantalla />} />
         <Route path="/Rol/:idUsuario" element={<RolDeterminar />} />
-        <Route path="/TiendaInformacion" element={<TiendaInformacion />} />
+        <Route path="/TiendaInformacion/:idUsuario" element={<TiendaInformacion />} />
         <Route path="/RecuperarContrasenhaPrimer" element={<RecuperarContrasenha />} />
         <Route path="/RecuperarContrasenhaSegundo" element={<EstablecerContrasenha />} />
         {/* Pantallas de Comprador */}

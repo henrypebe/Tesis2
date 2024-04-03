@@ -15,6 +15,7 @@ import ReclamoComprador from './ReclamoComprador';
 import EstadisticaComprador from './EstadisticaComprador';
 import MetodoPagoAdicionar from './MetodoPagoAdicionar';
 import MetodoPagoAumento from './MetodoPagoAumento';
+import { useParams } from 'react-router-dom';
 
 export default function MenuComprador() {
   const [mostrarInicio, setMostrarInicio] = useState(true);
@@ -34,9 +35,11 @@ export default function MenuComprador() {
 
   const [chatId, setChatId] = useState(false);
 
+  const { idUsuario } = useParams();
+
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
-      <BarraSuperior />
+      <BarraSuperior idUsuario={idUsuario}/>
       <Box sx={{display:"flex", flexDirection:"row"}}>
         <BarraLateralComprador mostrarInicio={mostrarInicio} onMostrarInicioChange={setMostrarInicio}
           mostrarPedidos={mostrarPedidos} onMostrarPedidosChange={setMostrarPedidos} mostrarProductos={mostrarProductos}

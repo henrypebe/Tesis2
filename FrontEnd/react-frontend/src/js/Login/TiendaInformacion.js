@@ -1,14 +1,22 @@
 import { Box, Button, TextField, Typography } from '@mui/material'
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function TiendaInformacion() {
+    const { idUsuario } = useParams();
     const handleCreateUser = async () => {
         try {
-            window.location.href = "/MenuComprador";
+            window.location.href = `/MenuComprador/${idUsuario}`;
         } catch (error) {
             console.error('Error al enviar el correo electrónico:', error);
+        }
+      };
+      const handleBack = async () => {
+        try {
+            window.location.href = `/Rol/${idUsuario}`;
+        } catch (error) {
+            console.error('Error al volver a la pantalla Rol', error);
         }
       };
   return (
@@ -25,7 +33,9 @@ export default function TiendaInformacion() {
       >
         <Box sx={{display:"flex", flexDirection:"row"}}>
             <Link to="/Rol" style={{ textDecoration: 'none' }}>
-                <Button sx={{ maxWidth: "30px", minWidth: "30px", color: "black", background: "transparent" }}>
+                <Button sx={{ maxWidth: "30px", minWidth: "30px", color: "black", background: "transparent" }}
+                onClick={handleBack}
+                >
                     <ArrowBackIcon />
                 </Button>
             </Link>

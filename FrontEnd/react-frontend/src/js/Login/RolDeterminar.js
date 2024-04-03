@@ -21,7 +21,7 @@ export default function RolDeterminar() {
             });
             
             if (response.ok) {
-                if(esComprador){
+                if(esVendedor){
                     window.location.href = `/TiendaInformacion/${idUsuario}`;
                 }else{
                     window.location.href = `/MenuVendedor/${idUsuario}`;

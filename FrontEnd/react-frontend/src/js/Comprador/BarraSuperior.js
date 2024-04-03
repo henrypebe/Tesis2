@@ -19,15 +19,23 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { SHA256 } from 'crypto-js';
+import { decryptValue, getSecretKey } from "../Server/Encriptacion";
 
 export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const [rol, setRol] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [openModalSecundario, setOpenModalSecundario] = React.useState(false);
+  const [openModalTercero, setOpenModaTercero] = React.useState(false);
   const [informacionUsuario, setInformacionUsuario] = useState();
   const [loading, setLoading] = React.useState(true);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const handleOpenModalSecundario = () => {setOpenModalSecundario(true); setOpen(false);};
+  const handleCloseModalSecundario = () => {setOpenModalSecundario(false); setOpen(true); setVerificarContrasenha("");};
+  const handleOpenModalTercero = () => {setOpenModaTercero(true); setOpen(false);};
+  const handleCloseModalTercero = () => {setOpenModaTercero(false); setOpen(true); setVerificarContrasenha("");};
 
   const obtenerRolesIdUsuario = async (idUsuario) => {
     try {
@@ -88,6 +96,11 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const [TelefonoCambiado, setTelefonoCambiado] = useState("");
   const [DireccionCambiado, setDireccionCambiado] = useState("");
 
+  const [verificarContrasenha, setVerificarContrasenha] = useState("");
+  const [verificarToken, setVerificarToken] = useState("");
+  const [token, setToken] = useState("");
+  const [contrasenha, setContrasenha] = useState("");
+
   const handleChange = (event) => {
     setRol(event.target.value);
   };
@@ -104,6 +117,32 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
     padding: "20px",
     borderRadius: "8px",
     height: "85%",
+  };
+  const styleSecundario = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 1000,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    padding: "20px",
+    borderRadius: "8px",
+    height: "27%",
+  };
+  const styleTercero = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 1000,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    padding: "20px",
+    borderRadius: "8px",
+    height: "27%",
   };
 
   const handleChangeCerrarSesion = () => {
@@ -130,6 +169,66 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
       console.error("Error al obtener el token:", error);
       throw new Error("Error al obtener el token");
     }
+  };
+
+  const handleVerificarContrasenha = async () =>{
+    try {
+      const hashedPassword = SHA256(verificarContrasenha).toString();
+      const response = await fetch(`https://localhost:7240/VerificarContrasenha?idUsuario=${idUsuario}&contrasenha=${hashedPassword}`, {
+          method: 'GET',
+          headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const _token = await response.text();
+        toast.success("Se puede visualizar el token", { autoClose: 2000 });
+        setToken(_token);
+        handleCloseModalSecundario();
+      } else if (response.status === 404) {
+        throw new Error("Usuario no encontrado");
+      } else {
+        throw new Error("Error al obtener el token");
+      }
+    } catch (error) {
+      console.error("Error al obtener el token:", error);
+      throw new Error("Error al obtener el token");
+    }
+  }
+
+  const handleVerificarToken = async () =>{
+    try {
+      const response = await fetch(`https://localhost:7240/VerificarToken?idUsuario=${idUsuario}&token=${verificarToken}`, {
+          method: 'GET',
+          headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const _contrasenha = await response.text();
+        toast.success("Se puede visualizar la contraseña", { autoClose: 2000 });
+        setContrasenha(_contrasenha);
+        handleCloseModalTercero();
+      } else if (response.status === 404) {
+        throw new Error("Usuario no encontrado");
+      } else {
+        throw new Error("Error al obtener la contrasenha");
+      }
+    } catch (error) {
+      console.error("Error al ingresar a la api", error);
+      throw new Error("Error al ingresar a la api");
+    }
+  }
+
+  const copyToClipboard = () => {
+      navigator.clipboard.writeText(token).then(() => {
+          toast.success('Token copiado al portapapeles', { autoClose: 2000 });
+      }).catch((error) => {
+        console.error('Error al copiar el token:', error);
+        toast.error('Error al copiar el token. Por favor, inténtalo de nuevo');
+      });
   };
 
   return loading ? (
@@ -183,13 +282,13 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
               Administrador
             </Typography>
           </Box>
-        ) : informacionUsuario && informacionUsuario.esVendedor ? (
+        ) : informacionUsuario && informacionUsuario.esComprador ? (
           <Box
             sx={{
               width: "40%",
               height: "80%",
               border: "2px solid #D9D9D9",
-              marginTop: "8px",
+              marginTop: "0px",
               borderRadius: "6px",
               backgroundColor: "#D9D9D9",
               display: "flex",
@@ -206,7 +305,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                 fontWeight: "bold",
               }}
             >
-              Vendedor
+              Comprador
             </Typography>
           </Box>
         ) : (
@@ -253,7 +352,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
             backgroundColor: "white",
             color: "black",
             fontWeight: "bold",
-            marginTop: "8px",
+            marginTop: "0px",
+            fontSize:"20px",
             "&:hover": {
               backgroundColor: "white",
               color: "black",
@@ -601,13 +701,17 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                       height: "100%",
                     },
                   }}
+                  disabled={true}
+                  defaultValue={token}
                 />
 
-                <IconButton sx={{ marginLeft: "10px", marginRight: "10px" }}>
+                <IconButton sx={{ marginLeft: "10px", marginRight: "10px" }}
+                  onClick={handleOpenModalSecundario}
+                >
                   <VisibilityIcon sx={{ color: "black", fontSize: "35px" }} />
                 </IconButton>
 
-                <IconButton>
+                <IconButton onClick={copyToClipboard}>
                   <ContentCopyIcon sx={{ color: "black", fontSize: "35px" }} />
                 </IconButton>
               </Box>
@@ -630,6 +734,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                   Contraseña:
                 </Typography>
                 <TextField
+                  defaultValue={contrasenha}
+                  disabled={true}
                   sx={{
                     height: 40,
                     width: "60%",
@@ -639,7 +745,9 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                   }}
                 />
 
-                <IconButton sx={{ marginLeft: "10px", marginRight: "10px" }}>
+                <IconButton sx={{ marginLeft: "10px", marginRight: "10px" }}
+                  onClick={handleOpenModalTercero}
+                >
                   <VisibilityIcon sx={{ color: "black", fontSize: "35px" }} />
                 </IconButton>
 
@@ -675,6 +783,185 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                 Eliminar cuenta
               </Button>
             </Box>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={openModalSecundario}
+          onClose={handleCloseModalSecundario}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={{ ...styleSecundario}}>
+          <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: "30px",
+                  width: "100%",
+                }}
+              >
+                Ingrese su contraseña
+              </Typography>
+
+              <IconButton
+                sx={{
+                  backgroundColor: "white",
+                  color: "black",
+                  width: "80px",
+                  fontSize: "17px",
+                  fontWeight: "bold",
+                  "&:hover": { backgroundColor: "white" },
+                }}
+                onClick={handleCloseModalSecundario}
+              >
+                <CancelIcon sx={{ fontSize: "50px" }} />
+              </IconButton>
+            </Box>
+            <hr
+              style={{
+                margin: "10px 0",
+                border: "0",
+                borderTop: "2px solid #ccc",
+                marginTop: "10px",
+                marginBottom: "30px",
+              }}
+            />
+            <TextField
+              id="outlined-basic"
+              label="Contraseña"
+              variant="outlined"
+              type="password"
+              InputLabelProps={{
+                style: {
+                  fontSize: '27px',
+                  marginTop:"-5px"
+                }
+              }}
+              onChange={(e) => setVerificarContrasenha(e.target.value)}
+              sx={{
+                height: 60,
+                width:"100%",
+                fontSize: "30px",
+                display:"flex",
+                justifyContent:"center",
+                "& .MuiInputBase-root": {
+                  height: "100%",
+                  fontSize: "30px",
+                },
+              }}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#1C2536",
+                marginTop:"25px",
+                fontSize:"25px",
+                height:"20%",
+                width: "100%",
+                "&:hover": { backgroundColor: "#1C2536" },
+              }}
+              onClick={handleVerificarContrasenha}
+            >
+              Confirmar
+            </Button>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={openModalTercero}
+          onClose={handleCloseModalTercero}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={{ ...styleTercero}}>
+          <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: "30px",
+                  width: "100%",
+                }}
+              >
+                Ingrese su token
+              </Typography>
+
+              <IconButton
+                sx={{
+                  backgroundColor: "white",
+                  color: "black",
+                  width: "80px",
+                  fontSize: "17px",
+                  fontWeight: "bold",
+                  "&:hover": { backgroundColor: "white" },
+                }}
+                onClick={handleCloseModalTercero}
+              >
+                <CancelIcon sx={{ fontSize: "50px" }} />
+              </IconButton>
+            </Box>
+            <hr
+              style={{
+                margin: "10px 0",
+                border: "0",
+                borderTop: "2px solid #ccc",
+                marginTop: "10px",
+                marginBottom: "30px",
+              }}
+            />
+            <TextField
+              id="outlined-basic"
+              label="Token"
+              variant="outlined"
+              InputLabelProps={{
+                style: {
+                  fontSize: '27px',
+                  marginTop:"-5px"
+                }
+              }}
+              onChange={(e) => setVerificarToken(e.target.value)}
+              sx={{
+                height: 60,
+                width:"100%",
+                fontSize: "30px",
+                display:"flex",
+                justifyContent:"center",
+                "& .MuiInputBase-root": {
+                  height: "100%",
+                  fontSize: "30px",
+                },
+              }}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#1C2536",
+                marginTop:"25px",
+                fontSize:"25px",
+                height:"20%",
+                width: "100%",
+                "&:hover": { backgroundColor: "#1C2536" },
+              }}
+              onClick={handleVerificarToken}
+            >
+              Confirmar
+            </Button>
           </Box>
         </Modal>
       </Box>

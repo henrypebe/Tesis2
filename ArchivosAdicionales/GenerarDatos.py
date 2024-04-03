@@ -34,6 +34,7 @@ def generar_datos_aleatorios(num_pedidos):
             # Obtenemos el número de cuenta encriptado y la dirección de entrega correspondientes al nombre de comprador
             numero_cuenta = numeros_cuenta[nombre_apellido]
             direccion_entrega = direcciones_entrega[nombres_compradores.index(nombre_apellido)]
+            direccion_entrega = direccion_entrega.replace("\n", ", ")
 
             # Generamos otros datos aleatorios
             fecha_creacion_pedido = fake.date_time_between(start_date='-30d', end_date='now')

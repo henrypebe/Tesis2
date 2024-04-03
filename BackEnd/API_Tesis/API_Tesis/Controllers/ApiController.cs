@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using API_Tesis.BD;
 using API_Tesis.Datos;
 using MySqlConnector;
+using System.Security.Cryptography;
 
 namespace API_Tesis.Controllers
 {
@@ -68,15 +69,16 @@ namespace API_Tesis.Controllers
                         }
                     }
                 }
+                connection.Close();
             }
 
             return Ok(_valorLogin);
         }
         [HttpPost]
         [Route("/CreateUsuario")]
-        public async Task<ActionResult<int>> CrearUsuario(int DNI, string nombreApellido, string correo, string contrasenha, string token)
+        public async Task<ActionResult<int>> CrearUsuario(int DNI, string nombreApellido, string correo, string contrasenha, string token, string contrasenhaVariado)
         {
-            
+
             string _token = token;
 
             while (VerificarTokenExistente(token))
@@ -92,10 +94,30 @@ namespace API_Tesis.Controllers
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
+                string secretKey;
+                string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
+                using (MySqlCommand command = new MySqlCommand(query2, connection))
+                {
+                    using (MySqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            secretKey = reader.GetString("KeyVar");
+                        }
+                        else
+                        {
+                            throw new Exception("No se encontró ningún secretKey en la tabla KeyEncript");
+                        }
+                    }
+                }
+                byte[] salt = Encoding.UTF8.GetBytes("saltValue");
+                byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
+                string base64Key = Convert.ToBase64String(keyBytes);
+                string encryptedText = Encrypt(contrasenhaVariado, base64Key);
                 string[] nombreApellidoArray = nombreApellido.Split(' ');
                 string nombre = nombreApellidoArray[0];
                 string apellido = nombreApellidoArray.Length > 1 ? nombreApellidoArray[1] : string.Empty;
-                string query = "INSERT INTO Usuario (DNI, Nombre, Apellido, Correo, contrasenha, Token) VALUES (@DNI, @Nombre, @Apellido, @Correo, @Contrasenha, @Token)";
+                string query = "INSERT INTO Usuario (DNI, Nombre, Apellido, Correo, contrasenha, Token, ContrasenhaVariado) VALUES (@DNI, @Nombre, @Apellido, @Correo, @Contrasenha, @Token, @ContrasenhaVariado)";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@DNI", DNI);
@@ -104,11 +126,14 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@Correo", correo);
                     command.Parameters.AddWithValue("@Contrasenha", contrasenha);
                     command.Parameters.AddWithValue("@Token", token);
+                    command.Parameters.AddWithValue("@ContrasenhaVariado", encryptedText);
 
-                    int idUsuario = Convert.ToInt32(command.ExecuteScalar());
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
 
-                    if (idUsuario > 0)
+                    if (rowsAffected > 0)
                     {
+                        command.CommandText = "SELECT LAST_INSERT_ID()";
+                        int idUsuario = Convert.ToInt32(command.ExecuteScalar());
                         string correoOrigen = "test@sbperu.net";
                         string contraseñaCorreo = "oyzlwfgvducseiga";
 
@@ -177,13 +202,48 @@ namespace API_Tesis.Controllers
 
                     if (rowsAffected > 0)
                     {
+                        connection.Close();
                         return Ok();
                     }
                     else
                     {
+                        connection.Close();
                         return NotFound();
                     }
                 }
+            }
+        }
+        [HttpGet]
+        [Route("/KeyEncript")]
+        public IActionResult GetToken()
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        object result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            string key = result.ToString();
+                            connection.Close();
+                            return Ok(key);
+                        }
+                        else
+                        {
+                            connection.Close();
+                            return NotFound("Usuario no encontrado");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener el token: {ex.Message}");
             }
         }
         [HttpGet]
@@ -204,10 +264,12 @@ namespace API_Tesis.Controllers
                         if (result != null)
                         {
                             string token = result.ToString();
+                            connection.Close();
                             return Ok(token);
                         }
                         else
                         {
+                            connection.Close();
                             return NotFound("Usuario no encontrado");
                         }
                     }
@@ -280,7 +342,7 @@ namespace API_Tesis.Controllers
                             }
                         }
                     }
-
+                    connection.Close();
                     return Ok();
                 }
             }
@@ -321,9 +383,119 @@ namespace API_Tesis.Controllers
                         }
                     }
                 }
+                connection.Close();
             }
 
             return Ok(usuarios);
+        }
+        [HttpGet]
+        [Route("/VerificarContrasenha")]
+        public async Task<IActionResult> VerificarContrasenha(int idUsuario, string contrasenha)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = "SELECT token, contrasenha FROM Usuario WHERE idUsuario = @IdUsuario";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                string contrasenhaHash = reader.GetString("contrasenha");
+                                if (contrasenha == contrasenhaHash)
+                                {
+                                    string token = reader.GetString("token");
+                                    connection.Close();
+                                    return Ok(token);
+                                }
+                                else
+                                {
+                                    connection.Close();
+                                    return Unauthorized();
+                                }
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/VerificarToken")]
+        public async Task<IActionResult> VerificarToken(int idUsuario, string token)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    string secretKey;
+                    string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
+                    using (MySqlCommand command = new MySqlCommand(query2, connection))
+                    {
+                        using (MySqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                secretKey = reader.GetString("KeyVar");
+                            }
+                            else
+                            {
+                                throw new Exception("No se encontró ningún secretKey en la tabla KeyEncript");
+                            }
+                        }
+                    }
+
+                    string query = "SELECT token, ContrasenhaVariado FROM Usuario WHERE idUsuario = @IdUsuario";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                string tokenHash = reader.GetString("token");
+                                if (token == tokenHash)
+                                {
+                                    string contrasenha = reader.GetString("ContrasenhaVariado");
+                                    byte[] salt = Encoding.UTF8.GetBytes("saltValue");
+                                    byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
+                                    string base64Key = Convert.ToBase64String(keyBytes);
+                                    string decryptedText = Decrypt(contrasenha, base64Key);
+                                    return Ok(decryptedText);
+                                }
+                                else
+                                {
+                                    return Unauthorized();
+                                }
+                            }
+                            else
+                            {
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
         [HttpGet]
         [Route("/InformacionIdUsuario")]
@@ -359,11 +531,12 @@ namespace API_Tesis.Controllers
                                     EsComprador = !reader.IsDBNull(reader.GetOrdinal("EsComprador")) && reader.GetBoolean("EsComprador"),
                                     EsVendedor = !reader.IsDBNull(reader.GetOrdinal("EsVendedor")) && reader.GetBoolean("EsVendedor")
                                 };
-
+                                connection.Close();
                                 return Ok(usuario);
                             }
                             else
                             {
+                                connection.Close();
                                 return NotFound("Usuario no encontrado");
                             }
                         }
@@ -391,6 +564,7 @@ namespace API_Tesis.Controllers
 
                     int count = Convert.ToInt32(command.ExecuteScalar());
 
+                    connection.Close();
                     // Si count es mayor que cero, significa que el correo ya está registrado
                     return count > 0;
                 }
@@ -412,8 +586,62 @@ namespace API_Tesis.Controllers
 
                     int count = Convert.ToInt32(command.ExecuteScalar());
 
+                    connection.Close();
                     // Si count es mayor que cero, significa que el correo ya está registrado
                     return count > 0;
+                }
+            }
+        }
+        public static string Encrypt(string plainText, string key)
+        {
+            try
+            {
+                using (Aes aesAlg = Aes.Create())
+                {
+                    aesAlg.Key = Encoding.UTF8.GetBytes(key);
+                    aesAlg.IV = new byte[16]; // Usar un IV (Initialization Vector) seguro para AES
+
+                    ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                    using (MemoryStream msEncrypt = new MemoryStream())
+                    {
+                        using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                        {
+                            using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                            {
+                                swEncrypt.Write(plainText);
+                            }
+                        }
+                        return Convert.ToBase64String(msEncrypt.ToArray());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error durante la encriptación: " + ex.Message);
+                return null;
+            }
+        }
+        public static string Decrypt(string cipherText, string key)
+        {
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = Encoding.UTF8.GetBytes(key);
+                aesAlg.IV = new byte[16]; // Usar el mismo IV que se usó para encriptar
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msDecrypt = new MemoryStream(cipherBytes))
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        {
+                            return srDecrypt.ReadToEnd();
+                        }
+                    }
                 }
             }
         }
