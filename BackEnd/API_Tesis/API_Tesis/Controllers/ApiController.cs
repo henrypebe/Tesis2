@@ -245,6 +245,37 @@ namespace API_Tesis.Controllers
                 }
             }
         }
+                //[HttpPut]
+        //[Route("/EditarTienda")]
+        //public async Task<ActionResult<int>> EditarTienda(int idTienda, string nombre, string descripcion, string direccion, string distrito, string pais)
+        //{
+        //    try
+        //    {
+        //        string connectionString = _configuration.GetConnectionString("DefaultConnection");
+        //        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //        {
+        //            connection.Open();
+        //            string query = @"INSERT INTO Tienda (Nombre, Descripcion, Direccion, Distrito, Pais, UsuarioID, Estado) 
+        //                     VALUES (@Nombre, @Descripcion, @Direccion, @Distrito, @Pais, @UsuarioID, @Estado);
+        //                     SELECT LAST_INSERT_ID();";
+        //            MySqlCommand command = new MySqlCommand(query, connection);
+        //            command.Parameters.AddWithValue("@Nombre", nombre);
+        //            command.Parameters.AddWithValue("@Descripcion", descripcion);
+        //            command.Parameters.AddWithValue("@Direccion", direccion);
+        //            command.Parameters.AddWithValue("@Distrito", distrito);
+        //            command.Parameters.AddWithValue("@Pais", pais);
+        //            command.Parameters.AddWithValue("@UsuarioID", idUsuario);
+        //            command.Parameters.AddWithValue("@Estado", 1);
+        //            int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+        //            return Ok(idGenerado);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        //    }
+        //}
         [HttpGet]
         [Route("/KeyEncript")]
         public IActionResult GetToken()
