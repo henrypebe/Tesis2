@@ -25,6 +25,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const [openModalQuinto, setOpenModaQuinto] = React.useState(false);
 
   const [informacionUsuario, setInformacionUsuario] = useState();
+  const [informacionTienda, setInformacionTienda] = useState();
   const [loading, setLoading] = React.useState(true);
 
   const handleOpen = () => setOpen(true);
@@ -59,6 +60,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   };
 
   const handleOpenModalQuinto = () => {
+    obtenerInformacionTienda();
     setOpenModaQuinto(true);
     setOpen(false);
   };
@@ -94,6 +96,33 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
     }
   };
 
+  const obtenerInformacionTienda = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7240/InformacionTienda?idUsuario=${idUsuario}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const tienda = await response.json();
+        console.log(tienda);
+        setInformacionTienda(tienda);
+      } else if (response.status === 404) {
+        throw new Error("Tienda no encontrado");
+      } else {
+        throw new Error("Error al obtener informacion de la tienda");
+      }
+    } catch (error) {
+      console.error("Error al obtener informacion de la tienda", error);
+      throw new Error("Error al obtener informacion de la tienda");
+    }
+  };
+
   useEffect(() => {
     const fetchData = () => {
       try {
@@ -118,7 +147,14 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
       setTelefonoCambiado(informacionUsuario.telefono ?? "");
       setDireccionCambiado(informacionUsuario.direccion ?? "");
     }
-  }, [informacionUsuario]);
+    if (informacionTienda) {
+      setNombreTiendaCambiado(informacionTienda.nombre ?? "");
+      setDescripcionTiendaCambiado(informacionTienda.descripcion ?? "");
+      setDireccionTiendaCambiado(informacionTienda.direccion ?? "");
+      setDistritoTiendaCambiado(informacionTienda.distrito ?? "");
+      setPaisTiendaCambiado(informacionTienda.pais ?? "");
+    }
+  }, [informacionUsuario, informacionTienda]);
 
   const [nombreCambiado, setNombreCambiado] = useState("");
   const [apellidoCambiado, setApellidoCambiado] = useState("");
@@ -126,6 +162,12 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const [TelefonoCambiado, setTelefonoCambiado] = useState("");
   const [DireccionCambiado, setDireccionCambiado] = useState("");
 
+  const [nombretTiendaCambiado, setNombreTiendaCambiado] = useState("");
+  const [DescripcionTiendaCambiado, setDescripcionTiendaCambiado] = useState("");
+  const [DireccionTiendaCambiado, setDireccionTiendaCambiado] = useState("");
+  const [DistritoTiendaCambiado, setDistritoTiendaCambiado] = useState("");
+  const [PaisTiendaCambiado, setPaisTiendaCambiado] = useState("");
+  
   const [ValorBloqueoContrasenha, setValorBloqueoContrasenha] = useState(true);
 
   const [verificarContrasenha, setVerificarContrasenha] = useState("");
@@ -1392,8 +1434,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                         fontSize: "25px",
                       },
                     }}
-                    defaultValue={nombreCambiado}
-                    onChange={(e) => setNombreCambiado(e.target.value)}
+                    defaultValue={nombretTiendaCambiado}
+                    onChange={(e) => setNombreTiendaCambiado(e.target.value)}
                   />
                 </Box>
 
@@ -1424,8 +1466,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                         fontSize: "25px",
                       },
                     }}
-                    defaultValue={nombreCambiado}
-                    onChange={(e) => setNombreCambiado(e.target.value)}
+                    defaultValue={DireccionTiendaCambiado}
+                    onChange={(e) => setDireccionTiendaCambiado(e.target.value)}
                   />
                 </Box>
 
@@ -1451,7 +1493,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                         width: "90%",
                       }}
                     >
-                      Dirección:
+                      Distrito:
                     </Typography>
                     <TextField
                       sx={{
@@ -1462,8 +1504,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                           fontSize: "25px",
                         },
                       }}
-                      defaultValue={nombreCambiado}
-                      onChange={(e) => setNombreCambiado(e.target.value)}
+                      defaultValue={DistritoTiendaCambiado}
+                      onChange={(e) => setDistritoTiendaCambiado(e.target.value)}
                     />
                   </Box>
 
@@ -1492,8 +1534,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                           fontSize: "25px",
                         },
                       }}
-                      defaultValue={nombreCambiado}
-                      onChange={(e) => setNombreCambiado(e.target.value)}
+                      defaultValue={PaisTiendaCambiado}
+                      onChange={(e) => setPaisTiendaCambiado(e.target.value)}
                     />
                   </Box>
                 </Box>
@@ -1543,6 +1585,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                 sx={{
                   width: "100%",
                 }}
+                defaultValue={DescripcionTiendaCambiado}
+                onChange={(e) => setDescripcionTiendaCambiado(e.target.value)}
               />
             </Box>
 
