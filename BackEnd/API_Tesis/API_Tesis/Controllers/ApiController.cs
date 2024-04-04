@@ -117,7 +117,7 @@ namespace API_Tesis.Controllers
                 string[] nombreApellidoArray = nombreApellido.Split(' ');
                 string nombre = nombreApellidoArray[0];
                 string apellido = nombreApellidoArray.Length > 1 ? nombreApellidoArray[1] : string.Empty;
-                string query = "INSERT INTO Usuario (DNI, Nombre, Apellido, Correo, contrasenha, Token, ContrasenhaVariado) VALUES (@DNI, @Nombre, @Apellido, @Correo, @Contrasenha, @Token, @ContrasenhaVariado)";
+                string query = "INSERT INTO Usuario (DNI, Nombre, Apellido, Correo, contrasenha, Token, ContrasenhaVariado, Estado) VALUES (@DNI, @Nombre, @Apellido, @Correo, @Contrasenha, @Token, @ContrasenhaVariado, @Estado)";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@DNI", DNI);
@@ -127,6 +127,7 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@Contrasenha", contrasenha);
                     command.Parameters.AddWithValue("@Token", token);
                     command.Parameters.AddWithValue("@ContrasenhaVariado", encryptedText);
+                    command.Parameters.AddWithValue("@Estado", 1);
 
                     int rowsAffected = await command.ExecuteNonQueryAsync();
 
@@ -180,6 +181,37 @@ namespace API_Tesis.Controllers
                 }
             }
         }
+        [HttpPost]
+        [Route("/CreateTienda")]
+        public async Task<ActionResult<int>> CrearTienda(int idUsuario, string nombre, string descripcion, string direccion, string distrito, string pais)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = @"INSERT INTO Tienda (Nombre, Descripcion, Direccion, Distrito, Pais, UsuarioID, Estado) 
+                             VALUES (@Nombre, @Descripcion, @Direccion, @Distrito, @Pais, @UsuarioID, @Estado);
+                             SELECT LAST_INSERT_ID();";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Nombre", nombre);
+                    command.Parameters.AddWithValue("@Descripcion", descripcion);
+                    command.Parameters.AddWithValue("@Direccion", direccion);
+                    command.Parameters.AddWithValue("@Distrito", distrito);
+                    command.Parameters.AddWithValue("@Pais", pais);
+                    command.Parameters.AddWithValue("@UsuarioID", idUsuario);
+                    command.Parameters.AddWithValue("@Estado", 1);
+                    int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+                    return Ok(idGenerado);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
         [HttpPut]
         [Route("/EditarUsuario")]
         public async Task<ActionResult> EditarUsuario(int idUsuario, string nombre, string apellido, string correo, int numero, string direccion)
@@ -188,7 +220,7 @@ namespace API_Tesis.Controllers
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono, Direccion = @Direccion WHERE idUsuario = @IdUsuario";
+                string query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono, Direccion = @Direccion WHERE idUsuario = @IdUsuario AND Estado = 1";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@IdUsuario", idUsuario);
@@ -256,7 +288,7 @@ namespace API_Tesis.Controllers
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT Token FROM Usuario WHERE IdUsuario = @Id";
+                    string query = "SELECT Token FROM Usuario WHERE IdUsuario = @Id AND Estado = 1";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@Id", id);
@@ -291,7 +323,7 @@ namespace API_Tesis.Controllers
                 {
                     await connection.OpenAsync();
 
-                    string updateQuery = "UPDATE Usuario SET EsComprador = @EsComprador, EsVendedor = @EsVendedor WHERE IdUsuario = @IdUsuario";
+                    string updateQuery = "UPDATE Usuario SET EsComprador = @EsComprador, EsVendedor = @EsVendedor WHERE IdUsuario = @IdUsuario AND Estado = 1";
                     using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
                     {
                         command.Parameters.AddWithValue("@EsComprador", esComprador);
@@ -352,6 +384,155 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
+        [Route("/RecuperarContrasenha")]
+        public async Task<IActionResult> VerifyUser(string correo, string token)
+        {
+            try
+            {
+                ValoresRecuperacionContrasenha _valor = new ValoresRecuperacionContrasenha();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string secretKey;
+                    string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
+                    using (MySqlCommand command = new MySqlCommand(query2, connection))
+                    {
+                        using (MySqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                secretKey = reader.GetString("KeyVar");
+                            }
+                            else
+                            {
+                                throw new Exception("No se encontró ningún secretKey en la tabla KeyEncript");
+                            }
+                        }
+                    }
+                    byte[] salt = Encoding.UTF8.GetBytes("saltValue");
+                    byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
+                    string base64Key = Convert.ToBase64String(keyBytes);
+
+                    string query = "SELECT ContrasenhaVariado, IdUsuario FROM Usuario WHERE Correo = @Correo AND Token = @Token AND Estado = 1";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Correo", correo);
+                        command.Parameters.AddWithValue("@Token", token);
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                int idUsuario = reader.GetInt32("IdUsuario");
+                                string constranseha = reader.GetString("ContrasenhaVariado");
+                                string decryptedText = Decrypt(constranseha, base64Key);
+                                _valor.IdUsuario = idUsuario;
+                                _valor.ContrasenhaVariado = decryptedText;
+
+                                string correoOrigen = "test@sbperu.net";
+                                string contraseñaCorreo = "oyzlwfgvducseiga";
+
+                                string asunto = $"Correo de Recuperación de Contraseña";
+                                StringBuilder htmlBody = new StringBuilder();
+                                htmlBody.Append("<h3>Se envia la contraseña para que pueda realizar el login:</h3>");
+                                htmlBody.Append($"<p style=\"font-size: 16px;\">{decryptedText}</p>");
+
+                                MailMessage message = new MailMessage
+                                {
+                                    From = new MailAddress(correoOrigen, "Prueba Tesis 2"),
+                                    Subject = asunto,
+                                    Body = htmlBody.ToString(),
+                                    IsBodyHtml = true
+                                };
+
+                                message.To.Add(correo);
+
+                                SmtpClient clienteSmtp = new SmtpClient("smtp.gmail.com")
+                                {
+                                    Port = 587,
+                                    Credentials = new NetworkCredential(correoOrigen, contraseñaCorreo),
+                                    EnableSsl = true
+                                };
+
+                                try
+                                {
+                                    await clienteSmtp.SendMailAsync(message);
+                                    Console.WriteLine("Correo enviado con la información de los tickets sin tareas.");
+                                    return Ok(idUsuario);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+                                    return BadRequest();
+                                }
+                            }
+                            else
+                            {
+                                return NotFound("Usuario no encontrado.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al verificar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/EditarContrasenha")]
+        public async Task<IActionResult> EditarContrasenha(int idUsuario, string contrasenha, string ContrasenhaVariado)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string secretKey;
+                    string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
+                    using (MySqlCommand command = new MySqlCommand(query2, connection))
+                    {
+                        using (MySqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                secretKey = reader.GetString("KeyVar");
+                            }
+                            else
+                            {
+                                throw new Exception("No se encontró ningún secretKey en la tabla KeyEncript");
+                            }
+                        }
+                    }
+                    byte[] salt = Encoding.UTF8.GetBytes("saltValue");
+                    byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
+                    string base64Key = Convert.ToBase64String(keyBytes);
+                    string encryptedText = Encrypt(ContrasenhaVariado, base64Key);
+
+                    string updateQuery = "UPDATE Usuario SET contrasenha = @contrasenha, ContrasenhaVariado = @ContrasenhaVariado WHERE IdUsuario = @IdUsuario AND Estado = 1";
+                    using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@contrasenha", contrasenha);
+                        command.Parameters.AddWithValue("@ContrasenhaVariado", encryptedText);
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+
+                        await command.ExecuteNonQueryAsync();
+                    }
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/users")]
         public ActionResult<IEnumerable<Usuario>> GetUsers()
         {
@@ -361,7 +542,7 @@ namespace API_Tesis.Controllers
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "SELECT * FROM Usuario";
+                string query = "SELECT * FROM Usuario WHERE Estado = 1";
 
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
@@ -399,7 +580,7 @@ namespace API_Tesis.Controllers
                 {
                     await connection.OpenAsync();
 
-                    string query = "SELECT token, contrasenha FROM Usuario WHERE idUsuario = @IdUsuario";
+                    string query = "SELECT token, contrasenha FROM Usuario WHERE idUsuario = @IdUsuario AND Estado = 1";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@IdUsuario", idUsuario);
@@ -461,7 +642,7 @@ namespace API_Tesis.Controllers
                         }
                     }
 
-                    string query = "SELECT token, ContrasenhaVariado FROM Usuario WHERE idUsuario = @IdUsuario";
+                    string query = "SELECT token, ContrasenhaVariado FROM Usuario WHERE idUsuario = @IdUsuario AND Estado = 1";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@IdUsuario", idUsuario);
@@ -508,7 +689,7 @@ namespace API_Tesis.Controllers
                 {
                     connection.Open();
 
-                    string query = "SELECT IdUsuario, Correo, Foto, Nombre, Apellido, DNI, Telefono, Direccion, EsComprador, EsVendedor FROM Usuario WHERE IdUsuario = @IdUsuario";
+                    string query = "SELECT IdUsuario, Correo, Foto, Nombre, Apellido, DNI, Telefono, Direccion, EsComprador, EsVendedor FROM Usuario WHERE IdUsuario = @IdUsuario AND Estado = 1";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -548,6 +729,103 @@ namespace API_Tesis.Controllers
                 return StatusCode(500, $"Error al obtener el usuario: {ex.Message}");
             }
         }
+        [HttpPost]
+        [Route("/CambiarEstadoUsuario")]
+        public async Task<ActionResult> EliminarUsuario(int idUsuario, string contrasenha, string token)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+                // Abrir una nueva conexión para ejecutar la consulta
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Consulta para obtener el estado del usuario
+                    string selectUserQuery = "SELECT EsVendedor, ContrasenhaVariado, Token FROM Usuario WHERE IdUsuario = @IdUsuario AND Estado = 1";
+                    using (MySqlCommand selectUserCommand = new MySqlCommand(selectUserQuery, connection))
+                    {
+                        selectUserCommand.Parameters.AddWithValue("@IdUsuario", idUsuario);
+
+                        // Ejecutar la consulta y leer el resultado
+                        using (var reader = await selectUserCommand.ExecuteReaderAsync())
+                        {
+                            if (reader.Read())
+                            {
+                                string ContrasenhaVariado = reader.GetString("ContrasenhaVariado");
+                                string Token = reader.GetString("Token");
+                                bool esVendedor = reader.GetBoolean("EsVendedor");
+                                await connection.CloseAsync();
+                                await connection.OpenAsync();
+                                string secretKey;
+                                string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
+                                using (MySqlCommand command = new MySqlCommand(query2, connection))
+                                {
+                                    using (MySqlDataReader _reader = await command.ExecuteReaderAsync())
+                                    {
+                                        if (await _reader.ReadAsync())
+                                        {
+                                            secretKey = _reader.GetString("KeyVar");
+                                        }
+                                        else
+                                        {
+                                            throw new Exception("No se encontró ningún secretKey en la tabla KeyEncript");
+                                        }
+                                    }
+                                }
+                                byte[] salt = Encoding.UTF8.GetBytes("saltValue");
+                                byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
+                                string base64Key = Convert.ToBase64String(keyBytes);
+                                string decryptedText = Decrypt(ContrasenhaVariado, base64Key);
+
+                                if (decryptedText == contrasenha && token == Token)
+                                {
+                                    await connection.CloseAsync();
+                                    await connection.OpenAsync();
+
+                                    string updateUserQuery = "UPDATE Usuario SET Estado = @Estado WHERE IdUsuario = @IdUsuario";
+                                    using (MySqlCommand updateUserCommand = new MySqlCommand(updateUserQuery, connection))
+                                    {
+                                        updateUserCommand.Parameters.AddWithValue("@Estado", 0);
+                                        updateUserCommand.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                                        await updateUserCommand.ExecuteNonQueryAsync();
+                                    }
+
+                                    if (esVendedor)
+                                    {
+                                        await connection.CloseAsync();
+                                        await connection.OpenAsync();
+
+                                        string updateTiendasQuery = "UPDATE Tienda SET Estado = @Estado WHERE UsuarioID = @UsuarioID";
+                                        using (MySqlCommand updateTiendasCommand = new MySqlCommand(updateTiendasQuery, connection))
+                                        {
+                                            updateTiendasCommand.Parameters.AddWithValue("@Estado", 0);
+                                            updateTiendasCommand.Parameters.AddWithValue("@UsuarioID", idUsuario);
+                                            await updateTiendasCommand.ExecuteNonQueryAsync();
+                                        }
+                                    }
+
+                                    return Ok();
+                                }
+                                else
+                                {
+                                    return NotFound();
+                                }
+                            }
+                            else
+                            {
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
         private bool VerificarCorreoExistente(string correo)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
@@ -556,7 +834,7 @@ namespace API_Tesis.Controllers
             {
                 connection.Open();
 
-                string query = "SELECT COUNT(*) FROM Usuario WHERE Correo = @Correo";
+                string query = "SELECT COUNT(*) FROM Usuario WHERE Correo = @Correo AND Estado = 1";
 
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
@@ -578,7 +856,7 @@ namespace API_Tesis.Controllers
             {
                 connection.Open();
 
-                string query = "SELECT COUNT(*) FROM Usuario WHERE Token = @Token";
+                string query = "SELECT COUNT(*) FROM Usuario WHERE Token = @Token AND Estado = 1";
 
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {

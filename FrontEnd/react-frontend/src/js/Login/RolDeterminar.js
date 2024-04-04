@@ -5,7 +5,7 @@ import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, useParams } from 'react-router-dom';
 
-export default function RolDeterminar() {
+export default function RolDeterminar({onLoginComprador}) {
     const { idUsuario } = useParams();
     const [esVendedor, setEsVendedor] = useState(false);
     const [esComprador, setEsComprador] = useState(false);
@@ -24,7 +24,8 @@ export default function RolDeterminar() {
                 if(esVendedor){
                     window.location.href = `/TiendaInformacion/${idUsuario}`;
                 }else{
-                    window.location.href = `/MenuVendedor/${idUsuario}`;
+                    // window.location.href = `/MenuVendedor/${idUsuario}`;
+                    onLoginComprador(idUsuario);
                 }
             } else {
                 throw new Error('Error al crear el usuario');

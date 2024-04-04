@@ -36,10 +36,9 @@ export default function MenuComprador() {
   const [chatId, setChatId] = useState(false);
 
   const { idUsuario } = useParams();
-
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
-      <BarraSuperior idUsuario={idUsuario}/>
+      <BarraSuperior idUsuario={idUsuario} />
       <Box sx={{display:"flex", flexDirection:"row"}}>
         <BarraLateralComprador mostrarInicio={mostrarInicio} onMostrarInicioChange={setMostrarInicio}
           mostrarPedidos={mostrarPedidos} onMostrarPedidosChange={setMostrarPedidos} mostrarProductos={mostrarProductos}

@@ -7,7 +7,6 @@ import { SHA256 } from 'crypto-js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
-import { encryptValue, getSecretKey } from '../Server/Encriptacion';
 
 export default function CreateUser() {
     const [email, setEmail] = useState('');
@@ -26,8 +25,6 @@ export default function CreateUser() {
           const hashedPassword2 = SHA256(confirmarContrasenha).toString();
 
           if(hashedPassword === hashedPassword2){
-            const key = await getSecretKey();
-            const hashedPasswordVaried = encryptValue(contrasenha, key);
 
             const token = uuidv4();
 

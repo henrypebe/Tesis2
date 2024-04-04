@@ -5,12 +5,12 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SHA256 } from 'crypto-js';
 
-export default function LoginPage() {
+export default function LoginPage({onLoginAdministrador, onLoginComprador, onLoginVendedor}) {
   const [emailType, setEmailType] = useState("");
   const [contrasenha, setContrasenha] = useState("");
   const [token, setToken] = useState("");
 
-  const handleCreateUser = async () => {
+  const handleLoginSistema = async () => {
     try {
       if(emailType !== '' || contrasenha !== '' || token !== ''){
         const hashedPassword = SHA256(contrasenha).toString();
@@ -24,16 +24,20 @@ export default function LoginPage() {
           const { idUsuario, opcionPantalla } = await response.json();
 
           if (opcionPantalla === 1) {
-            window.location.href = `/MenuAdministrador/${idUsuario}`;
+            onLoginAdministrador(idUsuario);
+            // window.location.href = `/MenuAdministrador/${idUsuario}`;
           } else if (opcionPantalla === 2) {
-            window.location.href = `/MenuComprador/${idUsuario}`;
+            onLoginComprador(idUsuario);
+            // return <Navigate to={`/MenuComprador/${idUsuario}`} replace />;
+            // window.location.href = `/MenuComprador/${idUsuario}`;
           } else if (opcionPantalla === 3) {
-            window.location.href = `/MenuVendedor/${idUsuario}`;
+            onLoginVendedor(idUsuario);
+            // window.location.href = `/MenuVendedor/${idUsuario}`;
           } else {
-            console.error("Tipo de correo electrónico no válido");
+            toast.error('Error al ingresar los datos, verifique nuevamente.');
           }
         } else {
-          throw new Error("Error al ingresar");
+          toast.error('Error al ingresar los datos, verifique nuevamente.');
         }
       }else{
         toast.error('Debe ingresar todos los datos solicitados.');
@@ -112,7 +116,7 @@ export default function LoginPage() {
             width: "100%",
             "&:hover": { backgroundColor: "#1C2536" },
           }}
-          onClick={handleCreateUser}
+          onClick={handleLoginSistema}
         >
           Iniciar Sesión
         </Button>

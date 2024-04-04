@@ -1,13 +1,32 @@
 import { Box, Button, TextField, Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-export default function TiendaInformacion() {
+export default function TiendaInformacion({onLoginVendedor}) {
+    const [NombreTienda, setNombreTienda] = useState("");
+    const [Descripcion, setDescripcion] = useState("");
+    const [Direccion, setDireccion] = useState("");
+    const [Distrito, setDistrito] = useState("");
+    const [Pais, setPais] = useState("");
+
     const { idUsuario } = useParams();
     const handleCreateUser = async () => {
         try {
-            window.location.href = `/MenuComprador/${idUsuario}`;
+            const response = await 
+            fetch(`https://localhost:7240/CreateTienda?idUsuario=${idUsuario}&nombre=${NombreTienda}&descripcion=${Descripcion}&direccion=${Direccion}&distrito=${Distrito}&pais=${Pais}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (response.ok) {
+                // const { idTienda } = await response.json();
+                // console.log(idTienda);
+                onLoginVendedor(idUsuario);
+            } else {
+                throw new Error("Error al ingresar");
+            }
         } catch (error) {
             console.error('Error al enviar el correo electrónico:', error);
         }
@@ -44,15 +63,25 @@ export default function TiendaInformacion() {
             </Typography>
         </Box>
 
-        <TextField id="outlined-basic" label="Nombre de la tienda (*)" variant="outlined" sx={{marginBottom:"19px"}}/>
+        <TextField id="outlined-basic" label="Nombre de la tienda (*)" variant="outlined" sx={{marginBottom:"19px"}}
+            onChange={(e) => setNombreTienda(e.target.value)}
+        />
 
-        <TextField id="outlined-basic" label="Descripción de la tienda (*)" variant="outlined" sx={{marginBottom:"19px"}}/>
+        <TextField id="outlined-basic" label="Descripción de la tienda (*)" variant="outlined" sx={{marginBottom:"19px"}}
+            onChange={(e) => setDescripcion(e.target.value)}
+        />
 
-        <TextField id="outlined-basic" label="Dirección (*)" variant="outlined" sx={{marginBottom:"19px"}}/>
+        <TextField id="outlined-basic" label="Dirección (*)" variant="outlined" sx={{marginBottom:"19px"}}
+            onChange={(e) => setDireccion(e.target.value)}
+        />
 
         <Box sx={{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
-            <TextField id="outlined-basic" label="Distrito (*)" variant="outlined" sx={{width:"50%", marginRight:"10px"}}/>
-            <TextField id="outlined-basic" label="País (*)" variant="outlined" sx={{width:"50%"}}/>
+            <TextField id="outlined-basic" label="Distrito (*)" variant="outlined" sx={{width:"50%", marginRight:"10px"}}
+                onChange={(e) => setDistrito(e.target.value)}
+            />
+            <TextField id="outlined-basic" label="País (*)" variant="outlined" sx={{width:"50%"}}
+                onChange={(e) => setPais(e.target.value)}
+            />
         </Box>
 
         <Typography sx={{width:"100%", marginTop:"25px", fontSize:"14px", color:"#ADADAD", marginBottom:"10px"}}>

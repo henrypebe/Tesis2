@@ -1,7 +1,7 @@
 import random
 import hashlib
 from faker import Faker
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 fake = Faker()
 
@@ -24,6 +24,11 @@ def fecha_hora_fraudulentas():
 def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numeros_cuenta):
     direcciones_entrega = [fake.address() for _ in range(50)]
     cambios_metodo_pago = {}
+    historial_cambios_direccion = {}
+    
+    cambios_mes_actual = 0
+    
+    primera_creacion_pedido = None
 
     with open("ArchivosAdicionales/datos_pedidos_fraude.txt", "w") as archivo:
         for _ in range(num_pedidos):
@@ -37,6 +42,15 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
 
                 if tipo_fraude == 'cambio_direccion':
                     direcciones_entrega[nombres_compradores.index(nombre_apellido)] = fake.address()
+                    historial_cliente = historial_cambios_direccion.get(nombre_apellido, [])
+                    historial_cliente.append(datetime.now())
+                    historial_cliente.append(datetime.now())
+                    historial_cliente.append(datetime.now())
+                    historial_cliente.append(datetime.now())
+                    historial_cliente.append(datetime.now())
+                    historial_cliente.append(datetime.now())
+                    historial_cambios_direccion[nombre_apellido] = historial_cliente
+                    cambios_mes_actual = sum(1 for fecha in historial_cliente if fecha >= datetime.now() - timedelta(days=30))
 
                 elif tipo_fraude == 'volumen_inusual':
                     if random.random() < 0.05:
@@ -56,7 +70,7 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
 
                 elif tipo_fraude == 'cambio_metodo_pago':
                     num_cambios_metodo_pago = cambios_metodo_pago.get(nombre_apellido, 0)
-                    num_cambios_metodo_pago += 20
+                    num_cambios_metodo_pago += 5
                     cambios_metodo_pago[nombre_apellido] = num_cambios_metodo_pago
 
             else:
@@ -72,8 +86,15 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
                     cambios_metodo_pago[nombre_apellido] = num_cambios_metodo_pago
                     if num_cambios_metodo_pago > 10 and tipo_fraude == 'No_Fraude':
                         tipo_fraude = 'cambio_metodo_pago'
+                if random.random() < 0.05:
+                    direcciones_entrega[nombres_compradores.index(nombre_apellido)] = fake.address()
+                    historial_cliente = historial_cambios_direccion.get(nombre_apellido, [])
+                    historial_cliente.append(datetime.now())
+                    historial_cambios_direccion[nombre_apellido] = historial_cliente
+                    cambios_mes_actual = sum(1 for fecha in historial_cliente if fecha >= datetime.now() - timedelta(days=30))
+                    if cambios_mes_actual > 5 and tipo_fraude == 'No_Fraude':
+                        tipo_fraude = 'cambio_direccion'
                         
-
             numero_cuenta = numeros_cuenta.get(nombre_apellido, '')  # Use .get() to avoid KeyError
             direccion_entrega = direcciones_entrega[nombres_compradores.index(nombre_apellido)]
             direccion_entrega = direccion_entrega.replace("\n", ", ")
@@ -81,6 +102,7 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
             archivo.write("Nombre y Apellido del Comprador: {}\n".format(nombre_apellido))
             archivo.write("Fecha de Creación del Pedido: {}\n".format(fecha_creacion_pedido))
             archivo.write("Lugar de Entrega: {}\n".format(direccion_entrega))
+            archivo.write("Cantidad de cambios de lugar de entrega durante el ultimo mes: {}\n".format(cambios_mes_actual))
             archivo.write("Costo del Pedido: {}\n".format(costo_pedido))
             archivo.write("Método de Pago (Número de Cuenta Encriptado): {}\n".format(numero_cuenta))
             archivo.write("Numeros de cambios del método de pago: {}\n".format(cambios_metodo_pago.get(nombre_apellido, 0)))

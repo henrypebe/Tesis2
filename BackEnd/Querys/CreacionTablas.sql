@@ -5,6 +5,7 @@ DROP TABLE Comprador;
 DROP TABLE Vendedor;
 DROP TABLE mensajes;
 DROP TABLE chats;
+DROP TABLE Tienda;
 
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -20,7 +21,8 @@ CREATE TABLE Usuario (
     Direccion text,
     EsAdministrador boolean,
     EsComprador boolean,
-    EsVendedor boolean
+    EsVendedor boolean,
+    Estado boolean
 );
 
 CREATE TABLE Comprador(
@@ -56,6 +58,19 @@ CREATE TABLE KeyEncript (
     KeyVar Text
 );
 
+CREATE TABLE Tienda (
+    IdTienda INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre TEXT,
+    Descripcion TEXT,
+    Direccion TEXT,
+    Distrito Text,
+    Pais text,
+    Foto BLOB,
+    UsuarioID INT NOT NULL,
+    FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario),
+    Estado boolean
+);
+
 INSERT INTO KeyEncript (KeyVar) 
 VALUES ('tesis2');
 
@@ -66,3 +81,6 @@ SELECT * FROM Usuario;
 SELECT * FROM Vendedor;
 SELECT * FROM Comprador;
 SELECT * FROM KeyEncript;
+SELECT * FROM Tienda;
+
+SELECT * FROM Usuario WHERE Estado = 1;
