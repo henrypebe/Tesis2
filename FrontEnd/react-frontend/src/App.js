@@ -47,9 +47,10 @@ function App() {
         {/* Pantallas de Login */}
         <Route path="/" element={<Navigate to="/Login" />} />
         <Route path="/Login" element={isLoggedInComprador? <Navigate to="/MenuVendedor/:idUsuario" /> : 
-          <LoginPage onLoginAdministrador={handleLoginAdministrador} onLoginComprador={handleLoginComprador} onLoginVendedor={handleLoginVendedor}/>} />
+          <LoginPage />} />
         <Route path="/CreateUser" element={<CreateUser />} />
-        <Route path="/TokenPantalla/:idUsuario" element={<TokenPantalla />} />
+        <Route path="/TokenPantalla/:idUsuario" element={<TokenPantalla onLoginAdministrador={handleLoginAdministrador} onLoginComprador={handleLoginComprador}
+          onLoginVendedor={handleLoginVendedor}/>} />
         <Route path="/Rol/:idUsuario" element={<RolDeterminar onLoginComprador={handleLoginComprador}/>} />
         <Route path="/TiendaInformacion/:idUsuario" element={<TiendaInformacion onLoginVendedor={handleLoginVendedor}/>} />
         <Route path="/RecuperarContrasenhaPrimer" element={<RecuperarContrasenha />} />

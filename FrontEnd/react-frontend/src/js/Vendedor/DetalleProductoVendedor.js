@@ -1,18 +1,29 @@
-import { Box, Button, Divider, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import { Box, Button, Divider, IconButton, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 import React from 'react';
 import HistoryIcon from '@mui/icons-material/History';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import CancelIcon from "@mui/icons-material/Cancel";
+import LineaDetalleProductoVisualizar from './LineaDetalleProductoVisualizar';
 
-export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto}) {
+export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto, productoInformacion}) {
   
     const handleChange = () =>{
         setMostrarMisProductos(true);
         setMostrarDetalleProducto(false);
     }
 
+    const [openModalPrincipal, setOpenModalPrincipal] = React.useState(false);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+    const handleOpenModalPrincipal = () => {
+        setOpenModalPrincipal(true);
+    };
+
+    const handleCloseModalPrincipal = () => {
+        setOpenModalPrincipal(false);
+    };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -25,6 +36,20 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
     
     const handleComentario = () => {
         
+    };
+
+    const styleSecundario = {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 1000,
+        bgcolor: "background.paper",
+        border: "2px solid #000",
+        boxShadow: 24,
+        padding: "20px",
+        borderRadius: "8px",
+        height: "27%",
     };
 
     const columns = [
@@ -72,14 +97,14 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                 >
                     Detalles generales del producto:
                 </Typography>
-                <IconButton>
+                <IconButton onClick={handleOpenModalPrincipal}>
                     <HistoryIcon sx={{fontSize:"40px", color:"black"}}/>
                 </IconButton>
             </Box>
 
             <Box sx={{display:"flex", flexDirection:"row"}}>
-                <img src="https://promart.vteximg.com.br/arquivos/ids/570404-1000-1000/22773.jpg?v=637401121588630000" alt="Descripción de la imagen" 
-                    style={{height:"120px"}}
+                <img src={productoInformacion.imagen} alt="Descripción de la imagen" 
+                    style={{height:"120px", maxWidth:"180px", minWidth:"180px"}}
                 />
                 <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
                 <Box sx={{display:"flex", flexDirection:"column", width:"50%", justifyContent:"center"}}>
@@ -91,7 +116,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        Productos 1
+                        {productoInformacion.nombre}
                         </Typography>
                         <Typography
                         sx={{
@@ -101,7 +126,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        Fecha de creación: 17/08/2024
+                        Fecha de creación: {new Date(productoInformacion.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {new Date(productoInformacion.fechaCreacion).toLocaleTimeString()}
                         </Typography>
                         <Typography
                         sx={{
@@ -111,7 +136,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        10 ventas
+                        {productoInformacion.cantidadVentas} {productoInformacion.cantidadVentas>1?"ventas":"venta"}
                     </Typography>
                 </Box>
             </Box>
@@ -120,8 +145,8 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
         <Box sx={{display:"flex", flexDirection:"column", marginTop:"15px", padding:"10px", border:"2px solid black", borderRadius:"6px",
         height:"25%"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"90%"}}>Descripción del producto:</Typography>
-            <Typography sx={{minHeight:"80%"}}>
-
+            <Typography sx={{minHeight:"80%", marginTop:"10px", fontSize:"20px"}}>
+                {productoInformacion.descripcion}
             </Typography>
         </Box>
 
@@ -190,6 +215,59 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                 />
             </Paper>
         </Box>
+
+        <Modal
+          open={openModalPrincipal}
+          onClose={handleCloseModalPrincipal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+            <Box sx={{ ...styleSecundario }}>
+                <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                }}
+                >
+                    <Typography
+                        sx={{
+                        color: "black",
+                        fontWeight: "bold",
+                        fontSize: "30px",
+                        width: "100%",
+                        }}
+                    >
+                        Monitoreo de cambios del producto
+                    </Typography>
+
+                    <IconButton
+                        sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "80px",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        "&:hover": { backgroundColor: "white" },
+                        }}
+                        onClick={handleCloseModalPrincipal}
+                    >
+                        <CancelIcon sx={{ fontSize: "50px" }} />
+                    </IconButton>
+                </Box>
+                <hr
+                    style={{
+                        margin: "10px 0",
+                        border: "0",
+                        borderTop: "2px solid #ccc",
+                        marginTop: "10px",
+                        marginBottom: "15px",
+                    }}
+                />
+                <LineaDetalleProductoVisualizar />
+            </Box>
+        </Modal>
     </Box>
   )
 }

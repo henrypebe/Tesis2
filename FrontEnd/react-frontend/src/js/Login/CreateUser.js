@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { SHA256 } from 'crypto-js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { v4 as uuidv4 } from 'uuid';
 
 export default function CreateUser() {
     const [email, setEmail] = useState('');
@@ -26,9 +25,7 @@ export default function CreateUser() {
 
           if(hashedPassword === hashedPassword2){
 
-            const token = uuidv4();
-
-            const response = await fetch(`https://localhost:7240/CreateUsuario?DNI=${DNI}&nombreApellido=${nombreApellido}&correo=${email}&contrasenha=${hashedPassword}&token=${token}&contrasenhaVariado=${contrasenha}`, {
+            const response = await fetch(`https://localhost:7240/CreateUsuario?DNI=${DNI}&nombreApellido=${nombreApellido}&correo=${email}&contrasenha=${hashedPassword}&contrasenhaVariado=${contrasenha}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,7 +33,7 @@ export default function CreateUser() {
             });
             if (response.ok) {
               const idUsuario = await response.json();
-              window.location.href = `/TokenPantalla/${idUsuario}`;
+              window.location.href = `/Rol/${idUsuario}`;
             } else {
                 throw new Error('Error al enviar el correo electrónico');
             }

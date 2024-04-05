@@ -8,34 +8,23 @@ import { SHA256 } from 'crypto-js';
 export default function LoginPage({onLoginAdministrador, onLoginComprador, onLoginVendedor}) {
   const [emailType, setEmailType] = useState("");
   const [contrasenha, setContrasenha] = useState("");
-  const [token, setToken] = useState("");
+  // const [token, setToken] = useState("");
 
   const handleLoginSistema = async () => {
     try {
-      if(emailType !== '' || contrasenha !== '' || token !== ''){
+      if(emailType !== '' || contrasenha !== ''){
         const hashedPassword = SHA256(contrasenha).toString();
-        const response = await fetch(`https://localhost:7240/login?_correo=${emailType}&_contrasenha=${hashedPassword}&_token=${token}`, {
+        const response = await fetch(`https://localhost:7240/login?_correo=${emailType}&_contrasenha=${hashedPassword}`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
           }
         });
         if (response.ok) {
-          const { idUsuario, opcionPantalla } = await response.json();
-
-          if (opcionPantalla === 1) {
-            onLoginAdministrador(idUsuario);
-            // window.location.href = `/MenuAdministrador/${idUsuario}`;
-          } else if (opcionPantalla === 2) {
-            onLoginComprador(idUsuario);
-            // return <Navigate to={`/MenuComprador/${idUsuario}`} replace />;
-            // window.location.href = `/MenuComprador/${idUsuario}`;
-          } else if (opcionPantalla === 3) {
-            onLoginVendedor(idUsuario);
-            // window.location.href = `/MenuVendedor/${idUsuario}`;
-          } else {
-            toast.error('Error al ingresar los datos, verifique nuevamente.');
-          }
+          const idUsuario = await response.text();
+          // console.log(idUsuario);
+          window.location.href = `/TokenPantalla/${idUsuario}`;
+          
         } else {
           toast.error('Error al ingresar los datos, verifique nuevamente.');
         }
@@ -88,13 +77,13 @@ export default function LoginPage({onLoginAdministrador, onLoginComprador, onLog
           onChange={(e) => setContrasenha(e.target.value)}
         />
 
-        <TextField
+        {/* <TextField
           id="outlined-basic"
           label="Token"
           variant="outlined"
           sx={{ marginBottom: "19px" }}
           onChange={(e) => setToken(e.target.value)}
-        />
+        /> */}
 
         <Box
           sx={{

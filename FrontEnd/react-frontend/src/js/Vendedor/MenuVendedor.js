@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import BarraSuperior from '../Comprador/BarraSuperior'
 import BarraLateralVendedor from './BarraLateralVendedor';
 import InicioVendedor from './InicioVendedor';
@@ -34,6 +34,39 @@ export default function MenuVendedor() {
 
     const { idUsuario } = useParams();
 
+    const [informacionTienda, setInformacionTienda] = useState();
+    const [productoInformacion, setProductoInformacion] = useState();
+
+    useEffect(() => {
+      const obtenerInformacionTienda = async () => {
+        try {
+          const response = await fetch(
+            `https://localhost:7240/InformacionTienda?idUsuario=${idUsuario}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+    
+          if (response.ok) {
+            const tienda = await response.json();
+            // console.log(tienda);
+            setInformacionTienda(tienda);
+          } else if (response.status === 404) {
+            throw new Error("Tienda no encontrado");
+          } else {
+            throw new Error("Error al obtener informacion de la tienda");
+          }
+        } catch (error) {
+          console.error("Error al obtener informacion de la tienda", error);
+          throw new Error("Error al obtener informacion de la tienda");
+        }
+      };
+      obtenerInformacionTienda();
+    }, [idUsuario]);
+
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
         <BarraSuperior idUsuario={idUsuario}/>
@@ -61,12 +94,13 @@ export default function MenuVendedor() {
             setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor}/>}
 
             {mostrarMisProductos && <MisProductos setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
-            setMostrarEditarProducto={setMostrarEditarProducto} setOpcionEditarProducto={setOpcionEditarProducto}/>}
+            setOpcionEditarProducto={setOpcionEditarProducto} setProductoInformacion={setProductoInformacion} setMostrarEditarProducto={setMostrarEditarProducto}/>}
 
-            {mostrarDetalleProducto && <DetalleProductoVendedor setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}/>}
+            {mostrarDetalleProducto && <DetalleProductoVendedor setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
+            productoInformacion={productoInformacion}/>}
 
             {mostrarEditarProducto && <EditarProducto setMostrarMisProductos={setMostrarMisProductos} setMostrarEditarProducto={setMostrarEditarProducto}
-            opcionEditarProducto={opcionEditarProducto}/>}
+            opcionEditarProducto={opcionEditarProducto} informacionTienda={informacionTienda} productoInformacion={productoInformacion}/>}
 
             {mostrarSeguimientoVendedor && <SeguimientoVendedor setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor}
             setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento}/>}

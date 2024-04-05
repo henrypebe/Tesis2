@@ -11,7 +11,7 @@ import {
 import { Box } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+// import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SHA256 } from "crypto-js";
@@ -19,7 +19,7 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const [open, setOpen] = React.useState(false);
-  const [openModalSecundario, setOpenModalSecundario] = React.useState(false);
+  // const [openModalSecundario, setOpenModalSecundario] = React.useState(false);
   const [openModalTercero, setOpenModaTercero] = React.useState(false);
   const [openModalCuarto, setOpenModaCuarto] = React.useState(false);
   const [openModalQuinto, setOpenModaQuinto] = React.useState(false);
@@ -30,23 +30,23 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleOpenModalSecundario = () => {
-    setOpenModalSecundario(true);
-    setOpen(false);
-  };
-  const handleCloseModalSecundario = () => {
-    setOpenModalSecundario(false);
-    setOpen(true);
-    setVerificarContrasenha("");
-  };
-  const handleOpenModalTercero = () => {
-    setOpenModaTercero(true);
-    setOpen(false);
-  };
+  // const handleOpenModalSecundario = () => {
+  //   setOpenModalSecundario(true);
+  //   setOpen(false);
+  // };
+  // const handleCloseModalSecundario = () => {
+  //   setOpenModalSecundario(false);
+  //   setOpen(true);
+  //   setVerificarContrasenha("");
+  // };
+  // const handleOpenModalTercero = () => {
+  //   setOpenModaTercero(true);
+  //   setOpen(false);
+  // };
   const handleCloseModalTercero = () => {
     setOpenModaTercero(false);
     setOpen(true);
-    setVerificarContrasenha("");
+    // setVerificarContrasenha("");
   };
 
   const handleOpenModalCuarto = () => {
@@ -56,7 +56,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const handleCloseModalCuarto = () => {
     setOpenModaCuarto(false);
     setOpen(true);
-    setVerificarContrasenha("");
+    // setVerificarContrasenha("");
   };
 
   const handleOpenModalQuinto = () => {
@@ -67,7 +67,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const handleCloseModalQuinto = () => {
     setOpenModaQuinto(false);
     setOpen(true);
-    setVerificarContrasenha("");
+    // setVerificarContrasenha("");
   };
 
   const obtenerRolesIdUsuario = async (idUsuario) => {
@@ -110,7 +110,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
 
       if (response.ok) {
         const tienda = await response.json();
-        console.log(tienda);
+        // console.log(tienda);
         setInformacionTienda(tienda);
       } else if (response.status === 404) {
         throw new Error("Tienda no encontrado");
@@ -128,7 +128,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
       try {
         const usuario = obtenerRolesIdUsuario(idUsuario);
         setInformacionUsuario(usuario);
-        console.log(usuario);
+        // console.log(usuario);
       } catch (error) {
         console.error("Error al obtener el usuario:", error.message);
       } finally {
@@ -170,9 +170,10 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   
   const [ValorBloqueoContrasenha, setValorBloqueoContrasenha] = useState(true);
 
-  const [verificarContrasenha, setVerificarContrasenha] = useState("");
+  // const [verificarContrasenha, setVerificarContrasenha] = useState("");
   const [verificarToken, setVerificarToken] = useState("");
-  const [token, setToken] = useState("");
+  // const [token, setToken] = useState("");
+
   const [contrasenha, setContrasenha] = useState("");
 
   const [verificarTokenEliminar, setVerificarTokenEliminar] = useState("");
@@ -181,8 +182,13 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
+      if(contrasenha !== ""){
+        handleClose();
+        setTimeout(() => {
+          handleOpen();
+        }, 10);
+      }
       setContrasenha("");
-      setToken("");
     }, 15000);
     return () => clearTimeout(timeout);
   }, [contrasenha]);
@@ -198,21 +204,21 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
     boxShadow: 24,
     padding: "20px",
     borderRadius: "8px",
-    height: informacionUsuario && informacionUsuario.esVendedor ? "90%" : "85%",
+    height: informacionUsuario && informacionUsuario.esVendedor ? "83%" : "85%",
   };
-  const styleSecundario = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 1000,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    padding: "20px",
-    borderRadius: "8px",
-    height: "27%",
-  };
+  // const styleSecundario = {
+  //   position: "absolute",
+  //   top: "50%",
+  //   left: "50%",
+  //   transform: "translate(-50%, -50%)",
+  //   width: 1000,
+  //   bgcolor: "background.paper",
+  //   border: "2px solid #000",
+  //   boxShadow: 24,
+  //   padding: "20px",
+  //   borderRadius: "8px",
+  //   height: "27%",
+  // };
   const styleTercero = {
     position: "absolute",
     top: "50%",
@@ -252,6 +258,12 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
     borderRadius: "8px",
     height: "79%",
   };
+
+  useEffect(() => {
+    if(contrasenha !== ""){
+      handleOpen();
+    }
+  }, [contrasenha]);
 
   const handleChangeCerrarSesion = () => {
     localStorage.removeItem("isLoggedInComprador");
@@ -348,39 +360,38 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
     }
   };
 
-  const handleVerificarContrasenha = async () => {
-    try {
-      const hashedPassword = SHA256(verificarContrasenha).toString();
-      const response = await fetch(
-        `https://localhost:7240/VerificarContrasenha?idUsuario=${idUsuario}&contrasenha=${hashedPassword}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  // const handleVerificarContrasenha = async () => {
+  //   try {
+  //     const hashedPassword = SHA256(verificarContrasenha).toString();
+  //     const response = await fetch(
+  //       `https://localhost:7240/VerificarContrasenha?idUsuario=${idUsuario}&contrasenha=${hashedPassword}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
 
-      if (response.ok) {
-        const _token = await response.text();
-        toast.success("Se puede visualizar el token", { autoClose: 2000 });
-        setToken(_token);
-        handleCloseModalSecundario();
-      } else if (response.status === 404) {
-        throw new Error("Usuario no encontrado");
-      } else {
-        throw new Error("Error al obtener el token");
-      }
-    } catch (error) {
-      console.error("Error al obtener el token:", error);
-      throw new Error("Error al obtener el token");
-    }
-  };
+  //     if (response.ok) {
+  //       const _token = await response.text();
+  //       toast.success("Se puede visualizar el token", { autoClose: 2000 });
+  //       handleCloseModalSecundario();
+  //     } else if (response.status === 404) {
+  //       throw new Error("Usuario no encontrado");
+  //     } else {
+  //       throw new Error("Error al obtener el token");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al obtener el token:", error);
+  //     throw new Error("Error al obtener el token");
+  //   }
+  // };
 
   const handleVerificarToken = async () => {
     try {
       const response = await fetch(
-        `https://localhost:7240/VerificarToken?idUsuario=${idUsuario}&token=${verificarToken}`,
+        `https://localhost:7240/VerificarToken?idUsuario=${idUsuario}`,
         {
           method: "GET",
           headers: {
@@ -393,7 +404,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
         const _contrasenha = await response.text();
         toast.success("Se puede visualizar la contraseña", { autoClose: 2000 });
         setContrasenha(_contrasenha);
-        handleCloseModalTercero();
+        handleClose();
       } else if (response.status === 404) {
         throw new Error("Usuario no encontrado");
       } else {
@@ -405,17 +416,47 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard
-      .writeText(token)
-      .then(() => {
-        toast.success("Token copiado al portapapeles", { autoClose: 2000 });
-      })
-      .catch((error) => {
-        console.error("Error al copiar el token:", error);
-        toast.error("Error al copiar el token. Por favor, inténtalo de nuevo");
-      });
-  };
+  const handleEditarTienda = async () =>{
+    try {
+      const descripcionSinEspacios = DescripcionTiendaCambiado.replace(/ /g, '_');
+      const direccionParam = DireccionTiendaCambiado.replace(/ /g, '_');
+      const distritoParam = DistritoTiendaCambiado.replace(/ /g, '_');
+
+      const response = await fetch(
+        `https://localhost:7240/EditarTienda?idTienda=${informacionTienda.idTienda}&nombre=${nombretTiendaCambiado}&descripcion=${descripcionSinEspacios}&direccion=${direccionParam}&distrito=${distritoParam}&pais=${PaisTiendaCambiado}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Se editó correctamente la información de la tienda", { autoClose: 2000 });
+        handleCloseModalQuinto();
+      } else if (response.status === 404) {
+        throw new Error("Usuario no encontrado");
+      } else {
+        throw new Error("Error al editar tienda");
+      }
+    } catch (error) {
+      console.error("Error al editar tienda", error);
+      throw new Error("Error al editar tienda");
+    }
+  }
+
+  // const copyToClipboard = () => {
+  //   navigator.clipboard
+  //     .writeText(token)
+  //     .then(() => {
+  //       toast.success("Token copiado al portapapeles", { autoClose: 2000 });
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error al copiar el token:", error);
+  //       toast.error("Error al copiar el token. Por favor, inténtalo de nuevo");
+  //     });
+  // };
 
   return loading ? (
     <></>
@@ -858,7 +899,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                 Seguridad
               </Typography>
 
-              <Box
+              {/* <Box
                 sx={{
                   display: "flex",
                   flexDirection: "row",
@@ -905,7 +946,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                     }}
                   />
                 </IconButton>
-              </Box>
+              </Box> */}
 
               <Box
                 sx={{
@@ -940,7 +981,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                 {ValorBloqueoContrasenha ? (
                   <IconButton
                     sx={{ marginLeft: "10px", marginRight: "10px" }}
-                    onClick={contrasenha === "" ? handleOpenModalTercero : null}
+                    onClick={contrasenha === "" ? handleVerificarToken : null}
                     disabled={contrasenha !== ""}
                   >
                     <VisibilityIcon
@@ -1020,7 +1061,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
           </Box>
         </Modal>
 
-        <Modal
+        {/* <Modal
           open={openModalSecundario}
           onClose={handleCloseModalSecundario}
           aria-labelledby="modal-modal-title"
@@ -1108,7 +1149,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
               Confirmar
             </Button>
           </Box>
-        </Modal>
+        </Modal> */}
 
         <Modal
           open={openModalTercero}
@@ -1600,7 +1641,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                 width: "100%",
                 "&:hover": { backgroundColor: "#1C2536" },
               }}
-              onClick={handleChangeEliminarCuenta}
+              onClick={handleEditarTienda}
             >
               Guardar cambios
             </Button>

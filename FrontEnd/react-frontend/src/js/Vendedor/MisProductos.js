@@ -1,11 +1,14 @@
 import { Box, Button, Divider, IconButton, TextField, Typography } from '@mui/material'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CardMisProductos from './CardMisProductos';
 
-export default function MisProductos({setMostrarMisProductos, setMostrarDetalleProducto, setMostrarEditarProducto, setOpcionEditarProducto}) {
+export default function MisProductos({setMostrarMisProductos, setMostrarDetalleProducto, setOpcionEditarProducto, setProductoInformacion, setMostrarEditarProducto}) {
+
+    const [productosList, setProductosList] = useState(null);
+    const [Busqueda, setBusqueda] = useState("");
 
     const handleChangeDetalleProductoVendedor = () =>{
         setMostrarMisProductos(false);
@@ -14,10 +17,38 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
 
     const handleChangeEditarProducto = (value) =>{
         setMostrarMisProductos(false);
-        setMostrarEditarProducto(true);
         setOpcionEditarProducto(value);
+        setMostrarEditarProducto(true);
     }
 
+    useEffect(() => {
+        const obtenerListaProducto = async () => {
+            try {
+              const response = await fetch(
+                `https://localhost:7240/ListasProductos?busqueda=${Busqueda === ""? "nada" : Busqueda}`,
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+        
+              if (response.ok) {
+                const producto = await response.json();
+                setProductosList(producto);
+              } else if (response.status === 404) {
+                throw new Error("Productos no encontrado");
+              } else {
+                throw new Error("Error al obtener la lista de productos");
+              }
+            } catch (error) {
+              console.error("Error al obtener la lista de productos", error);
+              throw new Error("Error al obtener la lista de productos");
+            }
+          };
+          obtenerListaProducto();
+      }, [Busqueda]);
 
   return (
     <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
@@ -38,6 +69,8 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                     <SearchIcon sx={{marginRight:"10px"}} />
                     ),
                 }}
+                defaultValue={Busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
             />
         </Box>
         
@@ -58,7 +91,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
 
             <Box sx={{display:"flex", flexDirection:"row"}}>
                 <img src="https://promart.vteximg.com.br/arquivos/ids/570404-1000-1000/22773.jpg?v=637401121588630000" alt="Descripción de la imagen" 
-                    style={{height:"110px"}}
+                    style={{height:"110px", maxWidth:"180px", minWidth:"180px"}}
                 />
                 <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
                 <Box sx={{display:"flex", flexDirection:"column", width:"50%"}}>
@@ -126,11 +159,17 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
             </Box>
         </Box>
 
-        <CardMisProductos setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
-        setMostrarEditarProducto={setMostrarEditarProducto}/>
-
-        <CardMisProductos setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
-        setMostrarEditarProducto={setMostrarEditarProducto}/>
+        {productosList && productosList.map(producto => (
+            <CardMisProductos
+                key={producto.IdProducto}
+                producto={producto}
+                setMostrarMisProductos={setMostrarMisProductos}
+                setMostrarDetalleProducto={setMostrarDetalleProducto}
+                setProductoInformacion={setProductoInformacion}
+                setOpcionEditarProducto={setOpcionEditarProducto}
+                setMostrarEditarProducto={setMostrarEditarProducto}
+            />
+        ))}
 
     </Box>
   )

@@ -6,14 +6,16 @@ DROP TABLE Vendedor;
 DROP TABLE mensajes;
 DROP TABLE chats;
 DROP TABLE Tienda;
+DROP TABLE Producto;
+DROP TABLE HistorialProducto;
 
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
     Correo TEXT,
     contrasenha TEXT,
-    Token Text,
     ContrasenhaVariado Text,
-    Foto BLOB,
+    Token TEXT,
+    Foto LONGBLOB,
     Nombre Text,
     Apellido Text,
     DNI int,
@@ -65,10 +67,36 @@ CREATE TABLE Tienda (
     Direccion TEXT,
     Distrito Text,
     Pais text,
-    Foto BLOB,
+    Foto LONGBLOB,
     UsuarioID INT NOT NULL,
     FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario),
     Estado boolean
+);
+
+CREATE TABLE Producto (
+    IdProducto INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre TEXT,
+    Precio Double,
+    Stock int,
+    FechaCreacion datetime,
+    Descripcion TEXT,
+    CantidadOferta Double,
+    Foto LONGBLOB,
+    CantidadGarantia TEXT,
+    EstadoAprobacion TEXT,
+    TipoProducto TEXT,
+    CantidadVentas INT,
+    TiendaID INT NOT NULL,
+    FOREIGN KEY (TiendaID) REFERENCES Tienda(IdTienda),
+    Estado boolean
+);
+
+CREATE TABLE HistorialProducto (
+    IdHistorialProducto INT AUTO_INCREMENT PRIMARY KEY,
+    FechaHora TEXT,
+    Descripcion TEXT,
+    ProductoID INT NOT NULL,
+    FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto)
 );
 
 INSERT INTO KeyEncript (KeyVar) 
@@ -83,4 +111,10 @@ SELECT * FROM Comprador;
 SELECT * FROM KeyEncript;
 SELECT * FROM Tienda;
 
+SELECT * FROM Producto;
+
 SELECT * FROM Usuario WHERE Estado = 1;
+
+ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
+ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
+ALTER TABLE Tienda MODIFY COLUMN Foto LONGBLOB;

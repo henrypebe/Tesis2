@@ -3,17 +3,21 @@ import React from "react";
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-export default function CardMisProductos({setMostrarMisProductos, setMostrarDetalleProducto, setMostrarEditarProducto}) {
+export default function CardMisProductos({producto, setMostrarMisProductos, setMostrarDetalleProducto, setProductoInformacion, setOpcionEditarProducto, setMostrarEditarProducto}) {
     const handleChangeDetalleProductoVendedor = () =>{
         setMostrarMisProductos(false);
         setMostrarDetalleProducto(true);
+        setProductoInformacion(producto);
     }
 
     const handleChangeEditarProducto = () =>{
         setMostrarMisProductos(false);
+        setProductoInformacion(producto);
+        setOpcionEditarProducto(0);
         setMostrarEditarProducto(true);
     }
 
+    // console.log(producto);
     return (
     <Box
       sx={{
@@ -26,9 +30,9 @@ export default function CardMisProductos({setMostrarMisProductos, setMostrarDeta
     >
       <Box sx={{ display: "flex", flexDirection: "row" }}>
         <img
-          src="https://promart.vteximg.com.br/arquivos/ids/570404-1000-1000/22773.jpg?v=637401121588630000"
-          alt="Descripción de la imagen"
-          style={{ height: "110px" }}
+          src={producto.imagen}
+          alt={producto.nombre}
+          style={{ height: "110px", maxWidth:"180px", minWidth:"180px" }}
         />
         <Divider
           orientation="vertical"
@@ -50,7 +54,7 @@ export default function CardMisProductos({setMostrarMisProductos, setMostrarDeta
               width: "100%",
             }}
           >
-            Productos 1
+            {producto.nombre}
           </Typography>
           <Typography
             sx={{
@@ -60,7 +64,7 @@ export default function CardMisProductos({setMostrarMisProductos, setMostrarDeta
               width: "100%",
             }}
           >
-            Fecha de creación: 17/08/2024
+            Fecha de creación: {new Date(producto.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {new Date(producto.fechaCreacion).toLocaleTimeString()}
           </Typography>
           <Typography
             sx={{
@@ -70,7 +74,7 @@ export default function CardMisProductos({setMostrarMisProductos, setMostrarDeta
               width: "100%",
             }}
           >
-            10 ventas
+            {producto.cantidadVentas} {producto.cantidadVentas>1?"ventas":"venta"}
           </Typography>
         </Box>
         <Divider
@@ -104,12 +108,12 @@ export default function CardMisProductos({setMostrarMisProductos, setMostrarDeta
           </Typography>
           <Typography
             sx={{
-              color: "#019935",
+              color: producto.estadoAprobacion==="Aprobado"?"#019935": producto.estadoAprobacion==="Pendiente"?"#999301":"#990A01",
               fontWeight: "bold",
               fontSize: "24px",
             }}
           >
-            Aprobado
+            {producto.estadoAprobacion === "Pendiente"? "En espera" : producto.estadoAprobacion}
           </Typography>
         </Box>
         <Divider
