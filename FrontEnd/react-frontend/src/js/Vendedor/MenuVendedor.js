@@ -15,6 +15,7 @@ import EstadisticaVendedor from './EstadisticaVendedor';
 import BilleteraVendedor from './BilleteraVendedor';
 import DetalleBilletera from './DetalleBilletera';
 import { useParams } from 'react-router-dom';
+import HistorialProducto from './HistorialProducto';
 
 export default function MenuVendedor() {
     const [mostrarInicio, setMostrarInicio] = useState(true);
@@ -36,6 +37,9 @@ export default function MenuVendedor() {
 
     const [informacionTienda, setInformacionTienda] = useState();
     const [productoInformacion, setProductoInformacion] = useState();
+    const [esVendedorAdministrador, setEsVendedorAdministrador] = useState();
+    
+    const [historialProducto, setHistoriaProducto] = useState();
 
     useEffect(() => {
       const obtenerInformacionTienda = async () => {
@@ -52,7 +56,7 @@ export default function MenuVendedor() {
     
           if (response.ok) {
             const tienda = await response.json();
-            // console.log(tienda);
+            console.log(tienda);
             setInformacionTienda(tienda);
           } else if (response.status === 404) {
             throw new Error("Tienda no encontrado");
@@ -64,12 +68,44 @@ export default function MenuVendedor() {
           throw new Error("Error al obtener informacion de la tienda");
         }
       };
+      const obtenerVendedorRol = async () => {
+        try {
+          const response = await fetch(
+            `https://localhost:7240/InformacionRolVendedor?idUsuario=${idUsuario}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+    
+          if (response.ok) {
+            const rol = await response.json();
+            setEsVendedorAdministrador(rol);
+          } else if (response.status === 404) {
+            throw new Error("Tienda no encontrado");
+          } else {
+            throw new Error("Error al obtener informacion de la tienda");
+          }
+        } catch (error) {
+          console.error("Error al obtener informacion de la tienda", error);
+          throw new Error("Error al obtener informacion de la tienda");
+        }
+      };
       obtenerInformacionTienda();
+      obtenerVendedorRol();
     }, [idUsuario]);
+
+    const handleChangeHistoria = (producto) =>{
+      setHistoriaProducto(true);
+      setMostrarDetalleProducto(false);
+      setProductoInformacion(producto);
+    }
 
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
-        <BarraSuperior idUsuario={idUsuario}/>
+        <BarraSuperior idUsuario={idUsuario} esVendedorAdministrador={esVendedorAdministrador}/>
         <Box sx={{display:"flex", flexDirection:"row"}}>
             
             <BarraLateralVendedor mostrarInicio={mostrarInicio} setMostrarInicio={setMostrarInicio} mostrarVentas={mostrarVentas}
@@ -81,7 +117,7 @@ export default function MenuVendedor() {
             setMostrarDetalleProducto={setMostrarDetalleProducto} mostrarEditarProducto={mostrarEditarProducto}
             setMostrarEditarProducto={setMostrarEditarProducto} mostrarDetalleSeguimiento={mostrarDetalleSeguimiento}
             setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento} mostrarDetalleBilletera={mostrarDetalleBilletera}
-            setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}
+            setMostrarnDetalleBilletera={setMostrarnDetalleBilletera} historialProducto={historialProducto} setHistoriaProducto={setHistoriaProducto}
             />
 
             {mostrarInicio && <InicioVendedor setMostrarInicio={setMostrarInicio} setMostrarEstadisticaVendedor={setMostrarEstadisticaVendedor}
@@ -94,13 +130,17 @@ export default function MenuVendedor() {
             setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor}/>}
 
             {mostrarMisProductos && <MisProductos setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
-            setOpcionEditarProducto={setOpcionEditarProducto} setProductoInformacion={setProductoInformacion} setMostrarEditarProducto={setMostrarEditarProducto}/>}
+            setOpcionEditarProducto={setOpcionEditarProducto} setProductoInformacion={setProductoInformacion} setMostrarEditarProducto={setMostrarEditarProducto}
+            informacionTienda={informacionTienda}/>}
 
             {mostrarDetalleProducto && <DetalleProductoVendedor setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
-            productoInformacion={productoInformacion}/>}
+            productoInformacion={productoInformacion} handleChangeHistoria={handleChangeHistoria}/>}
 
             {mostrarEditarProducto && <EditarProducto setMostrarMisProductos={setMostrarMisProductos} setMostrarEditarProducto={setMostrarEditarProducto}
             opcionEditarProducto={opcionEditarProducto} informacionTienda={informacionTienda} productoInformacion={productoInformacion}/>}
+
+            {historialProducto && <HistorialProducto setHistoriaProducto={setHistoriaProducto} setMostrarDetalleProducto={setMostrarDetalleProducto}
+            productoInformacion={productoInformacion}/>}
 
             {mostrarSeguimientoVendedor && <SeguimientoVendedor setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor}
             setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento}/>}

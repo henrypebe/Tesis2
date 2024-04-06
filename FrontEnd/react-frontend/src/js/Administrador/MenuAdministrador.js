@@ -7,10 +7,10 @@ import EstadisticaAdministrador from './EstadisticaAdministrador';
 import DetallePedidoAdministrador from './DetallePedidoAdministrador';
 import GestionAprobacion from './GestionAprobacion';
 import DetalleProductoAdministrador from './DetalleProductoAdministrador';
-// import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export default function MenuAdministrador() {
-  // const { idUsuario } = useParams();
+  const { idUsuario } = useParams();
   const [opcionAdministrador] = useState(true);
   const [mostrarInicio, setMostrarInicio] = useState(true);
   const [mostrarEstadistica, setMostrarEstadistica] = useState(false);
@@ -18,9 +18,18 @@ export default function MenuAdministrador() {
 
   const [mostrarPedidoDetalle, setMostrarPedidoDetalle] = useState(false);
   const [mostrarProductoDetalle, setMostrarProductoDetalle] = useState(false);
+
+  const [ProductoSeleccionado, setMostrarProductoSeleccionado] = useState(false);
+
+  const handleChangeProductoSeleccionado = (producto) =>{
+    setMostrarProductoSeleccionado(producto);
+    setMostrarGestionAprobacion(false);
+    setMostrarProductoDetalle(true);
+  }
+
     return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
-        <BarraSuperior opcionAdministrador={opcionAdministrador}/>
+        <BarraSuperior opcionAdministrador={opcionAdministrador} idUsuario={idUsuario}/>
 
         <Box sx={{display:"flex", flexDirection:"row"}}>
             <BarraLateralAdministrador mostrarInicio={mostrarInicio} setMostrarInicio={setMostrarInicio} mostrarEstadistica={mostrarEstadistica}
@@ -39,10 +48,10 @@ export default function MenuAdministrador() {
             setMostrarPedidoDetalle={setMostrarPedidoDetalle}/>}
 
             {mostrarGestionAprobacion && <GestionAprobacion setMostrarGestionAprobacion={setMostrarGestionAprobacion}
-            setMostrarProductoDetalle={setMostrarProductoDetalle}/>}
+            setMostrarProductoDetalle={setMostrarProductoDetalle} handleChangeProductoSeleccionado={handleChangeProductoSeleccionado}/>}
 
             {mostrarProductoDetalle && <DetalleProductoAdministrador setMostrarGestionAprobacion={setMostrarGestionAprobacion}
-            setMostrarProductoDetalle={setMostrarProductoDetalle}/>}
+            setMostrarProductoDetalle={setMostrarProductoDetalle} ProductoSeleccionado={ProductoSeleccionado}/>}
         </Box>
     </Box>
   )

@@ -1,8 +1,8 @@
 USE tesis2;
 
-DROP TABLE Usuario;
 DROP TABLE Comprador;
 DROP TABLE Vendedor;
+DROP TABLE Usuario;
 DROP TABLE mensajes;
 DROP TABLE chats;
 DROP TABLE Tienda;
@@ -15,7 +15,6 @@ CREATE TABLE Usuario (
     contrasenha TEXT,
     ContrasenhaVariado Text,
     Token TEXT,
-    Foto LONGBLOB,
     Nombre Text,
     Apellido Text,
     DNI int,
@@ -30,13 +29,16 @@ CREATE TABLE Usuario (
 CREATE TABLE Comprador(
 	idComprador INT AUTO_INCREMENT PRIMARY KEY,
     usuarioId INT NOT NULL,
-    FOREIGN KEY (usuarioId) REFERENCES Usuario(IdUsuario)
+    FOREIGN KEY (usuarioId) REFERENCES Usuario(IdUsuario),
+    Estado boolean
 );
 
 CREATE TABLE Vendedor(
 	idVendedor INT AUTO_INCREMENT PRIMARY KEY,
+    esAdministrador boolean,
     usuarioId INT NOT NULL,
-    FOREIGN KEY (usuarioId) REFERENCES Usuario(IdUsuario)
+    FOREIGN KEY (usuarioId) REFERENCES Usuario(IdUsuario),
+    Estado boolean
 );
 
 CREATE TABLE Chats (
@@ -65,7 +67,7 @@ CREATE TABLE Tienda (
     Nombre TEXT,
     Descripcion TEXT,
     Direccion TEXT,
-    Distrito Text,
+    Provincia Text,
     Pais text,
     Foto LONGBLOB,
     UsuarioID INT NOT NULL,
@@ -118,3 +120,4 @@ SELECT * FROM Usuario WHERE Estado = 1;
 ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Tienda MODIFY COLUMN Foto LONGBLOB;
+ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;

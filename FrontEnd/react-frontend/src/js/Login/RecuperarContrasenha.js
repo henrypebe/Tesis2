@@ -7,19 +7,17 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function RecuperarContrasenha() {
     const [email, setEmail] = useState("");
-    const [token, setToken] = useState("");
+    // const [token, setToken] = useState("");
     
     const handleCreateUser = async () => {
         try {
-            const response = await fetch(`https://localhost:7240/RecuperarContrasenha?correo=${email}&token=${token}`, {
+            const response = await fetch(`https://localhost:7240/RecuperarContrasenha?correo=${email}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
             if (response.ok) {
-                const { idUsuario } = await response.json();
-                console.log(idUsuario);
                 toast.success('Se envió el correo electrónico junto a la contraseña', { autoClose: 2000 });
               } else {
                 throw new Error("Error al ingresar");
@@ -57,12 +55,12 @@ export default function RecuperarContrasenha() {
         onChange={(e) => setEmail(e.target.value)}
         />
 
-        <TextField id="outlined-basic" label="Token (*)" variant="outlined" sx={{marginBottom:"19px"}}
+        {/* <TextField id="outlined-basic" label="Token (*)" variant="outlined" sx={{marginBottom:"19px"}}
         onChange={(e) => setToken(e.target.value)}
-        />
+        /> */}
 
         <Typography sx={{width:"100%", fontSize:"14px", color:"#ADADAD", marginBottom:"10px"}}>
-            (*) El link se enviará a su correo, si los datos son correctos
+            (*) La contraseña se enviará a su correo, si el dato es correcto
         </Typography>
 
         <Button variant="contained" sx={{backgroundColor:"#286C23",'&:hover': {backgroundColor:"#286C23"}}}

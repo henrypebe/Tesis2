@@ -8,14 +8,14 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
     const [TipoProducto, setTipoProducto] = React.useState(opcionEditarProducto === 0?productoInformacion.tipoProducto:'');
     const [PrecioProducto, setPrecioProducto] = React.useState(opcionEditarProducto === 0?productoInformacion.precio:'');
     const [CantidadProducto, setCantidadProducto] = React.useState(opcionEditarProducto === 0?productoInformacion.stock:'');
-    const componentes = productoInformacion.cantidadGarantia.split("_");
+    const componentes = productoInformacion? productoInformacion.cantidadGarantia.split("_"): "";
     const [TiempoGarantiaNum, setTiempoGarantiaNum] = React.useState(opcionEditarProducto === 0?parseInt(componentes[0]):'');
     const [TiempoGarantia, setTiempoGarantia] = React.useState(opcionEditarProducto === 0?componentes[1]:'');
     const [Oferta, setOferta] = React.useState(opcionEditarProducto === 0?productoInformacion.cantidadOferta:'');
     const [Descripcion, setDescripcion] = React.useState(opcionEditarProducto === 0?productoInformacion.descripcion:'');
     
     const [image, setImage] = React.useState(null);
-    const [isImageUploaded, setIsImageUploaded] = React.useState(productoInformacion.imagen !== "");
+    const [isImageUploaded, setIsImageUploaded] = React.useState(opcionEditarProducto === 0? productoInformacion.imagen:false);
     const [previewImage, setPreviewImage] = React.useState(opcionEditarProducto === 0?productoInformacion.imagen:'');
 
     const handleChange = () =>{
@@ -99,7 +99,13 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                 formData.append('nombre', nombreParam);
                 formData.append('precio', PrecioProducto);
                 formData.append('cantidad', CantidadProducto);
-                formData.append('image', image);
+                if(image){
+                    formData.append('image', image);
+                }else{
+                    const blob = await fetch(productoInformacion.imagen).then(response => response.blob());
+                    const file = new File([blob], 'product_image.jpg', { type: 'image/jpeg' });
+                    formData.append('image', file);
+                }
                 formData.append('descripcion', descripcionParam);
                 formData.append('cantidadOferta', Oferta);
                 formData.append('cantidadGarantia', cantidadGarantiaTotal);

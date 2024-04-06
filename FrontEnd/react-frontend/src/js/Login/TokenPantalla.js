@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 export default function TokenPantalla({onLoginAdministrador, onLoginComprador, onLoginVendedor}) {
   
     const { idUsuario } = useParams();
-    const [token, setToken] = useState('');
+    // const [token, setToken] = useState('');
     const [TokenVerificar, setTokenVerificar] = useState('');
 
     const obtenerTokenPorIdUsuario = async (idUsuario) => {
@@ -31,46 +31,48 @@ export default function TokenPantalla({onLoginAdministrador, onLoginComprador, o
     const handleCreateUser = async () => {
         try {
             obtenerTokenPorIdUsuario(idUsuario)
-            .then(token => {
-                setToken(token);
+            .then(async token => {
+                if(token === TokenVerificar){
+                    const response = await fetch(
+                        `https://localhost:7240/ObtenerRol?idUsuario=${idUsuario}`,
+                        {
+                          method: "GET",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                        }
+                    );
+                    if (response.ok) {
+                        const opcionPantalla = parseInt(await response.text());
+                        switch (opcionPantalla) {
+                            case 1:
+                                onLoginAdministrador(idUsuario);
+                                // Usar React Router si estás en un entorno de React Router
+                                // history.push(`/MenuAdministrador/${idUsuario}`);
+                                break;
+                            case 2:
+                                onLoginComprador(idUsuario);
+                                // history.push(`/MenuComprador/${idUsuario}`);
+                                break;
+                            case 3:
+                                onLoginVendedor(idUsuario);
+                                // history.push(`/MenuVendedor/${idUsuario}`);
+                                break;
+                            default:
+                                toast.error('Error al ingresar los datos, verifique nuevamente.');
+                        }
+                    } else if (response.status === 404) {
+                        throw new Error("Rol no encontrado");
+                    } else {
+                        throw new Error("Error al obtener los roles");
+                    }  
+                }else{
+                    toast.error('El token no es igual, verifiquelo.');
+                }
             })
             .catch(error => {
                 console.error('Error al obtener el token:', error.message);
             });
-            if(token === TokenVerificar){
-                const response = await fetch(
-                    `https://localhost:7240/ObtenerRol?idUsuario=${idUsuario}`,
-                    {
-                      method: "GET",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                    }
-                );
-                if (response.ok) {
-                    const opcionPantalla = parseInt(await response.text());
-                    if (opcionPantalla === 1) {
-                      onLoginAdministrador(idUsuario);
-                      // window.location.href = `/MenuAdministrador/${idUsuario}`;
-                    } else if (opcionPantalla === 2) {
-                      onLoginComprador(idUsuario);
-                      // return <Navigate to={`/MenuComprador/${idUsuario}`} replace />;
-                      // window.location.href = `/MenuComprador/${idUsuario}`;
-                    } else if (opcionPantalla === 3) {
-                      onLoginVendedor(idUsuario);
-                      // window.location.href = `/MenuVendedor/${idUsuario}`;
-                    } else {
-                      toast.error('Error al ingresar los datos, verifique nuevamente.');
-                    }
-                    console.log(opcionPantalla);
-                } else if (response.status === 404) {
-                    throw new Error("Rol no encontrado");
-                } else {
-                    throw new Error("Error al obtener los roles");
-                }  
-            }else{
-                toast.error('El token no es igual, verifiquelo.');
-            }
         } catch (error) {
             console.error('Error al enviar el correo electrónico:', error);
         }
@@ -102,6 +104,7 @@ export default function TokenPantalla({onLoginAdministrador, onLoginComprador, o
                     fontSize: "25px",
                     },
                 }}
+                label="Token"
                 defaultValue={TokenVerificar}
                 onChange={(e) => setTokenVerificar(e.target.value)}
             />

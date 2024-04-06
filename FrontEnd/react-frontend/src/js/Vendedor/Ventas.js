@@ -5,9 +5,9 @@ import { Box, Button, Checkbox, Paper, Table, TableBody, TableCell, TableContain
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 export default function Ventas({setMostrarVentas, setMostrarDetalleVenta}) {
-    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [fechaHabilitada, setFechaHabitada] = React.useState(true);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -55,9 +55,10 @@ export default function Ventas({setMostrarVentas, setMostrarDetalleVenta}) {
             views={['year', 'month', 'day']}
             format="DD/MM/YYYY"
             sx={{marginRight:"10px"}}
+            disabled={fechaHabilitada}
           />
 
-          <Checkbox {...label} />
+          <Checkbox checked={!fechaHabilitada} onChange={() => setFechaHabitada(!fechaHabilitada)}/>
 
           <Typography sx={{color:"black", fontSize:"20px", marginRight:"20px"}}>Filtrar por fecha</Typography>
         </Box>

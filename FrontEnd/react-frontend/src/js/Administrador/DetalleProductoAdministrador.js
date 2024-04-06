@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Typography } from '@mui/material'
 import React from 'react'
 
-export default function DetalleProductoAdministrador({setMostrarGestionAprobacion, setMostrarProductoDetalle}) {
+export default function DetalleProductoAdministrador({setMostrarGestionAprobacion, setMostrarProductoDetalle, ProductoSeleccionado}) {
     const handleChange = () =>{
         setMostrarProductoDetalle(false);
         setMostrarGestionAprobacion(true);
@@ -30,7 +30,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                             Nombre:
                         </Typography>
                         <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
-                            Producto 1
+                            {ProductoSeleccionado.nombre}
                         </Typography>
                     </Box>
 
@@ -39,7 +39,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                             Fecha de creación:
                         </Typography>
                         <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
-                            29/09/2024
+                            {new Date(ProductoSeleccionado.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                         </Typography>
                     </Box>
 
@@ -48,7 +48,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                             Cantidad de ventas:
                         </Typography>
                         <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
-                            10 ventas
+                            {ProductoSeleccionado.cantidadVentas} {ProductoSeleccionado.cantidadVentas>1?"ventas":"venta"}
                         </Typography>
                     </Box>
 
@@ -57,7 +57,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                             Precio:
                         </Typography>
                         <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
-                            S/. 20.00
+                            S/. {ProductoSeleccionado.precio.toFixed(2)}
                         </Typography>
                     </Box>
 
@@ -66,7 +66,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                             Oferta:
                         </Typography>
                         <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
-                            5%
+                            {ProductoSeleccionado.cantidadOferta}%
                         </Typography>
                     </Box>
                 </Box>
@@ -85,7 +85,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
 
                 <Box sx={{width:"40%", display:"flex", alignItems:"center", justifyContent:"center"}}>
                     <img
-                        src="https://promart.vteximg.com.br/arquivos/ids/570404-1000-1000/22773.jpg?v=637401121588630000"
+                        src={ProductoSeleccionado.imagen}
                         alt="Descripción de la imagen"
                         style={{ height: "200px" }}
                     />
@@ -98,7 +98,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                 Descripción del producto:
             </Typography>
             <Typography sx={{color:"black", fontSize:"20px", width:"90%", marginBottom:"10px", height:"20%"}}>
-                Descripción del producto
+                {ProductoSeleccionado.descripcion}
             </Typography>
         </Box>
 

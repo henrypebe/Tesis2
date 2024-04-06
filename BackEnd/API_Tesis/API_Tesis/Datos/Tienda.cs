@@ -6,9 +6,9 @@
         public string? Nombre { get; set; }
         public string? Descripcion { get; set; }
         public string? Direccion { get; set; }
-        public string? Distrito { get; set; }
+        public string? Provincia { get; set; }
         public string? Pais { get; set; }
-        public byte[]? Foto { get; set; }
+        public string? Foto { get; set; }
         public int UsuarioId { get; set; }
     }
 }

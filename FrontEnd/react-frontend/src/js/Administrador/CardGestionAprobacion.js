@@ -2,11 +2,7 @@ import { Box, Button, Divider, Typography } from "@mui/material";
 import React from "react";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-export default function CardGestionAprobacion({setMostrarGestionAprobacion, setMostrarProductoDetalle}) {
-    const handleChangeDetalleProducto = () =>{
-        setMostrarGestionAprobacion(false);
-        setMostrarProductoDetalle(true);
-    }
+export default function CardGestionAprobacion({ producto, handleChangeProductoSeleccionado}) {
     return (
     <Box
       sx={{
@@ -15,12 +11,13 @@ export default function CardGestionAprobacion({setMostrarGestionAprobacion, setM
         border: "2px solid black",
         borderRadius: "6px",
         padding: "10px",
+        marginBottom:"10px"
       }}
     >
       <img
-        src="https://promart.vteximg.com.br/arquivos/ids/570404-1000-1000/22773.jpg?v=637401121588630000"
+        src={producto.imagen}
         alt="Descripción de la imagen"
-        style={{ height: "110px" }}
+        style={{ height: "110px", minWidth:"160px", maxWidth:"160px" }}
       />
       <Divider
         orientation="vertical"
@@ -42,7 +39,7 @@ export default function CardGestionAprobacion({setMostrarGestionAprobacion, setM
             width: "100%",
           }}
         >
-          Productos 1
+          {producto.nombre}
         </Typography>
         <Typography
           sx={{
@@ -52,7 +49,7 @@ export default function CardGestionAprobacion({setMostrarGestionAprobacion, setM
             width: "100%",
           }}
         >
-          Fecha de creación: 17/08/2024
+          Fecha de creación: {new Date(producto.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {new Date(producto.fechaCreacion).toLocaleTimeString()}
         </Typography>
         <Typography
           sx={{
@@ -62,7 +59,7 @@ export default function CardGestionAprobacion({setMostrarGestionAprobacion, setM
             width: "100%",
           }}
         >
-          10 ventas
+          {producto.cantidadVentas} {producto.cantidadVentas>1?"ventas":"venta"}
         </Typography>
       </Box>
       <Divider
@@ -87,7 +84,7 @@ export default function CardGestionAprobacion({setMostrarGestionAprobacion, setM
           backgroundColor: "#3C9E34",
           "&:hover": { backgroundColor: "#3C9E34" },
         }}
-        onClick={handleChangeDetalleProducto}
+        onClick={() => {handleChangeProductoSeleccionado(producto);}}
       >
         <VisibilityIcon sx={{ fontSize: "40px", color: "black" }} />
         <Typography

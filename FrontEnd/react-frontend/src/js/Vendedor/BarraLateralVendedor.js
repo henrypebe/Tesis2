@@ -12,7 +12,8 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
     setMostrarMisProductos, mostrarSeguimientoVendedor, setMostrarSeguimientoVendedor, mostrarReclamo, setMostrarReclamo,
     mostrarEstadisticaVendedor, setMostrarEstadisticaVendedor, mostrarBilletera, setMostrarBilletera, mostrarDetalleVenta,
     setMostrarDetalleVenta,mostrarDetalleProducto, setMostrarDetalleProducto, mostrarEditarProducto, setMostrarEditarProducto,
-    mostrarDetalleSeguimiento, setMostrarnDetalleSeguimiento, mostrarDetalleBilletera, setMostrarnDetalleBilletera}) {
+    mostrarDetalleSeguimiento, setMostrarnDetalleSeguimiento, mostrarDetalleBilletera, setMostrarnDetalleBilletera, historialProducto,
+    setHistoriaProducto}) {
     const handleClickInicio = () => {
         setMostrarInicio(true);
         setMostrarVentas(false);
@@ -40,6 +41,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
         setMostrarEditarProducto(false);
         setMostrarnDetalleSeguimiento(false);
         setMostrarnDetalleBilletera(false);
+        setHistoriaProducto(false);
     };
     const handleClickMisProductos = () => {
         setMostrarInicio(false);
@@ -54,6 +56,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
         setMostrarEditarProducto(false);
         setMostrarnDetalleSeguimiento(false);
         setMostrarnDetalleBilletera(false);
+        setHistoriaProducto(false);
     };
     const handleClickSeguimiento = () => {
         setMostrarInicio(false);
@@ -68,6 +71,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
         setMostrarEditarProducto(false);
         setMostrarnDetalleSeguimiento(false);
         setMostrarnDetalleBilletera(false);
+        setHistoriaProducto(false);
     };
     const handleClickReclamo = () => {
         setMostrarInicio(false);
@@ -82,6 +86,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
         setMostrarEditarProducto(false);
         setMostrarnDetalleSeguimiento(false);
         setMostrarnDetalleBilletera(false);
+        setHistoriaProducto(false);
     };
     const handleClickEstadisticaVendedor = () => {
         setMostrarInicio(false);
@@ -96,6 +101,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
         setMostrarEditarProducto(false);
         setMostrarnDetalleSeguimiento(false);
         setMostrarnDetalleBilletera(false);
+        setHistoriaProducto(false);
     };
     const handleClickBilletera = () => {
         setMostrarInicio(false);
@@ -110,6 +116,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
         setMostrarEditarProducto(false);
         setMostrarnDetalleSeguimiento(false);
         setMostrarnDetalleBilletera(false);
+        setHistoriaProducto(false);
     };
     
     return (
@@ -131,7 +138,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
         </Button>
 
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
-            marginBottom:"10px", backgroundColor: mostrarMisProductos || mostrarDetalleProducto || mostrarEditarProducto?
+            marginBottom:"10px", backgroundColor: mostrarMisProductos || mostrarDetalleProducto || mostrarEditarProducto || historialProducto?
              "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickMisProductos}
             >

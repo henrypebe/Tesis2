@@ -7,14 +7,14 @@ export default function TiendaInformacion({onLoginVendedor}) {
     const [NombreTienda, setNombreTienda] = useState("");
     const [Descripcion, setDescripcion] = useState("");
     const [Direccion, setDireccion] = useState("");
-    const [Distrito, setDistrito] = useState("");
+    const [Provincia, setProvincia] = useState("");
     const [Pais, setPais] = useState("");
 
     const { idUsuario } = useParams();
     const handleCreateUser = async () => {
         try {
             const response = await 
-            fetch(`https://localhost:7240/CreateTienda?idUsuario=${idUsuario}&nombre=${NombreTienda}&descripcion=${Descripcion}&direccion=${Direccion}&distrito=${Distrito}&pais=${Pais}`, {
+            fetch(`https://localhost:7240/CreateTienda?idUsuario=${idUsuario}&nombre=${NombreTienda}&descripcion=${Descripcion}&direccion=${Direccion}&Provincia=${Provincia}&pais=${Pais}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,8 +76,8 @@ export default function TiendaInformacion({onLoginVendedor}) {
         />
 
         <Box sx={{display:"flex", flexDirection:"row", justifyContent: "space-between"}}>
-            <TextField id="outlined-basic" label="Distrito (*)" variant="outlined" sx={{width:"50%", marginRight:"10px"}}
-                onChange={(e) => setDistrito(e.target.value)}
+            <TextField id="outlined-basic" label="Provincia (*)" variant="outlined" sx={{width:"50%", marginRight:"10px"}}
+                onChange={(e) => setProvincia(e.target.value)}
             />
             <TextField id="outlined-basic" label="País (*)" variant="outlined" sx={{width:"50%"}}
                 onChange={(e) => setPais(e.target.value)}

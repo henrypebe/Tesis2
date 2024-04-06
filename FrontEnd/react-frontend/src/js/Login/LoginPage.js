@@ -5,10 +5,9 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SHA256 } from 'crypto-js';
 
-export default function LoginPage({onLoginAdministrador, onLoginComprador, onLoginVendedor}) {
+export default function LoginPage() {
   const [emailType, setEmailType] = useState("");
   const [contrasenha, setContrasenha] = useState("");
-  // const [token, setToken] = useState("");
 
   const handleLoginSistema = async () => {
     try {
@@ -21,9 +20,9 @@ export default function LoginPage({onLoginAdministrador, onLoginComprador, onLog
           }
         });
         if (response.ok) {
-          const idUsuario = await response.text();
-          // console.log(idUsuario);
-          window.location.href = `/TokenPantalla/${idUsuario}`;
+          const idUsuario = parseInt(await response.text());
+          if(idUsuario !== -1) window.location.href = `/TokenPantalla/${idUsuario}`;
+          else toast.error('Error al ingresar los datos, verifique nuevamente.');
           
         } else {
           toast.error('Error al ingresar los datos, verifique nuevamente.');
@@ -46,12 +45,13 @@ export default function LoginPage({onLoginAdministrador, onLoginComprador, onLog
           display: "flex",
           flexDirection: "column",
           width: "400px",
+          height:"40%"
         }}
       >
         <Typography
           sx={{
             textAlign: "center",
-            fontSize: "24px",
+            fontSize: "32px",
             fontFamily: "sans-serif",
             marginBottom: "19px",
             fontWeight: "600",
@@ -64,7 +64,9 @@ export default function LoginPage({onLoginAdministrador, onLoginComprador, onLog
           id="outlined-basic"
           label="Correo electrónico"
           variant="outlined"
-          sx={{ marginBottom: "19px" }}
+          sx={{ marginBottom: "25px" }}
+          inputProps={{ style: { fontSize: "22px" } }}
+          InputLabelProps={{ style: { fontSize: "22px" } }}
           onChange={(e) => setEmailType(e.target.value)}
         />
 
@@ -73,27 +75,21 @@ export default function LoginPage({onLoginAdministrador, onLoginComprador, onLog
           label="Contraseña"
           variant="outlined"
           type="password"
-          sx={{ marginBottom: "19px" }}
+          sx={{ marginBottom: "25px" }}
+          inputProps={{ style: { fontSize: "22px" } }}
+          InputLabelProps={{ style: { fontSize: "22px" } }}
           onChange={(e) => setContrasenha(e.target.value)}
         />
 
-        {/* <TextField
-          id="outlined-basic"
-          label="Token"
-          variant="outlined"
-          sx={{ marginBottom: "19px" }}
-          onChange={(e) => setToken(e.target.value)}
-        /> */}
-
         <Box
           sx={{
-            marginBottom: "19px",
+            marginBottom: "25px",
             display: "flex",
             justifyContent: "space-between",
           }}
         >
-          <Link href="/CreateUser">¿Es usuario nuevo?</Link>
-          <Link href="/RecuperarContrasenhaPrimer">
+          <Link href="/CreateUser" sx={{fontSize:"19px"}}>¿Es usuario nuevo?</Link>
+          <Link href="/RecuperarContrasenhaPrimer" sx={{fontSize:"19px"}}>
             ¿Se olvidó la contraseña?
           </Link>
         </Box>
@@ -103,6 +99,8 @@ export default function LoginPage({onLoginAdministrador, onLoginComprador, onLog
           sx={{
             backgroundColor: "#1C2536",
             width: "100%",
+            fontSize:"22px",
+            marginTop:"12px",
             "&:hover": { backgroundColor: "#1C2536" },
           }}
           onClick={handleLoginSistema}

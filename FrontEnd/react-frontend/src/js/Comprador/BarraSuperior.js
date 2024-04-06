@@ -17,10 +17,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { SHA256 } from "crypto-js";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
-export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
+export default function BarraSuperior({ opcionAdministrador, idUsuario, esVendedorAdministrador }) {
   const [open, setOpen] = React.useState(false);
   // const [openModalSecundario, setOpenModalSecundario] = React.useState(false);
-  const [openModalTercero, setOpenModaTercero] = React.useState(false);
+  // const [openModalTercero, setOpenModaTercero] = React.useState(false);
   const [openModalCuarto, setOpenModaCuarto] = React.useState(false);
   const [openModalQuinto, setOpenModaQuinto] = React.useState(false);
 
@@ -28,8 +28,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const [informacionTienda, setInformacionTienda] = useState();
   const [loading, setLoading] = React.useState(true);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
+  const handleClose = () => {setOpen(false);};
   // const handleOpenModalSecundario = () => {
   //   setOpenModalSecundario(true);
   //   setOpen(false);
@@ -43,11 +43,11 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   //   setOpenModaTercero(true);
   //   setOpen(false);
   // };
-  const handleCloseModalTercero = () => {
-    setOpenModaTercero(false);
-    setOpen(true);
-    // setVerificarContrasenha("");
-  };
+  // const handleCloseModalTercero = () => {
+  //   setOpenModaTercero(false);
+  //   setOpen(true);
+  //   // setVerificarContrasenha("");
+  // };
 
   const handleOpenModalCuarto = () => {
     setOpenModaCuarto(true);
@@ -61,12 +61,11 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
 
   const handleOpenModalQuinto = () => {
     obtenerInformacionTienda();
-    setOpenModaQuinto(true);
-    setOpen(false);
   };
   const handleCloseModalQuinto = () => {
     setOpenModaQuinto(false);
     setOpen(true);
+    handleCancelTienda();
     // setVerificarContrasenha("");
   };
 
@@ -84,15 +83,16 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
 
       if (response.ok) {
         const usuario = await response.json();
+        // console.log(usuario);
         setInformacionUsuario(usuario);
       } else if (response.status === 404) {
         throw new Error("Usuario no encontrado");
       } else {
-        throw new Error("Error al obtener el token");
+        throw new Error("Error al obtener la informacion del usuario");
       }
     } catch (error) {
-      console.error("Error al obtener el token:", error);
-      throw new Error("Error al obtener el token");
+      console.error("Error al obtener la informacion del usuario:", error);
+      throw new Error("Error al obtener la informacion del usuario");
     }
   };
 
@@ -110,8 +110,10 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
 
       if (response.ok) {
         const tienda = await response.json();
-        // console.log(tienda);
+        console.log(tienda);
         setInformacionTienda(tienda);
+        setOpenModaQuinto(true);
+        setOpen(false);
       } else if (response.status === 404) {
         throw new Error("Tienda no encontrado");
       } else {
@@ -151,8 +153,10 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
       setNombreTiendaCambiado(informacionTienda.nombre ?? "");
       setDescripcionTiendaCambiado(informacionTienda.descripcion ?? "");
       setDireccionTiendaCambiado(informacionTienda.direccion ?? "");
-      setDistritoTiendaCambiado(informacionTienda.distrito ?? "");
+      setProvinciaTiendaCambiado(informacionTienda.provincia ?? "");
       setPaisTiendaCambiado(informacionTienda.pais ?? "");
+      setPreviewImageTienda(informacionTienda.foto ?? "");
+      setIsImageUploadedTienda(informacionTienda.foto);
     }
   }, [informacionUsuario, informacionTienda]);
 
@@ -165,13 +169,38 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const [nombretTiendaCambiado, setNombreTiendaCambiado] = useState("");
   const [DescripcionTiendaCambiado, setDescripcionTiendaCambiado] = useState("");
   const [DireccionTiendaCambiado, setDireccionTiendaCambiado] = useState("");
-  const [DistritoTiendaCambiado, setDistritoTiendaCambiado] = useState("");
+  const [ProvinciaTiendaCambiado, setProvinciaTiendaCambiado] = useState("");
   const [PaisTiendaCambiado, setPaisTiendaCambiado] = useState("");
   
   const [ValorBloqueoContrasenha, setValorBloqueoContrasenha] = useState(true);
 
   // const [verificarContrasenha, setVerificarContrasenha] = useState("");
-  const [verificarToken, setVerificarToken] = useState("");
+  // const [verificarToken, setVerificarToken] = useState("");
+
+  const [imageTienda, setImageTienda] = React.useState(null);
+  const [isImageUploadedTienda, setIsImageUploadedTienda] = React.useState("");
+  const [previewImageTienda, setPreviewImageTienda] = React.useState("");
+  
+  const handleImageUploadTienda = (event) => {
+    const file = event.target.files[0];
+    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            setPreviewImageTienda(e.target.result);
+        };
+        reader.readAsDataURL(file);
+        setIsImageUploadedTienda(true);
+        setImageTienda(file);
+    } else {
+        toast.error('Por favor, seleccione un archivo de imagen válido (png, jpg).');
+    }
+  };
+  const handleCancelTienda = () => {
+      if(informacionTienda.foto !== "")setPreviewImageTienda(null);
+      setImageTienda(null);
+      if(informacionTienda.foto !== "")setIsImageUploadedTienda(false);
+  };
+
   // const [token, setToken] = useState("");
 
   const [contrasenha, setContrasenha] = useState("");
@@ -179,19 +208,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   const [verificarTokenEliminar, setVerificarTokenEliminar] = useState("");
   const [verificarContrasenhaEliminar, setVerificarContrasenhaEliminar] =
     useState("");
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if(contrasenha !== ""){
-        handleClose();
-        setTimeout(() => {
-          handleOpen();
-        }, 10);
-      }
-      setContrasenha("");
-    }, 15000);
-    return () => clearTimeout(timeout);
-  }, [contrasenha]);
 
   const style = {
     position: "absolute",
@@ -219,19 +235,19 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   //   borderRadius: "8px",
   //   height: "27%",
   // };
-  const styleTercero = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 1000,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    padding: "20px",
-    borderRadius: "8px",
-    height: "27%",
-  };
+  // const styleTercero = {
+  //   position: "absolute",
+  //   top: "50%",
+  //   left: "50%",
+  //   transform: "translate(-50%, -50%)",
+  //   width: 1000,
+  //   bgcolor: "background.paper",
+  //   border: "2px solid #000",
+  //   boxShadow: 24,
+  //   padding: "20px",
+  //   borderRadius: "8px",
+  //   height: "27%",
+  // };
   const styleCuarto = {
     position: "absolute",
     top: "50%",
@@ -259,11 +275,12 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
     height: "79%",
   };
 
-  useEffect(() => {
-    if(contrasenha !== ""){
-      handleOpen();
-    }
-  }, [contrasenha]);
+  // useEffect(() => {
+  //   const handleOpenEffect = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
+  //   if(contrasenha !== ""){
+  //     handleOpenEffect();
+  //   }
+  // }, [contrasenha, idUsuario]);
 
   const handleChangeCerrarSesion = () => {
     localStorage.removeItem("isLoggedInComprador");
@@ -309,13 +326,19 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
 
   const handleCambioDatos = async () => {
     try {
+      const formData = new FormData();
+      formData.append('IdUsuario', idUsuario);
+      formData.append('nombre', nombreCambiado);
+      formData.append('apellido', apellidoCambiado);
+      formData.append('correo', correoCambiado);
+      formData.append('numero', TelefonoCambiado);
+      formData.append('direccion', DireccionCambiado);
+
       const response = await fetch(
-        `https://localhost:7240/EditarUsuario?idUsuario=${idUsuario}&nombre=${nombreCambiado}&apellido=${apellidoCambiado}&correo=${correoCambiado}&numero=${TelefonoCambiado}&direccion=${DireccionCambiado}`,
+        `https://localhost:7240/EditarUsuario`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          body: formData
         }
       );
 
@@ -388,6 +411,22 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
   //   }
   // };
 
+  // useEffect(() => {
+  //   const handleCloseEffect = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
+  //   const handleOpenEffect = () => {setOpen(false); handleCancel();};
+
+  //   const timeout = setTimeout(() => {
+  //     if(contrasenha !== "" && openModalQuinto === false){
+  //       handleCloseEffect();
+  //       setTimeout(() => {
+  //         handleOpenEffect();
+  //       }, 10);
+  //     }
+  //     setContrasenha("");
+  //   }, 15000);
+  //   return () => clearTimeout(timeout);
+  // }, [contrasenha, openModalQuinto]);
+
   const handleVerificarToken = async () => {
     try {
       const response = await fetch(
@@ -405,6 +444,16 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
         toast.success("Se puede visualizar la contraseña", { autoClose: 2000 });
         setContrasenha(_contrasenha);
         handleClose();
+        setTimeout(() => {
+          handleOpen();
+        }, 10);
+        setTimeout(() => {
+          setContrasenha("");
+          handleClose();
+          setTimeout(() => {
+            handleOpen();
+          }, 10);
+        }, 15000);
       } else if (response.status === 404) {
         throw new Error("Usuario no encontrado");
       } else {
@@ -420,15 +469,28 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
     try {
       const descripcionSinEspacios = DescripcionTiendaCambiado.replace(/ /g, '_');
       const direccionParam = DireccionTiendaCambiado.replace(/ /g, '_');
-      const distritoParam = DistritoTiendaCambiado.replace(/ /g, '_');
+      const ProvinciaParam = ProvinciaTiendaCambiado.replace(/ /g, '_');
+
+      const formData = new FormData();
+      formData.append('idTienda', informacionTienda.idTienda);
+      formData.append('nombre', nombretTiendaCambiado);
+      if(imageTienda){
+        formData.append('image', imageTienda);
+      }else{
+          const blob = await fetch(informacionTienda.foto).then(response => response.blob());
+          const file = new File([blob], 'product_image.jpg', { type: 'image/jpeg' });
+          formData.append('image', file);
+      }
+      formData.append('descripcion', descripcionSinEspacios);
+      formData.append('direccion', direccionParam);
+      formData.append('Provincia', ProvinciaParam);
+      formData.append('pais', PaisTiendaCambiado);
 
       const response = await fetch(
-        `https://localhost:7240/EditarTienda?idTienda=${informacionTienda.idTienda}&nombre=${nombretTiendaCambiado}&descripcion=${descripcionSinEspacios}&direccion=${direccionParam}&distrito=${distritoParam}&pais=${PaisTiendaCambiado}`,
+        `https://localhost:7240/EditarTienda`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          body: formData
         }
       );
 
@@ -492,9 +554,9 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
           <Box
             sx={{
               width: "40%",
-              height: "80%",
+              height: "95%",
               border: "2px solid #D9D9D9",
-              marginTop: "8px",
+              marginTop: "0px",
               borderRadius: "6px",
               backgroundColor: "#D9D9D9",
               display: "flex",
@@ -543,7 +605,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
         ) : (
           <Box
             sx={{
-              width: "40%",
+              width: esVendedorAdministrador? "60%" : "45%",
               height: "80%",
               border: "2px solid #D9D9D9",
               marginTop: "0px",
@@ -563,7 +625,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                 fontWeight: "bold",
               }}
             >
-              Vendedor
+              {esVendedorAdministrador? "Vend. Administrador" : "Vend. Asistente"}
             </Typography>
           </Box>
         )}
@@ -639,55 +701,24 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
               }}
             />
 
-            <Box sx={{ display: "flex", flexDirection: "row", height: "42%" }}>
-              <Box
-                sx={{ display: "flex", flexDirection: "column", width: "30%" }}
+            <Box sx={{ display: "flex", flexDirection: "column", height: "42%" }}>
+              <Typography
+                sx={{
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: "24px",
+                  width: "100%",
+                  marginBottom: "10px",
+                }}
               >
-                <Typography
-                  sx={{
-                    color: "black",
-                    fontWeight: "bold",
-                    fontSize: "24px",
-                    width: "100%",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Detalles
-                </Typography>
-                <Box
-                  sx={{
-                    height: "65%",
-                    backgroundColor: "#D9D9D9",
-                    width: "100%",
-                    marginBottom: "10px",
-                  }}
-                ></Box>
-                <Box
-                  sx={{
-                    width: "98%",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    sx={{
-                      width: "80%",
-                      backgroundColor: "#1C2536",
-                      "&:hover": { backgroundColor: "#1C2536" },
-                    }}
-                  >
-                    Subir foto
-                  </Button>
-                </Box>
-              </Box>
+                Detalles
+              </Typography>
 
               <Box
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  marginLeft: "30px",
-                  width: "65%",
+                  width: "100%",
                 }}
               >
                 <Box
@@ -696,6 +727,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                     flexDirection: "row",
                     justifyContent: "space-between",
                     marginBottom: "20px",
+                    width:"100%"
                   }}
                 >
                   <Box
@@ -803,63 +835,70 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    marginTop: "25px",
+                    marginTop:"20px",
+                    width:"100%",
                   }}
                 >
-                  <Typography
+                  <Box
                     sx={{
-                      color: "black",
-                      fontSize: "24px",
+                      display: "flex",
+                      flexDirection: "column",
                       width: "50%",
+                      marginRight: "10px",
                     }}
                   >
-                    Número de teléfono:
-                  </Typography>
-                  <TextField
-                    sx={{
-                      height: 40,
-                      width: "50%",
-                      fontSize: "25px",
-                      "& .MuiInputBase-root": {
-                        height: "100%",
+                    <Typography
+                      sx={{
+                        color: "black",
+                        fontSize: "24px",
+                        width: "90%",
+                      }}
+                    >
+                      Número de teléfono:
+                    </Typography>
+                    <TextField
+                      sx={{
+                        height: 40,
                         fontSize: "25px",
-                      },
-                    }}
-                    defaultValue={TelefonoCambiado}
-                    onChange={(e) => setTelefonoCambiado(e.target.value)}
-                  />
-                </Box>
+                        "& .MuiInputBase-root": {
+                          height: "100%",
+                          fontSize: "25px",
+                        },
+                      }}
+                      defaultValue={TelefonoCambiado}
+                      onChange={(e) => setTelefonoCambiado(e.target.value)}
+                    />
+                  </Box>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: "25px",
-                  }}
-                >
-                  <Typography
+                  <Box
                     sx={{
-                      color: "black",
-                      fontSize: "24px",
+                      display: "flex",
+                      flexDirection: "column",
                       width: "50%",
                     }}
                   >
-                    Dirección de entrega:
-                  </Typography>
-                  <TextField
-                    sx={{
-                      height: 40,
-                      width: "50%",
-                      fontSize: "25px",
-                      "& .MuiInputBase-root": {
-                        height: "100%",
+                    <Typography
+                      sx={{
+                        color: "black",
+                        fontSize: "24px",
+                        width: "90%",
+                      }}
+                    >
+                      Dirección de entrega:
+                    </Typography>
+                    <TextField
+                      sx={{
+                        height: 40,
                         fontSize: "25px",
-                      },
-                    }}
-                    defaultValue={DireccionCambiado}
-                    onChange={(e) => setDireccionCambiado(e.target.value)}
-                  />
+                        "& .MuiInputBase-root": {
+                          height: "100%",
+                          fontSize: "25px",
+                        },
+                      }}
+                      defaultValue={DireccionCambiado}
+                      onChange={(e) => setDireccionCambiado(e.target.value)}
+                    />
+                  </Box>
                 </Box>
               </Box>
             </Box>
@@ -1151,7 +1190,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
           </Box>
         </Modal> */}
 
-        <Modal
+        {/* <Modal
           open={openModalTercero}
           onClose={handleCloseModalTercero}
           aria-labelledby="modal-modal-title"
@@ -1238,7 +1277,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
               Confirmar
             </Button>
           </Box>
-        </Modal>
+        </Modal> */}
 
         <Modal
           open={openModalCuarto}
@@ -1275,7 +1314,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                   fontWeight: "bold",
                   "&:hover": { backgroundColor: "white" },
                 }}
-                onClick={handleCloseModalTercero}
+                onClick={handleCloseModalCuarto}
               >
                 <CancelIcon sx={{ fontSize: "50px" }} />
               </IconButton>
@@ -1420,7 +1459,9 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                     width: "100%",
                     marginBottom: "10px",
                   }}
-                ></Box>
+                >
+                  {previewImageTienda && <img src={previewImageTienda} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                </Box>
                 <Box
                   sx={{
                     width: "98%",
@@ -1428,16 +1469,49 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                     justifyContent: "center",
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    sx={{
-                      width: "80%",
-                      backgroundColor: "#1C2536",
-                      "&:hover": { backgroundColor: "#1C2536" },
-                    }}
-                  >
-                    Subir foto
-                  </Button>
+                  {isImageUploadedTienda ? (
+                    <Button
+                        variant="contained"
+                          sx={{
+                            backgroundColor: '#FF0000',
+                            color: 'white',
+                            width: '60%',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            '&:hover': { backgroundColor: '#FF0000' }
+                          }}
+                        onClick={handleCancelTienda}
+                    >
+                      Cancelar
+                    </Button>
+                  ) : (
+                    <>
+                      <label htmlFor="upload-button">
+                        <Button
+                          variant="contained"
+                          component="span"
+                          sx={{
+                            backgroundColor: '#1C2536',
+                            color: 'white',
+                            width: '100%',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            marginRight: '10px',
+                            '&:hover': { backgroundColor: '#1C2536' }
+                          }}
+                        >
+                          Subir foto
+                        </Button>
+                      </label>
+                      <input
+                        type="file"
+                        id="upload-button"
+                        accept="image/png, image/jpeg"
+                        style={{ display: 'none' }}
+                        onChange={handleImageUploadTienda}
+                      />
+                    </>
+                  )}
                 </Box>
               </Box>
 
@@ -1534,7 +1608,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                         width: "90%",
                       }}
                     >
-                      Distrito:
+                      Provincia:
                     </Typography>
                     <TextField
                       sx={{
@@ -1545,8 +1619,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                           fontSize: "25px",
                         },
                       }}
-                      defaultValue={DistritoTiendaCambiado}
-                      onChange={(e) => setDistritoTiendaCambiado(e.target.value)}
+                      defaultValue={ProvinciaTiendaCambiado}
+                      onChange={(e) => setProvinciaTiendaCambiado(e.target.value)}
                     />
                   </Box>
 
@@ -1624,8 +1698,9 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario }) {
                 multiline
                 rows={8}
                 sx={{
-                  width: "100%",
+                  width: "100%"
                 }}
+                inputProps={{ style: { fontSize: "20px" } }}
                 defaultValue={DescripcionTiendaCambiado}
                 onChange={(e) => setDescripcionTiendaCambiado(e.target.value)}
               />
