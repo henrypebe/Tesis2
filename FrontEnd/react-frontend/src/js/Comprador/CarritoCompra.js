@@ -4,7 +4,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ItemShop from './ItemShop';
 
 export default function CarritoCompra({setMostrarCarrito, setMostrarProductos, mostrarOpcionCarrito, setMostrarDetalleProducto,
-  setMostrarMetodoPago}) {
+  setMostrarMetodoPago, productos, setProductos, setConteoCarritoCompra, conteoCarritoCompra}) {
 
   const handleBackProducto = () =>{
     setMostrarCarrito(false);
@@ -20,10 +20,14 @@ export default function CarritoCompra({setMostrarCarrito, setMostrarProductos, m
     setMostrarMetodoPago(true);
   }
 
-  const itemList = [
-    { id: 1, name: "Cuadernos - Libros/Artículos", price: 20.00, image: 'https://cdn-icons-png.freepik.com/512/3532/3532127.png' },
-    { id: 2, name: "Cuadernos - Libros/Artículos", price: 20.00, image: 'https://cdn-icons-png.freepik.com/512/3532/3532127.png' },
-  ];
+  const onCantidadChange = (idProducto, cantidad) => {
+    setProductos(prevProductos =>
+      prevProductos.map(producto =>
+        producto.idProducto === idProducto ? { ...producto, cantidad } : producto
+      )
+    );
+  };
+
   return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
        <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
@@ -39,11 +43,12 @@ export default function CarritoCompra({setMostrarCarrito, setMostrarProductos, m
         
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
           <ShoppingCartIcon sx={{fontSize:"100px", marginRight:"20px"}}/>
-          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"32px", width:"100%"}}>Total: S/. 1820</Typography>
+          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"32px", width:"100%"}}>Total: S/. {productos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0).toFixed(2)}</Typography>
         </Box>
 
-        {itemList.map(item => (
-        <ItemShop key={item.id} item={item} />
+        {productos.map(producto => (
+          <ItemShop producto={producto} onCantidadChange={onCantidadChange} conteoCarritoCompra={conteoCarritoCompra}
+          setConteoCarritoCompra={setConteoCarritoCompra}/>
         ))}
         
         <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}

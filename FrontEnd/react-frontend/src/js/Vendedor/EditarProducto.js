@@ -8,11 +8,17 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
     const [TipoProducto, setTipoProducto] = React.useState(opcionEditarProducto === 0?productoInformacion.tipoProducto:'');
     const [PrecioProducto, setPrecioProducto] = React.useState(opcionEditarProducto === 0?productoInformacion.precio:'');
     const [CantidadProducto, setCantidadProducto] = React.useState(opcionEditarProducto === 0?productoInformacion.stock:'');
-    const componentes = productoInformacion? productoInformacion.cantidadGarantia.split("_"): "";
+    const componentes = productoInformacion? productoInformacion.cantidadGarantia.split(" "): "";
     const [TiempoGarantiaNum, setTiempoGarantiaNum] = React.useState(opcionEditarProducto === 0?parseInt(componentes[0]):'');
     const [TiempoGarantia, setTiempoGarantia] = React.useState(opcionEditarProducto === 0?componentes[1]:'');
+    // console.log(productoInformacion);
+    const componentesEnvio = productoInformacion? productoInformacion.fechaEnvio.split(" "): "";
+    const [TiempoEnvioNum, setTiempoEnvioNum] = React.useState(opcionEditarProducto === 0?parseInt(componentesEnvio[0]):'');
+    const [TiempoEnvio, setTiempoEnvio] = React.useState(opcionEditarProducto === 0?componentesEnvio[1]:'');
+    
     const [Oferta, setOferta] = React.useState(opcionEditarProducto === 0?productoInformacion.cantidadOferta:'');
     const [Descripcion, setDescripcion] = React.useState(opcionEditarProducto === 0?productoInformacion.descripcion:'');
+    const [CostoEnvio, setCostoEnvio] = React.useState(opcionEditarProducto === 0?productoInformacion.costoEnvio:'');
     
     const [image, setImage] = React.useState(null);
     const [isImageUploaded, setIsImageUploaded] = React.useState(opcionEditarProducto === 0? productoInformacion.imagen:false);
@@ -27,6 +33,9 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
     };
     const handleChangeTiempo = (event) => {
         setTiempoGarantia(event.target.value);
+    };
+    const handleChangeEnvio = (event) => {
+        setTiempoEnvio(event.target.value);
     };
 
     const handleImageUpload = (event) => {
@@ -51,14 +60,15 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
     };
 
     const handleSubirProducto = async () =>{
-        const cantidadGarantiaTotal = TiempoGarantiaNum.toString() + "_" + TiempoGarantia.toString();
-        const nombreParam = NombreProducto.replace(/ /g, '_');
-        const descripcionParam = Descripcion.replace(/ /g, '_');
+        const cantidadGarantiaTotal = TiempoGarantiaNum.toString() + " " + TiempoGarantia.toString();
+        const cantidadEnvioTotal = TiempoEnvioNum.toString() + " " + TiempoEnvio.toString();
+        // const nombreParam = NombreProducto.replace(/ /g, '_');
+        // const descripcionParam = Descripcion.replace(/ /g, '_');
         if(opcionEditarProducto !== 1){
             try {
                 const formData = new FormData();
                 formData.append('idProducto', productoInformacion.idProducto);
-                formData.append('nombre', nombreParam);
+                formData.append('nombre', NombreProducto);
                 formData.append('precio', PrecioProducto);
                 formData.append('cantidad', CantidadProducto);
                 if(image){
@@ -68,10 +78,12 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                     const file = new File([blob], 'product_image.jpg', { type: 'image/jpeg' });
                     formData.append('image', file);
                 }
-                formData.append('descripcion', descripcionParam);
+                formData.append('descripcion', Descripcion);
                 formData.append('cantidadOferta', Oferta);
                 formData.append('cantidadGarantia', cantidadGarantiaTotal);
                 formData.append('tipoProducto', TipoProducto);
+                formData.append('costoEnvio', CostoEnvio);
+                formData.append('tiempoEnvio', cantidadEnvioTotal);
 
                 const response = await fetch(
                   `https://localhost:7240/EditarProducto`,
@@ -96,7 +108,7 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
         }else{
             try{
                 const formData = new FormData();
-                formData.append('nombre', nombreParam);
+                formData.append('nombre', NombreProducto);
                 formData.append('precio', PrecioProducto);
                 formData.append('cantidad', CantidadProducto);
                 if(image){
@@ -106,11 +118,13 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                     const file = new File([blob], 'product_image.jpg', { type: 'image/jpeg' });
                     formData.append('image', file);
                 }
-                formData.append('descripcion', descripcionParam);
+                formData.append('descripcion', Descripcion);
                 formData.append('cantidadOferta', Oferta);
                 formData.append('cantidadGarantia', cantidadGarantiaTotal);
                 formData.append('tipoProducto', TipoProducto);
                 formData.append('idTienda', informacionTienda.idTienda);
+                formData.append('costoEnvio', CostoEnvio);
+                formData.append('tiempoEnvio', cantidadEnvioTotal);
                 
                 const response = await fetch(
                     `https://localhost:7240/CreateProducto`,
@@ -284,7 +298,7 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                         </Box>
                     </Box>
 
-                    <Box sx={{display:"flex", flexDirection:"row", width:"100%", justifyContent:"space-between", marginBottom:"10px"}}>
+                    <Box sx={{display:"flex", flexDirection:"row", width:"153%", justifyContent:"space-between", marginBottom:"10px"}}>
                         <Box sx={{display:"flex", flexDirection:"column", marginRight:"20px", width:"50%"}}>
                             <Typography
                                 sx={{
@@ -328,9 +342,48 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                                 onChange={(e) => setCantidadProducto(e.target.value)}
                             />
                         </Box>
+
+                        <Box sx={{display:"flex", flexDirection:"column", marginRight:"20px", width:"50%", marginLeft:"20px"}}>
+                            <Typography
+                                sx={{
+                                color: "black",
+                                fontSize: "24px",
+                                width: "100%",
+                                }}
+                            >
+                                Tiempo de Envio:
+                            </Typography>
+                            <Box sx={{display:"flex", flexDirection:"row"}}>
+                                <TextField
+                                    sx={{
+                                        height: 40, marginRight:"10px",
+                                        '& .MuiInputBase-root': {
+                                        height: '100%',
+                                        },
+                                    }}
+                                    defaultValue={TiempoEnvioNum}
+                                    onChange={(e) => setTiempoEnvioNum(e.target.value)}
+                                />
+
+                                <FormControl fullWidth>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={TiempoEnvio}
+                                        label=""
+                                        onChange={handleChangeEnvio}
+                                        sx={{height:"40px"}}
+                                    >
+                                        <MenuItem value={"Días"}>Días</MenuItem>
+                                        <MenuItem value={"Meses"}>Meses</MenuItem>
+                                        <MenuItem value={"Años"}>Años</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        </Box>
                     </Box>
 
-                    <Box sx={{display:"flex", flexDirection:"row", width:"100%", justifyContent:"space-between"}}>
+                    <Box sx={{display:"flex", flexDirection:"row", width:"150%", justifyContent:"space-between"}}>
                         <Box sx={{display:"flex", flexDirection:"column", marginRight:"20px", width:"50%"}}>
                             <Typography
                                 sx={{
@@ -367,6 +420,30 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                                         <MenuItem value={"Años"}>Años</MenuItem>
                                     </Select>
                                 </FormControl>
+                            </Box>
+                        </Box>
+
+                        <Box sx={{display:"flex", flexDirection:"column", width:"50%", marginRight:"20px"}}>
+                            <Typography
+                                sx={{
+                                color: "black",
+                                fontSize: "24px",
+                                width: "100%",
+                                }}
+                            >
+                                Costo de envío:
+                            </Typography>
+                            <Box sx={{display:"flex", flexDirection:"row"}}>
+                                <TextField
+                                    sx={{
+                                        height: 40, width:"100%",
+                                        '& .MuiInputBase-root': {
+                                        height: '100%',
+                                        },
+                                    }}
+                                    defaultValue={`S/. ${CostoEnvio}`}
+                                    onChange={(e) => setCostoEnvio(e.target.value.replace('S/. ', ''))}
+                                />
                             </Box>
                         </Box>
 

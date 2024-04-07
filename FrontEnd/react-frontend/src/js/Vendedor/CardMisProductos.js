@@ -28,7 +28,7 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
         padding: "10px",
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: "row" }}>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems:"center" }}>
         <img
           src={producto.imagen}
           alt={producto.nombre}
@@ -74,7 +74,7 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
               width: "100%",
             }}
           >
-            {producto.cantidadVentas} {producto.cantidadVentas>1?"ventas":"venta"}
+            {producto.cantidadVentas} {producto.cantidadVentas>1?"ventas":"venta"} - Cantidad de Stock: <b style={{color:producto.stock===0?"red":"#286C23"}}>{producto.stock}</b>
           </Typography>
         </Box>
         <Divider

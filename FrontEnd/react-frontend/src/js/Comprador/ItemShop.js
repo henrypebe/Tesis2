@@ -2,18 +2,31 @@ import { Box, IconButton, Typography } from "@mui/material";
 import React, { useState } from "react";
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function ItemShop({item}) {
-    const [count, setCount] = useState(1);
+export default function ItemShop({producto, onCantidadChange, conteoCarritoCompra, setConteoCarritoCompra}) {
+    
+  const [cantidad, setCantidad] = useState(producto.cantidad);
+
+    // console.log(producto);
 
     const handleDecrease = () => {
-      if (count > 0) {
-        setCount(count - 1);
-      }
+      if (cantidad > 0) {
+        setCantidad(cantidad - 1);
+        onCantidadChange(producto.idProducto, cantidad-1);
+        setConteoCarritoCompra(conteoCarritoCompra - 1);
+    }
     };
   
     const handleIncrease = () => {
-      setCount(count + 1);
+      if(cantidad + 1 <= producto.stockMaximo){
+        setCantidad(cantidad+1);
+        onCantidadChange(producto.idProducto, cantidad+1);
+        setConteoCarritoCompra(conteoCarritoCompra + 1);
+      }else{
+        toast.error("¡Ya no hay stock disponible para este producto!");
+      }
     };
     return (
     <Box sx={{ display: "flex", flexDirection: "row", marginBottom:"10px"}}>
@@ -28,11 +41,8 @@ export default function ItemShop({item}) {
           justifyContent: "center",
         }}
       >
-        <img
-          src={item.image}
-          alt=""
-          style={{ height: "70px" }}
-        />
+        {producto.imagen && <img src={producto.imagen} alt="Preview" style={{ height: "100%", minWidth:"98%", maxWidth:"100%", objectFit: 'cover', borderRadius:"6px" }} />}
+        
       </Box>
 
       <Box
@@ -45,9 +55,9 @@ export default function ItemShop({item}) {
         }}
       >
         <Typography sx={{ fontSize: "25px" }}>
-          {item.name}
+          {producto.nombreProducto} - {producto.tipoProducto}
         </Typography>
-        <Typography sx={{ fontSize: "25px" }}>{item.price}</Typography>
+        <Typography sx={{ fontSize: "25px" }}>S/. {producto.precio.toFixed(2)}</Typography>
       </Box>
 
       <Box
@@ -77,7 +87,7 @@ export default function ItemShop({item}) {
           }}
         >
           <Typography sx={{ fontSize: "25px", fontWeight: "bold" }}>
-            {count}
+            {cantidad}
           </Typography>
         </Box>
 

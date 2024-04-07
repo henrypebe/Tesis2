@@ -12,7 +12,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
     setMostrarProductos, mostrarSeguimiento, setMostrarSeguimiento, mostrarEstadistica, setMostrarEstadistica, mostrarMetodoPagoAdicionar,
     setMostrarMetodoPagoAdicionar, mostrarDetalleProducto, setMostrarDetalleProducto, mostrarMetodoPago, setMostrarMetodoPago, mostrarDetallePedido,
     setMostrarDetallePedido, mostrarCarrito, setMostrarCarrito, mostrarDetalleSeguimiento, setMostrarDetalleSeguimiento, mostrarReclamo,
-    setMostrarReclamo, mostrarMetodoPagoAumento, setMetodoPagoAumento}) {
+    setMostrarReclamo, mostrarMetodoPagoAumento, setMetodoPagoAumento, setConteoCarritoCompra,setProductos}) {
     const handleClickInicio = () => {
         onMostrarInicioChange(true);
         onMostrarPedidosChange(false);
@@ -27,6 +27,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarDetalleSeguimiento(false);
         setMostrarReclamo(false);
         setMetodoPagoAumento(false);
+        setConteoCarritoCompra(0);
+        setProductos([]);
     };
 
     const handleClickPedidos = () => {
@@ -43,6 +45,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarDetalleSeguimiento(false);
         setMostrarReclamo(false);
         setMetodoPagoAumento(false);
+        setConteoCarritoCompra(0);
+        setProductos([]);
     };
 
     const handleClickProductos = () => {
@@ -59,6 +63,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarDetalleSeguimiento(false);
         setMostrarReclamo(false);
         setMetodoPagoAumento(false);
+        setConteoCarritoCompra(0);
+        setProductos([]);
     };
 
     const handleClickSeguimiento = () => {
@@ -75,6 +81,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarDetalleSeguimiento(false);
         setMostrarReclamo(false);
         setMetodoPagoAumento(false);
+        setConteoCarritoCompra(0);
+        setProductos([]);
     };
 
     const handleClickReclamo = () => {
@@ -106,6 +114,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarDetalleSeguimiento(false);
         setMostrarReclamo(false);
         setMetodoPagoAumento(false);
+        setConteoCarritoCompra(0);
+        setProductos([]);
     };
 
     const handleClickMetodoPago = () => {
@@ -121,6 +131,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarDetalleSeguimiento(false);
         setMostrarReclamo(false);
         setMetodoPagoAumento(false);
+        setConteoCarritoCompra(0);
+        setProductos([]);
     };
 
     return (

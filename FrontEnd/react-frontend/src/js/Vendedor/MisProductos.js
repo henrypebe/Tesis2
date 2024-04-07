@@ -7,8 +7,8 @@ import CardMisProductos from './CardMisProductos';
 
 export default function MisProductos({setMostrarMisProductos, setMostrarDetalleProducto, setOpcionEditarProducto, setProductoInformacion, setMostrarEditarProducto,
     informacionTienda}) {
-
-    const idTienda = informacionTienda.idTienda;
+    
+        const idTienda = informacionTienda.idTienda;
     const [productosList, setProductosList] = useState(null);
     const [Busqueda, setBusqueda] = useState("");
 
@@ -22,6 +22,8 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
         setOpcionEditarProducto(value);
         setMostrarEditarProducto(true);
     }
+
+    // console.log(productosList[0]);
 
     useEffect(() => {
         const obtenerListaProducto = async () => {
@@ -91,8 +93,8 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                 Producto con mayor venta:
             </Typography>
 
-            <Box sx={{display:"flex", flexDirection:"row"}}>
-                <img src="https://promart.vteximg.com.br/arquivos/ids/570404-1000-1000/22773.jpg?v=637401121588630000" alt="Descripción de la imagen" 
+            <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+                <img src={productosList && productosList[0].imagen} alt="Descripción de la imagen" 
                     style={{height:"110px", maxWidth:"180px", minWidth:"180px"}}
                 />
                 <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
@@ -105,7 +107,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                             width: "100%",
                         }}
                         >
-                        Productos 1
+                        {productosList && productosList[0].nombre}
                         </Typography>
                         <Typography
                         sx={{
@@ -115,7 +117,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                             width: "100%",
                         }}
                         >
-                        Fecha de creación: 17/08/2024
+                        Fecha de creación: {productosList && new Date(productosList[0].fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {productosList && new Date(productosList[0].fechaCreacion).toLocaleTimeString()}
                         </Typography>
                         <Typography
                         sx={{
@@ -125,7 +127,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                             width: "100%",
                         }}
                         >
-                        10 ventas
+                        {productosList && productosList[0].cantidadVentas} {productosList && productosList[0].cantidadVentas>1?"ventas":"venta"} - Cantidad de Stock: <b style={{color:productosList && productosList[0].stock===0?"red":"#286C23"}}>{productosList && productosList[0].stock}</b>
                     </Typography>
                 </Box>
                 <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
@@ -146,7 +148,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                             fontSize: "24px",
                         }}
                     >
-                        Aprobado
+                        {productosList && productosList[0]? productosList[0].estadoAprobacion === "Pendiente"? "En espera" : productosList[0].estadoAprobacion : ""}
                     </Typography>
                 </Box>
                 <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
@@ -161,7 +163,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
             </Box>
         </Box>
 
-        {productosList && productosList.map(producto => (
+        {productosList && productosList.slice(1).map(producto => (
             <CardMisProductos
                 key={producto.IdProducto}
                 producto={producto}

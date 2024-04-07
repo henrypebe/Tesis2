@@ -8,6 +8,8 @@ DROP TABLE chats;
 DROP TABLE Tienda;
 DROP TABLE Producto;
 DROP TABLE HistorialProducto;
+DROP TABLE Pedidos;
+DROP TABLE PedidoXProducto;
 
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -83,6 +85,8 @@ CREATE TABLE Producto (
     FechaCreacion datetime,
     Descripcion TEXT,
     CantidadOferta Double,
+    CostoEnvio Double,
+    TiempoEnvio TEXT,
     Foto LONGBLOB,
     CantidadGarantia TEXT,
     EstadoAprobacion TEXT,
@@ -101,6 +105,28 @@ CREATE TABLE HistorialProducto (
     FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto)
 );
 
+CREATE TABLE Pedidos(
+	IdPedido INT AUTO_INCREMENT PRIMARY KEY,
+    FechaEntrega DateTime,
+    FechaCreacion Datetime,
+    Total Double,
+    Estado int,
+    Reclamo boolean,
+	CantidadProductos int,
+    MetodoPago TEXT,
+    UsuarioID INT NOT NULL,
+    FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario)
+);
+
+CREATE TABLE PedidoXProducto(
+	IdPedidoXProducto INT AUTO_INCREMENT PRIMARY KEY,
+    ProductoID INT NOT NULL,
+    PedidoID INT NOT NULL,
+    Cantidad INT,
+    FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto),
+    FOREIGN KEY (PedidoID) REFERENCES Pedidos(IdPedido)
+);
+
 INSERT INTO KeyEncript (KeyVar) 
 VALUES ('tesis2');
 
@@ -112,6 +138,8 @@ SELECT * FROM Vendedor;
 SELECT * FROM Comprador;
 SELECT * FROM KeyEncript;
 SELECT * FROM Tienda;
+SELECT * FROM Pedidos;
+SELECT * FROM PedidoXProducto;
 
 SELECT * FROM Producto;
 
@@ -121,3 +149,16 @@ ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Tienda MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
+ALTER TABLE Producto ADD CostoEnvio DOUBLE;
+ALTER TABLE Producto ADD TiempoEnvio TEXT;
+ALTER TABLE Pedidos ADD FechaCreacion Datetime;
+
+SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
+	   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho,
+	   pp.ProductoID, pp.Cantidad, pr.Precio 
+       FROM Pedidos p 
+       INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+       INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+       INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+       INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+       WHERE p.UsuarioID = 3 AND  p.Estado = 1;

@@ -11,7 +11,6 @@ import {
 import { Box } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-// import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SHA256 } from "crypto-js";
@@ -19,8 +18,6 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 export default function BarraSuperior({ opcionAdministrador, idUsuario, esVendedorAdministrador }) {
   const [open, setOpen] = React.useState(false);
-  // const [openModalSecundario, setOpenModalSecundario] = React.useState(false);
-  // const [openModalTercero, setOpenModaTercero] = React.useState(false);
   const [openModalCuarto, setOpenModaCuarto] = React.useState(false);
   const [openModalQuinto, setOpenModaQuinto] = React.useState(false);
 
@@ -30,24 +27,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
   const handleOpen = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
   const handleClose = () => {setOpen(false);};
-  // const handleOpenModalSecundario = () => {
-  //   setOpenModalSecundario(true);
-  //   setOpen(false);
-  // };
-  // const handleCloseModalSecundario = () => {
-  //   setOpenModalSecundario(false);
-  //   setOpen(true);
-  //   setVerificarContrasenha("");
-  // };
-  // const handleOpenModalTercero = () => {
-  //   setOpenModaTercero(true);
-  //   setOpen(false);
-  // };
-  // const handleCloseModalTercero = () => {
-  //   setOpenModaTercero(false);
-  //   setOpen(true);
-  //   // setVerificarContrasenha("");
-  // };
 
   const handleOpenModalCuarto = () => {
     setOpenModaCuarto(true);
@@ -56,7 +35,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const handleCloseModalCuarto = () => {
     setOpenModaCuarto(false);
     setOpen(true);
-    // setVerificarContrasenha("");
   };
 
   const handleOpenModalQuinto = () => {
@@ -66,7 +44,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     setOpenModaQuinto(false);
     setOpen(true);
     handleCancelTienda();
-    // setVerificarContrasenha("");
   };
 
   const obtenerRolesIdUsuario = async (idUsuario) => {
@@ -220,34 +197,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     boxShadow: 24,
     padding: "20px",
     borderRadius: "8px",
-    height: informacionUsuario && informacionUsuario.esVendedor ? "83%" : "85%",
+    height: informacionUsuario && informacionUsuario.esVendedor ? "83%" : "79%",
   };
-  // const styleSecundario = {
-  //   position: "absolute",
-  //   top: "50%",
-  //   left: "50%",
-  //   transform: "translate(-50%, -50%)",
-  //   width: 1000,
-  //   bgcolor: "background.paper",
-  //   border: "2px solid #000",
-  //   boxShadow: 24,
-  //   padding: "20px",
-  //   borderRadius: "8px",
-  //   height: "27%",
-  // };
-  // const styleTercero = {
-  //   position: "absolute",
-  //   top: "50%",
-  //   left: "50%",
-  //   transform: "translate(-50%, -50%)",
-  //   width: 1000,
-  //   bgcolor: "background.paper",
-  //   border: "2px solid #000",
-  //   boxShadow: 24,
-  //   padding: "20px",
-  //   borderRadius: "8px",
-  //   height: "27%",
-  // };
   const styleCuarto = {
     position: "absolute",
     top: "50%",
@@ -274,13 +225,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     borderRadius: "8px",
     height: "79%",
   };
-
-  // useEffect(() => {
-  //   const handleOpenEffect = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
-  //   if(contrasenha !== ""){
-  //     handleOpenEffect();
-  //   }
-  // }, [contrasenha, idUsuario]);
 
   const handleChangeCerrarSesion = () => {
     localStorage.removeItem("isLoggedInComprador");
@@ -383,50 +327,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     }
   };
 
-  // const handleVerificarContrasenha = async () => {
-  //   try {
-  //     const hashedPassword = SHA256(verificarContrasenha).toString();
-  //     const response = await fetch(
-  //       `https://localhost:7240/VerificarContrasenha?idUsuario=${idUsuario}&contrasenha=${hashedPassword}`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       const _token = await response.text();
-  //       toast.success("Se puede visualizar el token", { autoClose: 2000 });
-  //       handleCloseModalSecundario();
-  //     } else if (response.status === 404) {
-  //       throw new Error("Usuario no encontrado");
-  //     } else {
-  //       throw new Error("Error al obtener el token");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error al obtener el token:", error);
-  //     throw new Error("Error al obtener el token");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const handleCloseEffect = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
-  //   const handleOpenEffect = () => {setOpen(false); handleCancel();};
-
-  //   const timeout = setTimeout(() => {
-  //     if(contrasenha !== "" && openModalQuinto === false){
-  //       handleCloseEffect();
-  //       setTimeout(() => {
-  //         handleOpenEffect();
-  //       }, 10);
-  //     }
-  //     setContrasenha("");
-  //   }, 15000);
-  //   return () => clearTimeout(timeout);
-  // }, [contrasenha, openModalQuinto]);
-
   const handleVerificarToken = async () => {
     try {
       const response = await fetch(
@@ -507,18 +407,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       throw new Error("Error al editar tienda");
     }
   }
-
-  // const copyToClipboard = () => {
-  //   navigator.clipboard
-  //     .writeText(token)
-  //     .then(() => {
-  //       toast.success("Token copiado al portapapeles", { autoClose: 2000 });
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error al copiar el token:", error);
-  //       toast.error("Error al copiar el token. Por favor, inténtalo de nuevo");
-  //     });
-  // };
 
   return loading ? (
     <></>
@@ -701,7 +589,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
               }}
             />
 
-            <Box sx={{ display: "flex", flexDirection: "column", height: "42%" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", height: informacionUsuario.esVendedor? "42%" : "45%"
+            , marginBottom:"10px"}}>
               <Typography
                 sx={{
                   color: "black",
@@ -865,6 +754,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                           fontSize: "25px",
                         },
                       }}
+                      inputProps={{ maxLength: 9 }}
                       defaultValue={TelefonoCambiado}
                       onChange={(e) => setTelefonoCambiado(e.target.value)}
                     />
@@ -903,18 +793,20 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
               </Box>
             </Box>
 
-            <Button
-              variant="contained"
-              sx={{
-                width: "100%",
-                backgroundColor: "#1C2536",
-                fontSize: "20px",
-                "&:hover": { backgroundColor: "#1C2536" },
-              }}
-              onClick={handleCambioDatos}
-            >
-              Guardar cambios
-            </Button>
+            <Box>
+              <Button
+                variant="contained"
+                sx={{
+                  width: "100%",
+                  backgroundColor: "#1C2536",
+                  fontSize: "20px",
+                  "&:hover": { backgroundColor: "#1C2536" },
+                }}
+                onClick={handleCambioDatos}
+              >
+                Guardar cambios
+              </Button>
+            </Box>
 
             <hr
               style={{
@@ -937,56 +829,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
               >
                 Seguridad
               </Typography>
-
-              {/* <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  marginTop: "8px",
-                  alignItems: "center",
-                }}
-              >
-                <Typography
-                  sx={{
-                    color: "black",
-                    fontSize: "24px",
-                    width: "25%",
-                  }}
-                >
-                  Token de Acceso:
-                </Typography>
-                <TextField
-                  sx={{
-                    height: 40,
-                    width: "60%",
-                    "& .MuiInputBase-root": {
-                      height: "100%",
-                    },
-                  }}
-                  disabled={true}
-                  defaultValue={token}
-                />
-
-                <IconButton
-                  sx={{ marginLeft: "10px", marginRight: "10px" }}
-                  onClick={handleOpenModalSecundario}
-                >
-                  <VisibilityIcon sx={{ color: "black", fontSize: "35px" }} />
-                </IconButton>
-
-                <IconButton
-                  onClick={token !== "" ? copyToClipboard : null}
-                  disabled={token === ""}
-                >
-                  <ContentCopyIcon
-                    sx={{
-                      color: token === "" ? "#C6C6C6" : "black",
-                      fontSize: "35px",
-                    }}
-                  />
-                </IconButton>
-              </Box> */}
-
               <Box
                 sx={{
                   display: "flex",
@@ -1099,185 +941,6 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
             </Box>
           </Box>
         </Modal>
-
-        {/* <Modal
-          open={openModalSecundario}
-          onClose={handleCloseModalSecundario}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={{ ...styleSecundario }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "30px",
-                  width: "100%",
-                }}
-              >
-                Ingrese su contraseña
-              </Typography>
-
-              <IconButton
-                sx={{
-                  backgroundColor: "white",
-                  color: "black",
-                  width: "80px",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                  "&:hover": { backgroundColor: "white" },
-                }}
-                onClick={handleCloseModalSecundario}
-              >
-                <CancelIcon sx={{ fontSize: "50px" }} />
-              </IconButton>
-            </Box>
-            <hr
-              style={{
-                margin: "10px 0",
-                border: "0",
-                borderTop: "2px solid #ccc",
-                marginTop: "10px",
-                marginBottom: "30px",
-              }}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Contraseña"
-              variant="outlined"
-              type="password"
-              InputLabelProps={{
-                style: {
-                  fontSize: "27px",
-                  marginTop: "-5px",
-                },
-              }}
-              onChange={(e) => setVerificarContrasenha(e.target.value)}
-              sx={{
-                height: 60,
-                width: "100%",
-                fontSize: "30px",
-                display: "flex",
-                justifyContent: "center",
-                "& .MuiInputBase-root": {
-                  height: "100%",
-                  fontSize: "30px",
-                },
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#1C2536",
-                marginTop: "25px",
-                fontSize: "25px",
-                height: "20%",
-                width: "100%",
-                "&:hover": { backgroundColor: "#1C2536" },
-              }}
-              onClick={handleVerificarContrasenha}
-            >
-              Confirmar
-            </Button>
-          </Box>
-        </Modal> */}
-
-        {/* <Modal
-          open={openModalTercero}
-          onClose={handleCloseModalTercero}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={{ ...styleTercero }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography
-                sx={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: "30px",
-                  width: "100%",
-                }}
-              >
-                Ingrese su token
-              </Typography>
-
-              <IconButton
-                sx={{
-                  backgroundColor: "white",
-                  color: "black",
-                  width: "80px",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                  "&:hover": { backgroundColor: "white" },
-                }}
-                onClick={handleCloseModalTercero}
-              >
-                <CancelIcon sx={{ fontSize: "50px" }} />
-              </IconButton>
-            </Box>
-            <hr
-              style={{
-                margin: "10px 0",
-                border: "0",
-                borderTop: "2px solid #ccc",
-                marginTop: "10px",
-                marginBottom: "30px",
-              }}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Token"
-              variant="outlined"
-              InputLabelProps={{
-                style: {
-                  fontSize: "27px",
-                  marginTop: "-5px",
-                },
-              }}
-              onChange={(e) => setVerificarToken(e.target.value)}
-              sx={{
-                height: 60,
-                width: "100%",
-                fontSize: "30px",
-                display: "flex",
-                justifyContent: "center",
-                "& .MuiInputBase-root": {
-                  height: "100%",
-                  fontSize: "30px",
-                },
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#1C2536",
-                marginTop: "25px",
-                fontSize: "25px",
-                height: "20%",
-                width: "100%",
-                "&:hover": { backgroundColor: "#1C2536" },
-              }}
-              onClick={handleVerificarToken}
-            >
-              Confirmar
-            </Button>
-          </Box>
-        </Modal> */}
 
         <Modal
           open={openModalCuarto}

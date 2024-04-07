@@ -42,11 +42,21 @@ export default function GestionAprobacion({handleChangeProductoSeleccionado}) {
         
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
-        {productosList && productosList.map(producto => (
+        {productosList && productosList.length > 0?
+        (
+          productosList.map(producto => (
             <CardGestionAprobacion 
             producto={producto} handleChangeProductoSeleccionado={handleChangeProductoSeleccionado}
             />
-        ))}
+          ))
+        ):
+        (
+          <Box>
+            <Typography sx={{fontSize:"20px", fontWeight:"bold"}}>
+              No se tiene productos en espera
+            </Typography>
+          </Box>
+        )}
     </Box>
   )
 }

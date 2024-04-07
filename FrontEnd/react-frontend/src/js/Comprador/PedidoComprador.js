@@ -1,5 +1,5 @@
 import { Box, Button, Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
@@ -22,10 +22,13 @@ const rows = [
 ];
 
 
-export default function PedidoComprador({setMostrarDetallePedido, setMostrarPedidos}) {
-  const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+export default function PedidoComprador({setMostrarDetallePedido, setMostrarPedidos, idUsuario}) {
+  const [fechaHabilitada, setFechaHabitada] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const [pedidosCompleteList, setPedidosCompleteList] = useState(null);
+  const [BusquedaFecha, setBusquedaFecha] = useState();
   
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -40,6 +43,44 @@ export default function PedidoComprador({setMostrarDetallePedido, setMostrarPedi
     setMostrarDetallePedido(true);
     setMostrarPedidos(false);
   };
+
+  const handleDateChange = (newDate) => {
+    setBusquedaFecha(newDate);
+  };
+
+  if(BusquedaFecha){
+    console.log(BusquedaFecha.$d);
+  }
+
+  useEffect(() => {
+    const handlePedidoCompleteList = async () => {
+        try {
+          const response = await fetch(
+            `https://localhost:7240/ListarPedidosCompletadosPorFecha?idUsuario=${idUsuario}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+    
+          if (response.ok) {
+            const pedido = await response.json();
+            setPedidosCompleteList(pedido);
+            console.log(pedidosCompleteList);
+          } else if (response.status === 404) {
+            throw new Error("Pedido no encontrado");
+          } else {
+            throw new Error("Error al obtener la lista de pedidos");
+          }
+        } catch (error) {
+          console.error("Error al obtener la lista de pedidos", error);
+          throw new Error("Error al obtener la lista de pedidos");
+        }
+      };
+      handlePedidoCompleteList();
+  }, [idUsuario]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -56,9 +97,12 @@ export default function PedidoComprador({setMostrarDetallePedido, setMostrarPedi
             views={['year', 'month', 'day']}
             format="DD/MM/YYYY"
             sx={{marginRight:"10px"}}
+            disabled={fechaHabilitada}
+            value={BusquedaFecha}
+            onChange={handleDateChange}
           />
 
-          <Checkbox {...label} />
+          <Checkbox checked={!fechaHabilitada} onChange={() => setFechaHabitada(!fechaHabilitada)} />
 
           <Typography sx={{color:"black", fontSize:"20px", marginRight:"20px"}}>Filtrar por fecha</Typography>
         </Box>

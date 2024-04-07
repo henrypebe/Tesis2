@@ -36,6 +36,16 @@ export default function MenuComprador() {
   const [chatId, setChatId] = useState(false);
 
   const { idUsuario } = useParams();
+
+  const [ProductoSeleccionado, setProductoSeleccionado] = useState();
+  const [conteoCarritoCompra, setConteoCarritoCompra] = useState(0);
+  const [productos, setProductos] = useState([]);
+
+  const HandleChangeProductoSeleccionado = (producto) =>{
+    setProductoSeleccionado(producto);
+    setMostrarDetalleProducto(true);
+    setMostrarProductos(false);
+  }
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
       <BarraSuperior idUsuario={idUsuario} />
@@ -49,27 +59,39 @@ export default function MenuComprador() {
           setMostrarDetallePedido={setMostrarDetallePedido} mostrarCarrito={mostrarCarrito} setMostrarCarrito={setMostrarCarrito} 
           mostrarDetalleSeguimiento={mostrarDetalleSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
           mostrarReclamo={mostrarReclamo} setMostrarReclamo={setMostrarReclamo} mostrarMetodoPagoAumento={mostrarMetodoPagoAumento}
-          setMetodoPagoAumento={setMetodoPagoAumento}
+          setMetodoPagoAumento={setMetodoPagoAumento} setConteoCarritoCompra={setConteoCarritoCompra} setProductos={setProductos}
           />
         {mostrarInicio && <InicioComprador onMostrarInicioChange={setMostrarInicio} onMostrarPedidosChange={setMostrarPedidos} 
         setMostrarProductos={setMostrarProductos} setMostrarSeguimiento={setMostrarSeguimiento}
         setMostrarEstadistica={setMostrarEstadistica} setMostrarMetodoPago={setMostrarMetodoPago}/>}
 
-        {mostrarPedidos && <PedidoComprador setMostrarDetallePedido={setMostrarDetallePedido} setMostrarPedidos={setMostrarPedidos}/>}
+        {mostrarPedidos && <PedidoComprador setMostrarDetallePedido={setMostrarDetallePedido} setMostrarPedidos={setMostrarPedidos}
+        idUsuario={idUsuario}
+        />}
 
         {mostrarDetallePedido && <DetallePedido setMostrarDetallePedido={setMostrarDetallePedido} setMostrarPedidos={setMostrarPedidos}
         setMostrarSeguimiento={setMostrarSeguimiento}/>}
 
         {mostrarProductos && <ProductoComprador setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarProductos={setMostrarProductos}
-        setMostrarCarrito={setMostrarCarrito} setMostrarOpcionCarrito={setMostrarOpcionCarrito}/>}
+        setMostrarCarrito={setMostrarCarrito} setMostrarOpcionCarrito={setMostrarOpcionCarrito} HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado}
+        conteoCarritoCompra={conteoCarritoCompra}
+        />}
 
         {mostrarDetalleProducto && <DetalleProducto setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarProductos={setMostrarProductos}
-        setMostrarMetodoPago={setMostrarMetodoPago} setMostrarOpcionCarrito={setMostrarOpcionCarrito} setMostrarCarrito={setMostrarCarrito}/>}
+        setMostrarMetodoPago={setMostrarMetodoPago} setMostrarOpcionCarrito={setMostrarOpcionCarrito} setMostrarCarrito={setMostrarCarrito}
+        ProductoSeleccionado={ProductoSeleccionado} conteoCarritoCompra={conteoCarritoCompra} setConteoCarritoCompra={setConteoCarritoCompra}
+        setProductos={setProductos} productos={productos}
+        />}
 
-        {mostrarMetodoPago && <MetodoPago setMostrarMetodoPago={setMostrarMetodoPago} setMostrarProductos={setMostrarProductos}/>}
+        {mostrarMetodoPago && <MetodoPago setMostrarMetodoPago={setMostrarMetodoPago} setMostrarProductos={setMostrarProductos}
+          productos={productos} conteoCarritoCompra={conteoCarritoCompra} setProductos={setProductos} setConteoCarritoCompra={setConteoCarritoCompra}
+          idUsuario={idUsuario}
+        />}
 
         {mostrarCarrito && <CarritoCompra setMostrarCarrito={setMostrarCarrito} setMostrarProductos={setMostrarProductos}
-        mostrarOpcionCarrito={mostrarOpcionCarrito} setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarMetodoPago={setMostrarMetodoPago}/>}
+        mostrarOpcionCarrito={mostrarOpcionCarrito} setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarMetodoPago={setMostrarMetodoPago}
+        productos={productos} setProductos={setProductos} setConteoCarritoCompra={setConteoCarritoCompra} conteoCarritoCompra={conteoCarritoCompra}
+        />}
         
         {mostrarSeguimiento && <SeguimientoComprador setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
         setChatId={setChatId}/>}

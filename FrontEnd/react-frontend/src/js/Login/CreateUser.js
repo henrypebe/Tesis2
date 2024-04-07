@@ -18,6 +18,14 @@ export default function CreateUser() {
         setEmail(event.target.value);
     };
 
+    const handleDNIChange = (e) => {
+      let inputValue = e.target.value;
+  
+      if (inputValue.length <= 8) {
+        setDNI(inputValue);
+      }
+    };
+
     const handleCreateUser = async () => {
         try {
           const hashedPassword = SHA256(contrasenha).toString();
@@ -42,7 +50,7 @@ export default function CreateUser() {
           }
         } catch (error) {
             console.error('Error al enviar el correo electrónico:', error);
-            alert('Error al enviar el correo electrónico. Por favor, inténtalo de nuevo más tarde');
+            toast.error('Las contraseñas no coinciden, intente nuevamente.');
         }
       };
   
@@ -70,7 +78,7 @@ export default function CreateUser() {
         </Box>
 
         <TextField id="outlined-basic" label="DNI" variant="outlined" sx={{marginBottom:"19px"}}
-          onChange={(e) => setDNI(e.target.value)}
+          onChange={handleDNIChange} inputProps={{ maxLength: 8 }}
         />
 
         <TextField id="outlined-basic" label="Nombre y Apellido" variant="outlined" sx={{marginBottom:"19px"}}
