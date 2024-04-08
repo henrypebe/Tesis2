@@ -40,6 +40,7 @@ export default function MenuVendedor() {
     const [esVendedorAdministrador, setEsVendedorAdministrador] = useState();
     
     const [historialProducto, setHistoriaProducto] = useState();
+    const [VentaSeleccionada, setVentaSeleccionada] = useState();
 
     useEffect(() => {
       const obtenerInformacionTienda = async () => {
@@ -56,7 +57,7 @@ export default function MenuVendedor() {
     
           if (response.ok) {
             const tienda = await response.json();
-            console.log(tienda);
+            // console.log(tienda);
             setInformacionTienda(tienda);
           } else if (response.status === 404) {
             throw new Error("Tienda no encontrado");
@@ -103,6 +104,12 @@ export default function MenuVendedor() {
       setProductoInformacion(producto);
     }
 
+    const HandleChangeVentaSeleccionado = (venta) =>{
+      setMostrarDetalleVenta(true);
+      setMostrarVentas(false);
+      setVentaSeleccionada(venta);
+    }
+
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
         <BarraSuperior idUsuario={idUsuario} esVendedorAdministrador={esVendedorAdministrador}/>
@@ -124,10 +131,10 @@ export default function MenuVendedor() {
             setMostrarVentas={setMostrarVentas} setMostrarMisProductos={setMostrarMisProductos}
             setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor} setMostrarBilletera={setMostrarBilletera} setMostrarReclamo={setMostrarReclamo}/>}
 
-            {mostrarVentas && <Ventas setMostrarVentas={setMostrarVentas} setMostrarDetalleVenta={setMostrarDetalleVenta}/>}
+            {mostrarVentas && <Ventas HandleChangeVentaSeleccionado={HandleChangeVentaSeleccionado} informacionTienda={informacionTienda}/>}
 
             {mostrarDetalleVenta && <DetalleVenta setMostrarVentas={setMostrarVentas} setMostrarDetalleVenta={setMostrarDetalleVenta}
-            setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor}/>}
+            setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor} VentaSeleccionada={VentaSeleccionada} informacionTienda={informacionTienda}/>}
 
             {mostrarMisProductos && <MisProductos setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
             setOpcionEditarProducto={setOpcionEditarProducto} setProductoInformacion={setProductoInformacion} setMostrarEditarProducto={setMostrarEditarProducto}

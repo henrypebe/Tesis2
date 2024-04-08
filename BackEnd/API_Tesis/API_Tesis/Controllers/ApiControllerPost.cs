@@ -196,6 +196,12 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@Estado", 1);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 
+                    string updateQuery = "UPDATE Vendedor SET TiendaID = @TiendaID WHERE usuarioId = @UsuarioID";
+                    MySqlCommand updateCommand = new MySqlCommand(updateQuery, connection);
+                    updateCommand.Parameters.AddWithValue("@TiendaID", idGenerado);
+                    updateCommand.Parameters.AddWithValue("@UsuarioID", idUsuario);
+                    await updateCommand.ExecuteNonQueryAsync();
+
                     return Ok(idGenerado);
                 }
             }
@@ -303,13 +309,15 @@ namespace API_Tesis.Controllers
                 {
                     connection.Open();
 
-                    string query = @"INSERT INTO PedidoXProducto (ProductoID, PedidoID, Cantidad) VALUES 
-                    (@ProductoID, @PedidoID, @Cantidad);
+                    string query = @"INSERT INTO PedidoXProducto (ProductoID, PedidoID, Cantidad, TieneSeguimiento, TieneReclamo) VALUES 
+                    (@ProductoID, @PedidoID, @Cantidad, @TieneSeguimiento, @TieneReclamo);
                      SELECT LAST_INSERT_ID();";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@ProductoID", productoId);
                     command.Parameters.AddWithValue("@PedidoID", pedidoId);
                     command.Parameters.AddWithValue("@Cantidad", cantidad);
+                    command.Parameters.AddWithValue("@TieneSeguimiento", 0);
+                    command.Parameters.AddWithValue("@TieneReclamo", 0);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 
                     string query2 = "UPDATE Producto SET Stock = @Stock, CantidadVentas = CantidadVentas + 1 WHERE IdProducto = @IdProducto AND Estado = 1";

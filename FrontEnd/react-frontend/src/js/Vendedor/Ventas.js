@@ -1,13 +1,17 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider'
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Box, Button, Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
-export default function Ventas({setMostrarVentas, setMostrarDetalleVenta}) {
+export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda}) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [fechaHabilitada, setFechaHabitada] = React.useState(true);
+
+    const [VentasCompleteList, setVentasCompleteList] = React.useState(null);
+    const [VentasPendienteList, setVentasPendienteList] = React.useState(null);
+    const [BusquedaFecha, setBusquedaFecha] = React.useState(null);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -18,9 +22,8 @@ export default function Ventas({setMostrarVentas, setMostrarDetalleVenta}) {
         setPage(0);
     };
     
-    const handleDetallePedido = () => {
-        setMostrarDetalleVenta(true);
-        setMostrarVentas(false);
+    const handleDateChange = (newDate) => {
+      setBusquedaFecha(newDate);
     };
 
     const columns = [
@@ -29,20 +32,55 @@ export default function Ventas({setMostrarVentas, setMostrarDetalleVenta}) {
         { id: 'costoTotal', label: 'Ganacia', minWidth: 200, maxWidth: 200 },
         { id: 'boton', label: '', minWidth: 100, maxWidth: 100},
     ];
+
+    useEffect(() => {
+      const handlePedidoCompleteList = async () => {
+          try {
+            
+            const fechaString = BusquedaFecha != null && !fechaHabilitada? BusquedaFecha.$d : "";
+            const fecha = new Date(fechaString);
+            const fechaISO = BusquedaFecha != null && !fechaHabilitada? fecha.toISOString(): "0001-01-01T00:00:00.000Z";
+  
+            const response = await fetch(
+              `https://localhost:7240/ListarVentasCompletadosPorFecha?idTienda=${informacionTienda.idTienda}&FechaFiltro=${fechaISO}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
       
-    const rows = [
-        { fechaEntregado: "20/04/2023", cliente: 'Camiseta', costoTotal: "S/.200.00"},
-        { fechaEntregado: "20/04/2023", cliente: 'Pantalón', costoTotal: "S/.200.00"},
-        { fechaEntregado: "20/04/2023", cliente: 'Zapatos', costoTotal: "S/.200.00"},
-        { fechaEntregado: "20/04/2023", cliente: 'Sombrero', costoTotal: "S/.200.00"},
-        { fechaEntregado: "20/04/2023", cliente: 'Calcetines', costoTotal: "S/.200.00"},
-        { fechaEntregado: "20/04/2023", cliente: 'Bufanda', costoTotal: "S/.200.00"},
-        { fechaEntregado: "20/04/2023", cliente: 'Guantes', costoTotal: "S/.200.00"},
-    ];
+            if (response.ok) {
+              const pedido = await response.json();
+              // console.log(pedido);
+              const fechaActual = new Date();
+              const pedidosFuturos = pedido.filter(_pedido => {
+                const fechaEntrega = new Date(_pedido.fechaEntrega);
+                return fechaEntrega > fechaActual;
+              });
+              const pedidosPasados = pedido.filter(_pedido => {
+                const fechaEntrega = new Date(_pedido.fechaEntrega);
+                return fechaEntrega <= fechaActual;
+              });
+              setVentasCompleteList(pedidosPasados);
+              setVentasPendienteList(pedidosFuturos);
+            } else if (response.status === 404) {
+              // console.error("Error al obtener la lista de pedidos");
+            } else {
+              // console.error("Error al obtener la lista de pedidos");
+            }
+          } catch (error) {
+            console.error("Error al obtener la lista de pedidos", error);
+            throw new Error("Error al obtener la lista de pedidos");
+          }
+        };
+        handlePedidoCompleteList();
+    }, [informacionTienda.idTienda, BusquedaFecha, fechaHabilitada]);
 
     return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px"}}>
+      <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"86vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px"}}>Pedidos</Typography>
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
@@ -56,6 +94,8 @@ export default function Ventas({setMostrarVentas, setMostrarDetalleVenta}) {
             format="DD/MM/YYYY"
             sx={{marginRight:"10px"}}
             disabled={fechaHabilitada}
+            value={BusquedaFecha}
+            onChange={handleDateChange}
           />
 
           <Checkbox checked={!fechaHabilitada} onChange={() => setFechaHabitada(!fechaHabilitada)}/>
@@ -67,121 +107,138 @@ export default function Ventas({setMostrarVentas, setMostrarDetalleVenta}) {
 
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", marginBottom:"10px"}}>Pedidos completados:</Typography>
 
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-          <TableContainer sx={{ maxHeight: 240 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth, maxWidth: column.maxWidth, fontSize:"20px", fontWeight:"bold" }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-              {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}
-                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth, fontSize:"18px"
-                        }}
-                        >
-                          {column.id === 'boton' ? (
-                            <Button variant="contained" sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
-                            onClick={handleDetallePedido}>Ver Detalles</Button>
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      );
-                    })}
+        {VentasCompleteList && VentasCompleteList.length>0?
+        (
+          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer sx={{ maxHeight: 240 }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {columns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
+                      >
+                        {column.label}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                );
-              })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
 
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
+                <TableBody>
+                {VentasCompleteList && VentasCompleteList.map((pedido) => {
+                  const fechaEntrega = new Date(pedido.fechaEntrega);
+                  const dia = fechaEntrega.getDate();
+                  const mes = fechaEntrega.getMonth() + 1;
+                  const año = fechaEntrega.getFullYear();
+                  const diaFormateado = dia < 10 ? '0' + dia : dia;
+                  const mesFormateado = mes < 10 ? '0' + mes : mes;
+                  const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
+                      <TableCell>{fechaFormateada}</TableCell>
+                      <TableCell>{pedido.nombreCliente} {pedido.apellidoCliente}</TableCell>
+                      <TableCell>S/. {pedido.total.toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="contained" 
+                          sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
+                          onClick={() => HandleChangeVentaSeleccionado(pedido)}>Ver Detalles
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={VentasCompleteList.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        ):
+        (
+          <Box sx={{ height:"26%", padding:"5px"}}>
+            <Typography sx={{fontWeight:"bold", fontSize:"20px"}}>No se tiene pedidos completados por el momento</Typography>
+          </Box>
+        )}
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"15px", marginBottom:"10px"}} />
 
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", marginBottom:"10px"}}>Pedidos pendientes:</Typography>
 
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-          <TableContainer sx={{ maxHeight: 240 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth, maxWidth: column.maxWidth, fontSize:"20px", fontWeight:"bold" }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-              {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}
-                        sx={{fontSize:"18px", minWidth: column.minWidth, maxWidth: column.maxWidth}}>
-                          {column.id === 'boton' ? (
-                            <Button variant="contained" sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
-                            onClick={handleDetallePedido}>Ver Detalles</Button>
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      );
-                    })}
+        {VentasPendienteList && VentasPendienteList.length > 0?
+        (
+          <Paper sx={{ width: '100%', overflow: 'hidden', height:"39%" }}>
+            <TableContainer sx={{ height:"84%" }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    {columns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        align={column.align}
+                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth, fontWeight:"bold", fontSize:"20px" }}
+                      >
+                        {column.label}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                );
-              })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
 
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
+                <TableBody>
+                {VentasPendienteList && VentasPendienteList.map((pedido) => {
+                  const fechaEntrega = new Date(pedido.fechaEntrega);
+                  const dia = fechaEntrega.getDate();
+                  const mes = fechaEntrega.getMonth() + 1;
+                  const año = fechaEntrega.getFullYear();
+                  const diaFormateado = dia < 10 ? '0' + dia : dia;
+                  const mesFormateado = mes < 10 ? '0' + mes : mes;
+                  const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
+                      <TableCell sx={{fontSize:"16px"}}>{fechaFormateada}</TableCell>
+                      <TableCell sx={{fontSize:"16px"}}>{pedido.nombreCliente} {pedido.apellidoCliente}</TableCell>
+                      <TableCell sx={{fontSize:"16px"}}>S/. {pedido.total.toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="contained" 
+                          sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
+                          onClick={() => HandleChangeVentaSeleccionado(pedido)}>Ver Detalles
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={VentasPendienteList.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        )
+        :
+        (
+          <Box sx={{ height:"32%", padding:"5px"}}>
+            <Typography sx={{fontWeight:"bold", fontSize:"20px"}}>No se tiene pedidos pendientes por el momento</Typography>
+          </Box>
+        )}
 
       </Box>
     </LocalizationProvider>

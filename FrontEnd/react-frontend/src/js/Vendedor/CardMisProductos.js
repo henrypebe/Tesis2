@@ -2,8 +2,10 @@ import { Box, Divider, IconButton, Typography } from "@mui/material";
 import React from "react";
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function CardMisProductos({producto, setMostrarMisProductos, setMostrarDetalleProducto, setProductoInformacion, setOpcionEditarProducto, setMostrarEditarProducto}) {
+export default function CardMisProductos({producto, setMostrarMisProductos, setMostrarDetalleProducto, setProductoInformacion, 
+  setOpcionEditarProducto, setMostrarEditarProducto, handleOpenModal}) {
     const handleChangeDetalleProductoVendedor = () =>{
         setMostrarMisProductos(false);
         setMostrarDetalleProducto(true);
@@ -141,6 +143,9 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
           </IconButton>
           <IconButton sx={{ marginRight: "10px", height: "50%" }} onClick={handleChangeDetalleProductoVendedor}>
             <VisibilityIcon sx={{ fontSize: "40px" }} />
+          </IconButton>
+          <IconButton sx={{marginRight:"10px", height:"50%"}} onClick={() => {handleOpenModal(producto);}}>
+            <DeleteIcon sx={{fontSize:"40px"}}/>
           </IconButton>
         </Box>
       </Box>

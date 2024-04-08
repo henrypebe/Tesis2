@@ -1,8 +1,27 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
 import React from "react";
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function CardReclamo() {
+export default function CardReclamo({seguimiento}) {
+
+  const handleReclamo = async() =>{
+    const response = await fetch(
+      `https://localhost:7240/EditarReclamoPedido?idPedidoXProducto=${seguimiento.idPedidoXProducto}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      toast.success('El producto fue reclamado', { autoClose: 2000 });
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -18,7 +37,7 @@ export default function CardReclamo() {
       }}
     >
       <img
-        src="https://img.freepik.com/vector-gratis/etiqueta-engomada-caja-vacia-abierta-sobre-fondo-blanco_1308-68243.jpg?size=626&ext=jpg&ga=GA1.1.1319243779.1711411200&semt=ais"
+        src={seguimiento.fotoProducto}
         alt=""
         style={{ height: "80px" }}
       />
@@ -44,7 +63,7 @@ export default function CardReclamo() {
             width: "100%",
           }}
         >
-          Productos 1
+          {seguimiento.nombreProducto}
         </Typography>
         <Typography
           sx={{
@@ -54,7 +73,7 @@ export default function CardReclamo() {
             width: "100%",
           }}
         >
-          Tienda 1
+          {seguimiento.nombreTienda}
         </Typography>
         <Typography
           sx={{
@@ -64,7 +83,7 @@ export default function CardReclamo() {
             width: "100%",
           }}
         >
-          Pepito Alvez
+          {seguimiento.nombreDuenho} {seguimiento.apellidoDuenho}
         </Typography>
       </Box>
 
@@ -80,24 +99,37 @@ export default function CardReclamo() {
         }}
       />
 
-      <Button
-        sx={{
-          width: "25%",
-          backgroundColor: "#286C23",
-          height: "80%",
-          borderRadius: "8px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginLeft: "20px",
-          flexDirection:"row",
-          textAlign:"center",
-          "&:hover": { backgroundColor: "#286C23" },
-        }}
-      >
-        <ThumbDownOffAltIcon sx={{ fontSize: "50px", color: "white", marginRight:"10px" }} />
-        <Typography sx={{color:"white", fontSize:"25px", fontWeight:"bold", marginLeft:"0px"}}>Realizar reclamo</Typography>
-      </Button>
+      {seguimiento.tieneReclamo?
+      (
+        <Box sx={{border:"2px solid #850E0E", width:"25%", borderRadius:"6px", backgroundColor:"#850E0E", padding:"5px", height:"70px",
+          display:"flex", alignItems:"center", justifyContent:"center"}}>
+          <Typography sx={{color:"white", textAlign:"center", fontSize:"30px", fontWeight:"bold"}}>
+            Reclamado
+          </Typography>
+        </Box>
+      )
+      :
+      (
+        <Button
+          sx={{
+            width: "26%",
+            backgroundColor: "#286C23",
+            height: "80%",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginLeft: "20px",
+            flexDirection:"row",
+            textAlign:"center",
+            "&:hover": { backgroundColor: "#286C23" },
+          }}
+          onClick={handleReclamo}
+        >
+          <ThumbDownOffAltIcon sx={{ fontSize: "50px", color: "white", marginRight:"10px" }} />
+          <Typography sx={{color:"white", fontSize:"25px", fontWeight:"bold", marginLeft:"0px"}}>Realizar reclamo</Typography>
+        </Button>
+      )}
     </Box>
   );
 }

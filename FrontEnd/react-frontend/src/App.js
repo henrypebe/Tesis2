@@ -47,8 +47,7 @@ function App() {
       <Routes>
         {/* Pantallas de Login */}
         <Route path="/" element={<Navigate to="/Login" />} />
-        <Route path="/Login" element={isLoggedInComprador? <Navigate to="/MenuVendedor/:idUsuario" /> : 
-          <LoginPage />} />
+        <Route path="/Login" element={<LoginPage />} />
         <Route path="/CreateUser" element={<CreateUser />} />
         <Route path="/TokenPantalla/:idUsuario" element={<TokenPantalla onLoginAdministrador={handleLoginAdministrador} onLoginComprador={handleLoginComprador}
           onLoginVendedor={handleLoginVendedor}/>} />
@@ -59,12 +58,10 @@ function App() {
         <Route path="/RecuperarContrasenhaSegundo" element={<EstablecerContrasenha />} />
         {/* Pantallas de Comprador */}
         {/* <Route path="/MenuComprador/:idUsuario" element={<MenuComprador />} /> */}
-        <Route path="/MenuComprador/:idUsuario" element={isLoggedInComprador ? <MenuComprador /> 
-          : <Navigate to="/Login" />} />
+        <Route path="/MenuComprador/:idUsuario" element={isLoggedInComprador ? <MenuComprador /> : <Navigate to="/Login" />} />
         {/* Pantallas de Vendedor */}
         {/* <Route path="/MenuVendedor/:idUsuario" element={<MenuVendedor />} /> */}
-        <Route path="/MenuVendedor/:idUsuario" element={isLoggedInVendedor ? <MenuVendedor /> 
-          : <Navigate to="/Login" />} />
+        <Route path="/MenuVendedor/:idUsuario" element={isLoggedInVendedor ? <MenuVendedor /> : <Navigate to="/Login" />} />
         {/* Pantallas de Administrador */}
         <Route path="/MenuAdministrador/:idUsuario" element={isLoggedInAdministrador ? <MenuAdministrador /> : <Navigate to="/Login" />} />
       </Routes>

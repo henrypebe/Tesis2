@@ -16,9 +16,23 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
     }
 
     const handleChangeMétodoPago = () =>{
+        const nuevoProducto = {
+            idProducto: ProductoSeleccionado.idProducto,
+            nombreProducto: ProductoSeleccionado.nombre,
+            tipoProducto: ProductoSeleccionado.tipoProducto,
+            precio: ProductoSeleccionado.precio,
+            cantidad: 1,
+            imagen: ProductoSeleccionado.imagen,
+            stockMaximo: ProductoSeleccionado.stock,
+            idTienda: ProductoSeleccionado.idTienda,
+            fechaEnvio: ProductoSeleccionado.fechaEnvio
+        };
+
+        setProductos([...productos, nuevoProducto]);
         setMostrarDetalleProducto(false);
         setMostrarProductos(false);
         setMostrarMetodoPago(true);
+        setConteoCarritoCompra(conteoCarritoCompra+1);
     }
 
     const handleChangeCarrito = () =>{
@@ -92,9 +106,15 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
         <Box sx={{display:"flex", flexDirection:"row", border:"2px solid black", borderRadius:"10px", padding:"5px", alignItems:"center"}}>
-            <img src={ProductoSeleccionado.tiendaFoto} alt="Descripción de la imagen tienda"
-            style={{height:"70px", borderRadius:"12px", marginLeft:"20px"}}
-            />
+            {ProductoSeleccionado.tiendaFoto?
+            (
+                <img src={ProductoSeleccionado.tiendaFoto} alt="Descripción de la imagen tienda"
+                style={{height:"70px", borderRadius:"12px", marginLeft:"20px", width:"10%"}}
+                />
+            ):
+            (
+                <Box sx={{width:"10%"}}></Box>
+            )}
             <Typography sx={{fontWeight:"bold", fontSize:"35px", width:"80%", marginLeft:"10px", textAlign:"center"}}>
                 {ProductoSeleccionado.tiendaNombre}
             </Typography>

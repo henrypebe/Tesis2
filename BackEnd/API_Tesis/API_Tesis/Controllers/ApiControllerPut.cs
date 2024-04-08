@@ -15,6 +15,26 @@ namespace API_Tesis.Controllers
         {
             _configuration = configuration;
             _context = context;
+            var timer = new System.Timers.Timer(TimeSpan.FromHours(24).TotalMilliseconds);
+            timer.AutoReset = true;
+            timer.Elapsed += (sender, e) => ActualizarEstadoPedidos();
+            timer.Start();
+        }
+        private void ActualizarEstadoPedidos()
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "UPDATE Pedidos SET Estado = 2 WHERE DATE(FechaEntrega) <= DATE(NOW())";
+
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    int rowsAffected = command.ExecuteNonQuery();
+                    Console.WriteLine($"Se actualizaron {rowsAffected} pedidos.");
+                }
+            }
         }
         [HttpPut]
         [Route("/EditarProducto")]
@@ -162,6 +182,71 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpPut]
+        [Route("/EditarSeguimientoPedido")]
+        public async Task<IActionResult> EditarSeguimientoPedido(int idPedidoXProducto, int idUsuario, int idTienda)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE PedidoXProducto SET TieneSeguimiento = @TieneSeguimiento WHERE IdPedidoXProducto = @IdPedidoXProducto";
+                    MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                    command.Parameters.AddWithValue("@TieneSeguimiento", 1);
+                    command.Parameters.AddWithValue("@IdPedidoXProducto", idPedidoXProducto);
+
+                    await command.ExecuteNonQueryAsync();
+
+                    string query = @"INSERT INTO Chat (Estado, FechaCreacion, CompradorID, TiendaID, PedidoXProductoID) 
+                        VALUES (@Estado, @FechaCreacion, @CompradorID, @TiendaID, @PedidoXProductoID);
+                        SELECT LAST_INSERT_ID();";
+                    MySqlCommand command2 = new MySqlCommand(query, connection);
+                    command2.Parameters.AddWithValue("@Estado", "Pendiente");
+                    command2.Parameters.AddWithValue("@FechaCreacion", DateTime.Today);
+                    command2.Parameters.AddWithValue("@CompradorID", idUsuario);
+                    command2.Parameters.AddWithValue("@TiendaID", idTienda);
+                    command2.Parameters.AddWithValue("@PedidoXProductoID", idPedidoXProducto);
+                    await command2.ExecuteNonQueryAsync();
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/EditarReclamoPedido")]
+        public async Task<IActionResult> EditarReclamoPedido(int idPedidoXProducto)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE PedidoXProducto SET TieneReclamo = @TieneReclamo AND TieneSeguimiento = @TieneSeguimiento" +
+                        "WHERE IdPedidoXProducto = @IdPedidoXProducto";
+                    MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                    command.Parameters.AddWithValue("@TieneReclamo", 1);
+                    command.Parameters.AddWithValue("@TieneSeguimiento", 0);
+                    command.Parameters.AddWithValue("@IdPedidoXProducto", idPedidoXProducto);
+
+                    await command.ExecuteNonQueryAsync();
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
         [Route("/editarRolUsuario")]
         public async Task<IActionResult> EditarUsuario(int idUsuario, bool esComprador, bool esVendedor)
         {
@@ -193,11 +278,12 @@ namespace API_Tesis.Controllers
                             // Si vendedorCount es 0, significa que no hay registros con el mismo usuarioId, por lo que se puede proceder con la inserción
                             if (vendedorCount == 0)
                             {
-                                string insertVendedorQuery = "INSERT INTO Vendedor (usuarioId, Estado) VALUES (@UsuarioId, @Estado)";
+                                string insertVendedorQuery = "INSERT INTO Vendedor (usuarioId, Estado, TiendaID) VALUES (@UsuarioId, @Estado, @TiendaID)";
                                 using (MySqlCommand insertCommand = new MySqlCommand(insertVendedorQuery, connection))
                                 {
                                     insertCommand.Parameters.AddWithValue("@UsuarioId", idUsuario);
                                     insertCommand.Parameters.AddWithValue("@Estado", 1);
+                                    insertCommand.Parameters.AddWithValue("@TiendaID", 0);
                                     await insertCommand.ExecuteNonQueryAsync();
                                 }
                             }
@@ -215,7 +301,7 @@ namespace API_Tesis.Controllers
                             // Si compradorCount es 0, significa que no hay registros con el mismo usuarioId, por lo que se puede proceder con la inserción
                             if (compradorCount == 0)
                             {
-                                string insertCompradorQuery = "INSERT INTO Comprador (usuarioId, Estado) VALUES (@UsuarioId, Estado)";
+                                string insertCompradorQuery = "INSERT INTO Comprador (usuarioId, Estado) VALUES (@UsuarioId, @Estado)";
                                 using (MySqlCommand insertCommand = new MySqlCommand(insertCompradorQuery, connection))
                                 {
                                     insertCommand.Parameters.AddWithValue("@UsuarioId", idUsuario);
@@ -301,6 +387,34 @@ namespace API_Tesis.Controllers
                         command.Parameters.AddWithValue("@contrasenha", contrasenha);
                         command.Parameters.AddWithValue("@ContrasenhaVariado", encryptedText);
                         command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+
+                        await command.ExecuteNonQueryAsync();
+                    }
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/EliminarProducto")]
+        public async Task<IActionResult> EliminarProducto(int idProducto)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE Producto SET Estado = @Estado WHERE IdProducto = @IdProducto";
+                    using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@Estado", 0);
+                        command.Parameters.AddWithValue("@IdProducto", idProducto);
 
                         await command.ExecuteNonQueryAsync();
                     }

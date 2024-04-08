@@ -3,9 +3,9 @@
     public class Pedido
     {
         public int IdPedido { get; set; }
-        public int IdTienda { get; set; }
-        public string NombreTienda { get; set; }
-        public string NombreDueño { get; set; }
+        public int IdDuenho { get; set; }
+        public string NombreCliente { get; set; }
+        public string ApellidoCliente { get; set; }
         public int Estado { get; set; }
         public DateTime FechaEntrega { get; set; }
         public DateTime FechaCreacion { get; set; }

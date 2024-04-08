@@ -396,7 +396,7 @@ namespace API_Tesis.Controllers
         }
         [HttpGet]
         [Route("/ListarPedidosCompletadosPorFecha")]
-        public async Task<IActionResult> ListarPedidosCompletadosPorFecha(int idUsuario)
+        public async Task<IActionResult> ListarPedidosCompletadosPorFecha(int idUsuario, DateTime FechaFiltro)
         {
             try
             {
@@ -408,18 +408,29 @@ namespace API_Tesis.Controllers
 
                     string query = @"
                         SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
-	                   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho,
-	                   pp.ProductoID, pp.Cantidad, pr.Precio 
+	                   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho,
+	                   pp.ProductoID, pp.Cantidad, pr.Precio, pr.Nombre as NombreProducto, u.IdUsuario as IdDuenho, pp.TieneSeguimiento,
+                       pp.IdPedidoXProducto
                        FROM Pedidos p 
                        INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                        INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-                       WHERE p.UsuarioID = @IdUsuario AND  p.Estado = 1;";
+                       WHERE p.UsuarioID = @IdUsuario AND p.Estado = 1";
+
+                    if (FechaFiltro != DateTime.MinValue)
+                    {
+                        query += " AND DATE_FORMAT(p.FechaEntrega, '%Y-%m-%d') = @FechaFiltro";
+                    }
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        if (FechaFiltro != DateTime.MinValue)
+                        {
+                            string fechaFiltroFormateada = FechaFiltro.ToString("yyyy-MM-dd");
+                            command.Parameters.AddWithValue("@FechaFiltro", fechaFiltroFormateada);
+                        }
                         using (MySqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -431,9 +442,90 @@ namespace API_Tesis.Controllers
                                     pedidoExistente = new Pedido
                                     {
                                         IdPedido = idPedido,
-                                        IdTienda = reader.GetInt32("IdTienda"),
-                                        NombreTienda = reader.GetString("NombreTienda"),
-                                        NombreDueño = reader.GetString("NombreDuenho"),
+                                        IdDuenho = reader.GetInt32("IdDuenho"),
+                                        FechaEntrega = reader.GetDateTime("FechaEntrega"),
+                                        FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                        Total = reader.GetDouble("Total"),
+                                        Estado = reader.GetInt32("Estado"),
+                                        ProductosLista = new List<ProductoPedido>()
+                                    };
+
+                                    pedidos.Add(pedidoExistente);
+                                }
+                                bool _tieneSeguimiento = reader.GetBoolean("TieneSeguimiento");
+                                pedidoExistente.ProductosLista.Add(new ProductoPedido
+                                {
+                                    IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
+                                    NombreTienda = reader.GetString("NombreTienda"),
+                                    NombreDueño = reader.GetString("NombreDuenho"),
+                                    ApellidoDuenho = reader.GetString("ApellidoDuenho"),
+                                    IdProducto = reader.GetInt32("ProductoID"),
+                                    IdTienda = reader.GetInt32("IdTienda"),
+                                    NombreProducto = reader.GetString("NombreProducto"),
+                                    Cantidad = reader.GetInt32("Cantidad"),
+                                    Precio = reader.GetDouble("Precio"),
+                                    TieneSeguimiento = _tieneSeguimiento
+                                });
+                            }
+                            return Ok(pedidos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarVentasCompletadosPorFecha")]
+        public async Task<IActionResult> ListarVentasCompletadosPorFecha(int idTienda, DateTime FechaFiltro)
+        {
+            try
+            {
+                List<Pedido> pedidos = new List<Pedido>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
+	                   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente,
+	                   pp.ProductoID, pp.Cantidad, pr.Precio, pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto
+                       FROM Pedidos p 
+                       INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                       INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                       INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                       INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
+                       WHERE pr.TiendaID = @IdTienda AND p.Estado = 1";
+
+                    if (FechaFiltro != DateTime.MinValue)
+                    {
+                        query += " AND DATE_FORMAT(p.FechaEntrega, '%Y-%m-%d') = @FechaFiltro";
+                    }
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdTienda", idTienda);
+                        if (FechaFiltro != DateTime.MinValue)
+                        {
+                            string fechaFiltroFormateada = FechaFiltro.ToString("yyyy-MM-dd");
+                            command.Parameters.AddWithValue("@FechaFiltro", fechaFiltroFormateada);
+                        }
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int idPedido = reader.GetInt32("IdPedido");
+                                Pedido pedidoExistente = pedidos.FirstOrDefault(p => p.IdPedido == idPedido);
+                                if (pedidoExistente == null)
+                                {
+                                    pedidoExistente = new Pedido
+                                    {
+                                        IdPedido = idPedido,
+                                        NombreCliente = reader.GetString("NombreCliente"),
+                                        ApellidoCliente = reader.GetString("ApellidoCliente"),
                                         FechaEntrega = reader.GetDateTime("FechaEntrega"),
                                         FechaCreacion = reader.GetDateTime("FechaCreacion"),
                                         Total = reader.GetDouble("Total"),
@@ -445,12 +537,77 @@ namespace API_Tesis.Controllers
                                 }
                                 pedidoExistente.ProductosLista.Add(new ProductoPedido
                                 {
+                                    IdTienda = reader.GetInt32("IdTienda"),
                                     IdProducto = reader.GetInt32("ProductoID"),
+                                    IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
+                                    NombreTienda = reader.GetString("NombreTienda"),
+                                    NombreProducto = reader.GetString("NombreProducto"),
                                     Cantidad = reader.GetInt32("Cantidad"),
-                                    Precio = reader.GetDouble("Precio")
+                                    Precio = reader.GetDouble("Precio"),
+                                    TieneSeguimiento = reader.GetBoolean("TieneSeguimiento"),
                                 });
                             }
                             return Ok(pedidos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/VisualizarSeguimientoPorUsuario")]
+        public async Task<IActionResult> VisualizarSeguimientoPorUsuario(int idUsuario)
+        {
+            try
+            {
+                List<Seguimiento> seguimientos = new List<Seguimiento>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho,u.Apellido AS ApellidoDuenho, c.IdChat, pr.Nombre AS NombreProducto,
+                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo
+                        FROM Pedidos p
+                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                        INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
+                        INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        WHERE p.UsuarioID = @IdUsuario AND pp.TieneSeguimiento=true";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int idChat = reader.GetInt32("IdChat");
+                                Seguimiento seguimientoExistente = seguimientos.FirstOrDefault(p => p.IdChat == idChat);
+                                if (seguimientoExistente == null)
+                                {
+                                    seguimientoExistente = new Seguimiento
+                                    {
+                                        IdChat = idChat,
+                                        IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
+                                        NombreTienda = reader.GetString("NombreTienda"),
+                                        NombreDuenho = reader.GetString("NombreDuenho"),
+                                        ApellidoDuenho = reader.GetString("ApellidoDuenho"),
+                                        NombreProducto = reader.GetString("NombreProducto"),
+                                        FotoProducto = ConvertirBytesAImagen(reader["FotoProducto"] as byte[]),
+                                        EstadoPedido = reader.GetInt32("EstadoPedido"),
+                                        TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                    };
+
+                                    seguimientos.Add(seguimientoExistente);
+                                }
+                            }
+                            return Ok(seguimientos);
                         }
                     }
                 }

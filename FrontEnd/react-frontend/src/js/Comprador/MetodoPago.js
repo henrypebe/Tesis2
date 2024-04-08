@@ -7,6 +7,8 @@ const { add  } = require('date-fns');
 export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, productos, conteoCarritoCompra,
     setProductos, setConteoCarritoCompra, idUsuario}) {
 
+    // console.log(productos);
+
     const handleBackPedido = () =>{
         setMostrarMetodoPago(false);
         setMostrarProductos(true);

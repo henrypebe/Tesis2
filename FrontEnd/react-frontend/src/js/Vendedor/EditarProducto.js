@@ -16,7 +16,7 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
     const [TiempoEnvioNum, setTiempoEnvioNum] = React.useState(opcionEditarProducto === 0?parseInt(componentesEnvio[0]):'');
     const [TiempoEnvio, setTiempoEnvio] = React.useState(opcionEditarProducto === 0?componentesEnvio[1]:'');
     
-    const [Oferta, setOferta] = React.useState(opcionEditarProducto === 0?productoInformacion.cantidadOferta:'');
+    const [Oferta, setOferta] = React.useState(opcionEditarProducto === 0?productoInformacion.cantidadOferta:0);
     const [Descripcion, setDescripcion] = React.useState(opcionEditarProducto === 0?productoInformacion.descripcion:'');
     const [CostoEnvio, setCostoEnvio] = React.useState(opcionEditarProducto === 0?productoInformacion.costoEnvio:'');
     

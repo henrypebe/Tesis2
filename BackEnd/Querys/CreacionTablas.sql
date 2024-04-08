@@ -4,7 +4,7 @@ DROP TABLE Comprador;
 DROP TABLE Vendedor;
 DROP TABLE Usuario;
 DROP TABLE mensajes;
-DROP TABLE chats;
+DROP TABLE chat;
 DROP TABLE Tienda;
 DROP TABLE Producto;
 DROP TABLE HistorialProducto;
@@ -39,14 +39,20 @@ CREATE TABLE Vendedor(
 	idVendedor INT AUTO_INCREMENT PRIMARY KEY,
     esAdministrador boolean,
     usuarioId INT NOT NULL,
+    TiendaID INT,
     FOREIGN KEY (usuarioId) REFERENCES Usuario(IdUsuario),
     Estado boolean
 );
 
-CREATE TABLE Chats (
+CREATE TABLE Chat (
     IdChat INT AUTO_INCREMENT PRIMARY KEY,
     Estado TEXT,
-    FechaEnvio datetime
+    FechaCreacion datetime,
+    CompradorID INT NOT NULL,
+    TiendaID INT NOT NULL,
+    PedidoXProductoID INT NOT NULL,
+    FOREIGN KEY (PedidoXProductoID) REFERENCES PedidoXProducto(IdPedidoXProducto),
+    FOREIGN KEY (CompradorID) REFERENCES Usuario(IdUsuario)
 );
 
 CREATE TABLE Mensajes (
@@ -54,7 +60,7 @@ CREATE TABLE Mensajes (
     ChatId INT NOT NULL,
     Contenido TEXT,
     EmisorId INT NOT NULL,
-    FOREIGN KEY (ChatId) REFERENCES Chats(IdChat),
+    FOREIGN KEY (ChatId) REFERENCES Chat(IdChat),
     FOREIGN KEY (EmisorId) REFERENCES Usuario(IdUsuario),
     FechaEnvio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -123,6 +129,8 @@ CREATE TABLE PedidoXProducto(
     ProductoID INT NOT NULL,
     PedidoID INT NOT NULL,
     Cantidad INT,
+    TieneSeguimiento boolean,
+    TieneReclamo boolean,
     FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto),
     FOREIGN KEY (PedidoID) REFERENCES Pedidos(IdPedido)
 );
@@ -139,6 +147,7 @@ SELECT * FROM Comprador;
 SELECT * FROM KeyEncript;
 SELECT * FROM Tienda;
 SELECT * FROM Pedidos;
+SELECT * FROM Chat;
 SELECT * FROM PedidoXProducto;
 
 SELECT * FROM Producto;
@@ -152,13 +161,24 @@ ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
 ALTER TABLE Producto ADD CostoEnvio DOUBLE;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
+ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
+
+SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreUsuario
+FROM Pedidos p
+INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
+INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
+INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+WHERE p.UsuarioID = 3 AND pp.TieneSeguimiento=true;
 
 SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
-	   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho,
-	   pp.ProductoID, pp.Cantidad, pr.Precio 
-       FROM Pedidos p 
-       INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
-       INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-       INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-       INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-       WHERE p.UsuarioID = 3 AND  p.Estado = 1;
+	                   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho,
+	                   pp.ProductoID, pp.Cantidad, pr.Precio, pr.Nombre as NombreProducto, u.IdUsuario as IdDuenho, pp.TieneSeguimiento,
+                       pp.IdPedidoXProducto
+                       FROM Pedidos p 
+                       INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                       INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                       INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                       INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                       WHERE p.UsuarioID = 3 AND p.Estado = 1

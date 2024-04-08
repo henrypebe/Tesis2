@@ -1,13 +1,13 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
 import React from "react";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import ChatIcon from '@mui/icons-material/Chat';
 
-export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetalleSeguimiento, chatId, setChatId}) {
+export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetalleSeguimiento, seguimiento}) {
   const handleChangeDetalleSeguimiento = () =>{
     setMostrarSeguimiento(false);
     setMostrarDetalleSeguimiento(true);
-    setChatId(chatId);
   }  
     return (
     <Box
@@ -24,7 +24,7 @@ export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetall
       }}
     >
       <img
-        src="https://img.freepik.com/vector-gratis/etiqueta-engomada-caja-vacia-abierta-sobre-fondo-blanco_1308-68243.jpg?size=626&ext=jpg&ga=GA1.1.1319243779.1711411200&semt=ais"
+        src={seguimiento.fotoProducto}
         alt=""
         style={{ height: "80px" }}
       />
@@ -50,7 +50,7 @@ export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetall
             width: "100%",
           }}
         >
-          Productos 1
+          {seguimiento.nombreProducto}
         </Typography>
         <Typography
           sx={{
@@ -60,7 +60,7 @@ export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetall
             width: "100%",
           }}
         >
-          Tienda 1
+          {seguimiento.nombreTienda}
         </Typography>
         <Typography
           sx={{
@@ -70,7 +70,7 @@ export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetall
             width: "100%",
           }}
         >
-          Pepito Alvez
+          {seguimiento.nombreDuenho} {seguimiento.apellidoDuenho}
         </Typography>
       </Box>
 
@@ -114,11 +114,18 @@ export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetall
             width: "100%",
           }}
         >
-          <CheckCircleIcon sx={{ color: "#286C23", fontSize: "26px" }} />
+          {seguimiento.estadoPedido === 1?
+          (
+            <ReportProblemIcon sx={{ color: "#86882D", fontSize: "26px" }}/>
+          )
+          :
+          (
+            <CheckCircleIcon sx={{ color: "#286C23", fontSize: "26px" }} />
+          )}
           <Typography
-            sx={{ color: "#286C23", fontWeight: "bold", fontSize: "26px" }}
+            sx={{ color: seguimiento.estadoPedido?"#86882D" : "#286C23", fontWeight: "bold", fontSize: "26px", marginLeft:"10px" }}
           >
-            Solucionado
+            {seguimiento.estadoPedido === 1? "Pendiente": seguimiento.estadoPedido === 2? "Completado" : ""}
           </Typography>
         </Box>
       </Box>

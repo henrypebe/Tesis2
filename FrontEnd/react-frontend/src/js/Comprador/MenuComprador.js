@@ -33,11 +33,12 @@ export default function MenuComprador() {
   const [mostrarReclamo, setMostrarReclamo] = useState(false);
   const [mostrarMetodoPagoAumento, setMetodoPagoAumento] = useState(false);
 
-  const [chatId, setChatId] = useState(false);
+  // const [chatId, setChatId] = useState(false);
 
   const { idUsuario } = useParams();
 
   const [ProductoSeleccionado, setProductoSeleccionado] = useState();
+  const [PedidoSeleccionado, setPedidoSeleccionado] = useState();
   const [conteoCarritoCompra, setConteoCarritoCompra] = useState(0);
   const [productos, setProductos] = useState([]);
 
@@ -46,6 +47,13 @@ export default function MenuComprador() {
     setMostrarDetalleProducto(true);
     setMostrarProductos(false);
   }
+
+  const HandleChangePedidoSeleccionado = (pedido) =>{
+    setPedidoSeleccionado(pedido);
+    setMostrarDetallePedido(true);
+    setMostrarPedidos(false);
+  }
+
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
       <BarraSuperior idUsuario={idUsuario} />
@@ -65,12 +73,11 @@ export default function MenuComprador() {
         setMostrarProductos={setMostrarProductos} setMostrarSeguimiento={setMostrarSeguimiento}
         setMostrarEstadistica={setMostrarEstadistica} setMostrarMetodoPago={setMostrarMetodoPago}/>}
 
-        {mostrarPedidos && <PedidoComprador setMostrarDetallePedido={setMostrarDetallePedido} setMostrarPedidos={setMostrarPedidos}
-        idUsuario={idUsuario}
+        {mostrarPedidos && <PedidoComprador idUsuario={idUsuario} HandleChangePedidoSeleccionado={HandleChangePedidoSeleccionado}
         />}
 
         {mostrarDetallePedido && <DetallePedido setMostrarDetallePedido={setMostrarDetallePedido} setMostrarPedidos={setMostrarPedidos}
-        setMostrarSeguimiento={setMostrarSeguimiento}/>}
+        setMostrarSeguimiento={setMostrarSeguimiento} PedidoSeleccionado={PedidoSeleccionado} idUsuario={idUsuario}/>}
 
         {mostrarProductos && <ProductoComprador setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarProductos={setMostrarProductos}
         setMostrarCarrito={setMostrarCarrito} setMostrarOpcionCarrito={setMostrarOpcionCarrito} HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado}
@@ -94,12 +101,11 @@ export default function MenuComprador() {
         />}
         
         {mostrarSeguimiento && <SeguimientoComprador setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
-        setChatId={setChatId}/>}
+          idUsuario={idUsuario}/>}
 
-        {mostrarDetalleSeguimiento && <DetalleSeguimiento setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
-        chatId={chatId}/>}
+        {mostrarDetalleSeguimiento && <DetalleSeguimiento setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}/>}
 
-        {mostrarReclamo && <ReclamoComprador />}
+        {mostrarReclamo && <ReclamoComprador idUsuario={idUsuario}/>}
 
         {mostrarEstadistica && <EstadisticaComprador />}
 
