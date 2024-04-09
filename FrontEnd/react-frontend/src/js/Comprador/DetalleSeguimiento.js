@@ -1,14 +1,160 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function DetalleSeguimiento({
   setMostrarSeguimiento,
   setMostrarDetalleSeguimiento,
-  chatId
+  SeguimientoSeleccionado,
+  idUsuario
 }) {
+  
+  const [ListaMensaje, setListaMensaje] = useState();
+  const [mensajeEnviado, setMensajeEnviado] = useState('');
+  
   const handleBackPedido = () => {
     setMostrarSeguimiento(true);
     setMostrarDetalleSeguimiento(false);
+  };
+
+  const handleChangeMensajeEnviado = (e) =>{
+    setMensajeEnviado(e.target.value);
+  }
+
+  const obtenerListaMensaje = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7240/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const ListSeguimiento = await response.json();
+        setListaMensaje(ListSeguimiento);
+        // console.log(ListSeguimiento);
+      } else if (response.status === 404) {
+        throw new Error("Seguimiento no encontrado");
+      } else {
+        throw new Error("Error al obtener la lista de seguimientos");
+      }
+    } catch (error) {
+      console.error("Error al obtener la lista de seguimientos", error);
+      throw new Error("Error al obtener la lista de seguimientos");
+    }
+  };
+
+  const HandleCreateMensaje = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7240/CreateMensaje?ChatId=${SeguimientoSeleccionado.idChat}&EmisorId=${idUsuario}&Contenido=${mensajeEnviado}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        setMensajeEnviado("");
+        obtenerListaMensaje();
+      } else if (response.status === 404) {
+        throw new Error("Seguimiento no encontrado");
+      } else {
+        throw new Error("Error al obtener la lista de seguimientos");
+      }
+    } catch (error) {
+      console.error("Error al obtener la lista de seguimientos", error);
+      throw new Error("Error al obtener la lista de seguimientos");
+    }
+  };
+
+  useEffect(() => {
+    const obtenerListaMensaje = async () => {
+        try {
+          const response = await fetch(
+            `https://localhost:7240/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+    
+          if (response.ok) {
+            const ListSeguimiento = await response.json();
+            setListaMensaje(ListSeguimiento);
+            console.log(ListSeguimiento);
+          } else if (response.status === 404) {
+            throw new Error("Seguimiento no encontrado");
+          } else {
+            throw new Error("Error al obtener la lista de seguimientos");
+          }
+        } catch (error) {
+          console.error("Error al obtener la lista de seguimientos", error);
+          throw new Error("Error al obtener la lista de seguimientos");
+        }
+      };
+      obtenerListaMensaje();
+  }, [SeguimientoSeleccionado.idChat]);
+
+  useEffect(() => {
+    const obtenerListaMensaje = async () => {
+      try {
+        const response = await fetch(
+          `https://localhost:7240/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        if (response.ok) {
+          const ListSeguimiento = await response.json();
+          setListaMensaje(ListSeguimiento);
+          // console.log(ListSeguimiento);
+        } else if (response.status === 404) {
+          throw new Error("Seguimiento no encontrado");
+        } else {
+          throw new Error("Error al obtener la lista de seguimientos");
+        }
+      } catch (error) {
+        console.error("Error al obtener la lista de seguimientos", error);
+        throw new Error("Error al obtener la lista de seguimientos");
+      }
+    };
+    const interval = setInterval(() => {
+      obtenerListaMensaje();
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [SeguimientoSeleccionado.idChat]);
+
+  const scrollContainerRef = useRef(null);
+  const [userScrolledUp, setUserScrolledUp] = useState(false);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+
+    if (!userScrolledUp && scrollContainer) {
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
+  }, [ListaMensaje, userScrolledUp]);
+
+  const handleScroll = () => {
+    const scrollContainer = scrollContainerRef.current;
+
+    // Verifica si el usuario ha desplazado hacia arriba
+    if (scrollContainer) {
+      setUserScrolledUp(scrollContainer.scrollTop < scrollContainer.scrollHeight - scrollContainer.clientHeight);
+    }
   };
 
   return (
@@ -17,8 +163,8 @@ export default function DetalleSeguimiento({
         padding: "20px",
         width: "85.3%",
         marginTop: "-1.9px",
-        minHeight: "84vh",
-        maxHeight: "auto",
+        minHeight: "86vh",
+        maxHeight: "86vh",
       }}
     >
       <Box
@@ -37,7 +183,7 @@ export default function DetalleSeguimiento({
             width: "100%",
           }}
         >
-          Pedidos - Tienda 1
+          Pedidos - {SeguimientoSeleccionado.nombreTienda}
         </Typography>
         <Button
           variant="contained"
@@ -66,10 +212,21 @@ export default function DetalleSeguimiento({
         }}
       />
 
-      <Box
-        sx={{ border: "2px solid black", height: "74%", overflowY: "scroll" }}
-      >
-        
+      <Box sx={{border: "2px solid black", height: "74%", overflowY:"scroll", display:"flex", flexDirection:"column"}} 
+        ref={scrollContainerRef} onScroll={handleScroll}>
+        {ListaMensaje && ListaMensaje.map((mensaje) => (
+          <Box
+            sx={{ display:"flex", alignItems:mensaje.esTienda?"flex-start":"flex-end",
+            flexDirection:"column" }}
+          >
+            <Typography
+              key={mensaje.idMensaje}
+              sx={{border:"2px solid black", width:"40%", padding:"10px", borderRadius:"6px", marginBottom:"10px"}}
+            >
+              <b>{mensaje.nombreEmisor} {mensaje.apellidoEmisor} (yo):</b> {mensaje.contenido}
+            </Typography>
+          </Box>
+        ))}
       </Box>
 
       <Box sx={{ display: "flex", flexDirection: "row", marginTop:"10px", height:"6%", marginBottom:"10px"}}>
@@ -83,7 +240,8 @@ export default function DetalleSeguimiento({
               height: '100%',
             },
           }}
-          
+          value={mensajeEnviado}
+          onChange={handleChangeMensajeEnviado}
         />
         <Button
           variant="contained"
@@ -92,6 +250,7 @@ export default function DetalleSeguimiento({
             width: "15%", marginLeft:"10px",
             "&:hover": { backgroundColor: "#1C2536" },
           }}
+          onClick={HandleCreateMensaje}
         >
           Enviar mensaje
         </Button>

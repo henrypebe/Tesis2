@@ -1,7 +1,7 @@
 import { Box, Divider, Typography } from '@mui/material'
 import React from 'react'
 
-export default function CardReclamoVendedor() {
+export default function CardReclamoVendedor({reclamo}) {
   return (
     <Box
       sx={{
@@ -17,9 +17,9 @@ export default function CardReclamoVendedor() {
       }}
     >
       <img
-        src="https://img.freepik.com/vector-gratis/etiqueta-engomada-caja-vacia-abierta-sobre-fondo-blanco_1308-68243.jpg?size=626&ext=jpg&ga=GA1.1.1319243779.1711411200&semt=ais"
+        src={reclamo.fotoProducto}
         alt=""
-        style={{ height: "80px" }}
+        style={{ height: "80px", width:"12%" }}
       />
 
       <Divider
@@ -34,7 +34,7 @@ export default function CardReclamoVendedor() {
         }}
       />
 
-      <Box sx={{ display: "flex", flexDirection: "column", width: "50%" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", width: "60%" }}>
         <Typography
           sx={{
             color: "black",
@@ -43,7 +43,7 @@ export default function CardReclamoVendedor() {
             width: "100%",
           }}
         >
-          Productos 1
+          {reclamo.nombreProducto}
         </Typography>
         <Typography
           sx={{
@@ -53,7 +53,7 @@ export default function CardReclamoVendedor() {
             width: "100%",
           }}
         >
-          Tienda 1
+          {reclamo.nombreCliente} {reclamo.apellidoCliente}
         </Typography>
         <Typography
           sx={{
@@ -63,7 +63,7 @@ export default function CardReclamoVendedor() {
             width: "100%",
           }}
         >
-          Pepito Alvez
+          Cantidad: {reclamo.cantidadProducto}
         </Typography>
       </Box>
 

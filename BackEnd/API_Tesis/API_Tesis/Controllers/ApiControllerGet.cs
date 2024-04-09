@@ -558,6 +558,67 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
+        [Route("/VisualizarSeguimientoPorTienda")]
+        public async Task<IActionResult> VisualizarSeguimientoPorTienda(int idTienda)
+        {
+            try
+            {
+                List<Seguimiento> seguimientos = new List<Seguimiento>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreCliente,u.Apellido AS ApellidoCliente, c.IdChat, pr.Nombre AS NombreProducto,
+                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, p.FechaCreacion
+                        FROM Pedidos p
+                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                        INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
+                        INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
+                        WHERE c.TiendaID = @TiendaID AND pp.TieneSeguimiento=true";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@TiendaID", idTienda);
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int idChat = reader.GetInt32("IdChat");
+                                Seguimiento seguimientoExistente = seguimientos.FirstOrDefault(p => p.IdChat == idChat);
+                                if (seguimientoExistente == null)
+                                {
+                                    seguimientoExistente = new Seguimiento
+                                    {
+                                        IdChat = idChat,
+                                        IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
+                                        NombreTienda = reader.GetString("NombreTienda"),
+                                        NombreCliente = reader.GetString("NombreCliente"),
+                                        ApellidoCliente = reader.GetString("ApellidoCliente"),
+                                        NombreProducto = reader.GetString("NombreProducto"),
+                                        FotoProducto = ConvertirBytesAImagen(reader["FotoProducto"] as byte[]),
+                                        EstadoPedido = reader.GetInt32("EstadoPedido"),
+                                        FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                        TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                    };
+
+                                    seguimientos.Add(seguimientoExistente);
+                                }
+                            }
+                            return Ok(seguimientos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/VisualizarSeguimientoPorUsuario")]
         public async Task<IActionResult> VisualizarSeguimientoPorUsuario(int idUsuario)
         {
@@ -608,6 +669,175 @@ namespace API_Tesis.Controllers
                                 }
                             }
                             return Ok(seguimientos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarMensajesChatId")]
+        public async Task<IActionResult> ListarMensajesChatId(int ChatId)
+        {
+            try
+            {
+                List<Mensaje> Mensajes = new List<Mensaje>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT m.IdMensaje, m.Contenido, m.EmisorId, m.FechaEnvio, m.EsTienda, u.Nombre AS NombreEmisor, u.Apellido AS ApellidoEmisor,
+                        u.EsComprador, u.EsVendedor
+                        FROM Mensajes m
+                        INNER JOIN Usuario u ON u.IdUsuario = m.EmisorId
+                        WHERE ChatId = @ChatId ORDER BY m.IdMensaje ASC";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ChatId", ChatId);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (reader.Read())
+                            {
+                                int idMensaje = reader.GetInt32("IdMensaje");
+                                Mensaje mensajeExistente = Mensajes.FirstOrDefault(p => p.IdMensaje == idMensaje);
+                                if (mensajeExistente == null)
+                                {
+                                    mensajeExistente = new Mensaje
+                                    {
+                                        IdMensaje = idMensaje,
+                                        Contenido = reader.GetString("Contenido"),
+                                        EmisorId = reader.GetInt32("EmisorId"),
+                                        NombreEmisor = reader.GetString("NombreEmisor"),
+                                        ApellidoEmisor = reader.GetString("ApellidoEmisor"),
+                                        FechaEnvio = reader.GetDateTime("FechaEnvio"),
+                                        EsTienda = reader.GetBoolean("EsTienda"),
+                                    };
+
+                                    Mensajes.Add(mensajeExistente);
+                                }
+                            }
+                            return Ok(Mensajes);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarMensajesTiendaChatId")]
+        public async Task<IActionResult> ListarMensajesTiendaChatId(int ChatId)
+        {
+            try
+            {
+                List<Mensaje> Mensajes = new List<Mensaje>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT m.IdMensaje, m.Contenido, m.EmisorId, m.FechaEnvio, m.EsTienda, u.Nombre AS NombreEmisor, u.Apellido AS ApellidoEmisor,
+                        u.EsComprador, u.EsVendedor, p.Nombre AS NombreProducto
+                        FROM Mensajes m
+                        INNER JOIN Usuario u ON u.IdUsuario = m.EmisorId
+                        INNER JOIN Chat c ON c.IdChat = m.ChatId
+                        INNER JOIN PedidoXProducto pp ON pp.IdPedidoXProducto = c.PedidoXProductoID
+                        INNER JOIN Producto p ON p.IdProducto = pp.ProductoID
+                        WHERE ChatId = @ChatId ORDER BY m.IdMensaje ASC";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ChatId", ChatId);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (reader.Read())
+                            {
+                                int idMensaje = reader.GetInt32("IdMensaje");
+                                Mensaje mensajeExistente = Mensajes.FirstOrDefault(p => p.IdMensaje == idMensaje);
+                                if (mensajeExistente == null)
+                                {
+                                    mensajeExistente = new Mensaje
+                                    {
+                                        IdMensaje = idMensaje,
+                                        Contenido = reader.GetString("Contenido"),
+                                        EmisorId = reader.GetInt32("EmisorId"),
+                                        NombreEmisor = reader.GetString("NombreEmisor"),
+                                        NombreProducto = reader.GetString("NombreProducto"),
+                                        ApellidoEmisor = reader.GetString("ApellidoEmisor"),
+                                        FechaEnvio = reader.GetDateTime("FechaEnvio"),
+                                        EsTienda = reader.GetBoolean("EsTienda"),
+                                    };
+
+                                    Mensajes.Add(mensajeExistente);
+                                }
+                            }
+                            return Ok(Mensajes);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarProductoReclamos")]
+        public async Task<IActionResult> ListarProductoReclamos(int idTienda)
+        {
+            try
+            {
+                List<ProductoReclamo> ProductosReclamos = new List<ProductoReclamo>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT pp.ProductoID, pr.Nombre AS NombreProducto, pr.Foto AS FotoProducto,
+                        u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente, pp.Cantidad AS CantidadProducto, pp.IdPedidoXProducto
+                        FROM PedidoXProducto pp
+                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                        INNER JOIN Pedidos p ON p.IdPedido = pp.PedidoID
+                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        WHERE t.IdTienda = @IdTienda AND pp.TieneReclamo = true";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdTienda", idTienda);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (reader.Read())
+                            {
+                                int IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto");
+                                ProductoReclamo productoReclamo = ProductosReclamos.FirstOrDefault(p => p.IdPedidoXProducto == IdPedidoXProducto);
+                                if (productoReclamo == null)
+                                {
+                                    productoReclamo = new ProductoReclamo
+                                    {
+                                        IdPedidoXProducto = IdPedidoXProducto,
+                                        ProductoID = reader.GetInt32("ProductoID"),
+                                        FotoProducto = ConvertirBytesAImagen(reader["FotoProducto"] as byte[]),
+                                        NombreProducto = reader.GetString("NombreProducto"),
+                                        NombreCliente = reader.GetString("NombreCliente"),
+                                        ApellidoCliente = reader.GetString("ApellidoCliente"),
+                                        CantidadProducto = reader.GetInt32("CantidadProducto")
+                                    };
+
+                                    ProductosReclamos.Add(productoReclamo);
+                                }
+                            }
+                            return Ok(ProductosReclamos);
                         }
                     }
                 }

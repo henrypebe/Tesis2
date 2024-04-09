@@ -337,6 +337,66 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpPost]
+        [Route("/CreateMensaje")]
+        public async Task<ActionResult<int>> CreateMensaje(int ChatId, int EmisorId, string Contenido)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"INSERT INTO Mensajes (ChatId, Contenido, EmisorId, FechaEnvio, EsTienda) VALUES 
+                    (@ChatId, @Contenido, @EmisorId, @FechaEnvio, @EsTienda);
+                     SELECT LAST_INSERT_ID();";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@ChatId", ChatId);
+                    command.Parameters.AddWithValue("@Contenido", Contenido);
+                    command.Parameters.AddWithValue("@EmisorId", EmisorId);
+                    command.Parameters.AddWithValue("@FechaEnvio", DateTime.Now);
+                    command.Parameters.AddWithValue("@EsTienda", 0);
+                    int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+                    return Ok(idGenerado);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpPost]
+        [Route("/CreateMensajeTienda")]
+        public async Task<ActionResult<int>> CreateMensajeTienda(int ChatId, int EmisorId, string Contenido)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"INSERT INTO Mensajes (ChatId, Contenido, EmisorId, FechaEnvio, EsTienda) VALUES 
+                    (@ChatId, @Contenido, @EmisorId, @FechaEnvio, @EsTienda);
+                     SELECT LAST_INSERT_ID();";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@ChatId", ChatId);
+                    command.Parameters.AddWithValue("@Contenido", Contenido);
+                    command.Parameters.AddWithValue("@EmisorId", EmisorId);
+                    command.Parameters.AddWithValue("@FechaEnvio", DateTime.Now);
+                    command.Parameters.AddWithValue("@EsTienda", 1);
+                    int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+                    return Ok(idGenerado);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpPost]
         [Route("/CambiarEstadoUsuario")]
         public async Task<ActionResult> EliminarUsuario(int idUsuario, string contrasenha, string token)
         {

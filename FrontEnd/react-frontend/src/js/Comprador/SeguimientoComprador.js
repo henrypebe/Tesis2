@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material'
 import React, { useEffect } from 'react';
 import CardSeguimiento from './CardSeguimiento';
 
-export default function SeguimientoComprador({setMostrarSeguimiento, setMostrarDetalleSeguimiento, setChatId, idUsuario}) {
+export default function SeguimientoComprador({HandleChangeSeguimientoSeleccionado, idUsuario}) {
   
   const [ListaSeguimiento, setListaSeguimiento] = React.useState();
 
@@ -37,7 +37,7 @@ export default function SeguimientoComprador({setMostrarSeguimiento, setMostrarD
   }, [idUsuario]);
 
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"86vh", maxHeight:"auto"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Seguimientos</Typography>
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
@@ -45,7 +45,7 @@ export default function SeguimientoComprador({setMostrarSeguimiento, setMostrarD
         {ListaSeguimiento && ListaSeguimiento.length > 0 ? 
         (
           ListaSeguimiento.map(seguimiento => (
-            <CardSeguimiento setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
+            <CardSeguimiento HandleChangeSeguimientoSeleccionado={HandleChangeSeguimientoSeleccionado}
               seguimiento={seguimiento}
             />
           ))

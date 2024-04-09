@@ -32,15 +32,17 @@ export default function CardReclamo({seguimiento}) {
         border: "2px solid black",
         padding: "10px",
         borderRadius: "10px",
-        width: "90%",
+        width: "93%",
         marginBottom: "10px",
       }}
     >
-      <img
-        src={seguimiento.fotoProducto}
-        alt=""
-        style={{ height: "80px" }}
-      />
+      <Box sx={{width:"12%", display:"flex", alignItems:"center"}}>
+        <img
+          src={seguimiento.fotoProducto}
+          alt=""
+          style={{ height: "80px", width:"100%" }}
+        />
+      </Box>
 
       <Divider
         orientation="vertical"
@@ -54,7 +56,7 @@ export default function CardReclamo({seguimiento}) {
         }}
       />
 
-      <Box sx={{ display: "flex", flexDirection: "column", width: "50%" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", width: "65%" }}>
         <Typography
           sx={{
             color: "black",
@@ -101,7 +103,7 @@ export default function CardReclamo({seguimiento}) {
 
       {seguimiento.tieneReclamo?
       (
-        <Box sx={{border:"2px solid #850E0E", width:"25%", borderRadius:"6px", backgroundColor:"#850E0E", padding:"5px", height:"70px",
+        <Box sx={{border:"2px solid #850E0E", width:"26%", borderRadius:"6px", backgroundColor:"#850E0E", padding:"5px", height:"70px",
           display:"flex", alignItems:"center", justifyContent:"center"}}>
           <Typography sx={{color:"white", textAlign:"center", fontSize:"30px", fontWeight:"bold"}}>
             Reclamado
@@ -110,24 +112,14 @@ export default function CardReclamo({seguimiento}) {
       )
       :
       (
-        <Button
-          sx={{
-            width: "26%",
-            backgroundColor: "#286C23",
-            height: "80%",
-            borderRadius: "8px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginLeft: "20px",
-            flexDirection:"row",
-            textAlign:"center",
-            "&:hover": { backgroundColor: "#286C23" },
-          }}
+        <Button sx={{border:"2px solid #86882D", width:"27%", borderRadius:"6px", backgroundColor:"#86882D", padding:"5px", height:"70px",
+          display:"flex", alignItems:"center", justifyContent:"center", '&:hover':{backgroundColor:"#86882D"}}}
           onClick={handleReclamo}
-        >
+          >
           <ThumbDownOffAltIcon sx={{ fontSize: "50px", color: "white", marginRight:"10px" }} />
-          <Typography sx={{color:"white", fontSize:"25px", fontWeight:"bold", marginLeft:"0px"}}>Realizar reclamo</Typography>
+          <Typography sx={{color:"white", textAlign:"center", fontSize:"30px", fontWeight:"bold"}}>
+            Realizar reclamo
+          </Typography>
         </Button>
       )}
     </Box>

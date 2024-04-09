@@ -41,6 +41,7 @@ export default function MenuVendedor() {
     
     const [historialProducto, setHistoriaProducto] = useState();
     const [VentaSeleccionada, setVentaSeleccionada] = useState();
+    const [SeguimientoSeleccionado, setSeguimientoSeleccionado] = useState();
 
     useEffect(() => {
       const obtenerInformacionTienda = async () => {
@@ -110,6 +111,12 @@ export default function MenuVendedor() {
       setVentaSeleccionada(venta);
     }
 
+    const HandleChangeSeguimientoSeleccionado = (seguimiento) =>{
+      setSeguimientoSeleccionado(seguimiento);
+      setMostrarSeguimientoVendedor(false);
+      setMostrarnDetalleSeguimiento(true);
+    }
+
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
         <BarraSuperior idUsuario={idUsuario} esVendedorAdministrador={esVendedorAdministrador}/>
@@ -149,13 +156,12 @@ export default function MenuVendedor() {
             {historialProducto && <HistorialProducto setHistoriaProducto={setHistoriaProducto} setMostrarDetalleProducto={setMostrarDetalleProducto}
             productoInformacion={productoInformacion}/>}
 
-            {mostrarSeguimientoVendedor && <SeguimientoVendedor setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor}
-            setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento}/>}
+            {mostrarSeguimientoVendedor && <SeguimientoVendedor informacionTienda={informacionTienda} HandleChangeSeguimientoSeleccionado={HandleChangeSeguimientoSeleccionado}/>}
 
             {mostrarDetalleSeguimiento && <DetalleSeguimientoVendedor setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor}
-            setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento}/>}
+            setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento} SeguimientoSeleccionado={SeguimientoSeleccionado} informacionTienda={informacionTienda}/>}
 
-            {mostrarReclamo && <ReclamoVendedor />}
+            {mostrarReclamo && <ReclamoVendedor informacionTienda={informacionTienda}/>}
 
             {mostrarEstadisticaVendedor && <EstadisticaVendedor />}
 

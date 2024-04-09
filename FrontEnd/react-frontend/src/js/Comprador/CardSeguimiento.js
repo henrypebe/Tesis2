@@ -4,12 +4,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import ChatIcon from '@mui/icons-material/Chat';
 
-export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetalleSeguimiento, seguimiento}) {
-  const handleChangeDetalleSeguimiento = () =>{
-    setMostrarSeguimiento(false);
-    setMostrarDetalleSeguimiento(true);
-  }  
-    return (
+export default function CardSeguimiento({HandleChangeSeguimientoSeleccionado, seguimiento}) {
+  
+  return (
     <Box
       sx={{
         display: "flex",
@@ -26,7 +23,7 @@ export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetall
       <img
         src={seguimiento.fotoProducto}
         alt=""
-        style={{ height: "80px" }}
+        style={{ height: "80px", width:"10%" }}
       />
 
       <Divider
@@ -154,7 +151,7 @@ export default function CardSeguimiento({setMostrarSeguimiento, setMostrarDetall
           marginLeft: "40px",
           "&:hover": { backgroundColor: "#286C23" },
         }}
-        onClick={handleChangeDetalleSeguimiento}
+        onClick={() => {HandleChangeSeguimientoSeleccionado(seguimiento);}}
       >
         <ChatIcon sx={{ fontSize: "60px", color: "black" }} />
       </Button>

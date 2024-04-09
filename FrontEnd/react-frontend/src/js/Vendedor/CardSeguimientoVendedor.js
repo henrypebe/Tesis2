@@ -2,12 +2,9 @@ import { Box, Button, Divider, Typography } from '@mui/material';
 import React from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChatIcon from '@mui/icons-material/Chat';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
-export default function CardSeguimientoVendedor({setMostrarSeguimientoVendedor, setMostrarnDetalleSeguimiento}) {
-    const handleChangeDetalleSeguimiento = () =>{
-        setMostrarSeguimientoVendedor(false);
-        setMostrarnDetalleSeguimiento(true);
-    }
+export default function CardSeguimientoVendedor({HandleChangeSeguimientoSeleccionado, seguimiento}) {
   return (
     <Box
         sx={{
@@ -23,9 +20,9 @@ export default function CardSeguimientoVendedor({setMostrarSeguimientoVendedor, 
         }}
     >
         <img
-            src="https://img.freepik.com/vector-gratis/etiqueta-engomada-caja-vacia-abierta-sobre-fondo-blanco_1308-68243.jpg?size=626&ext=jpg&ga=GA1.1.1319243779.1711411200&semt=ais"
+            src={seguimiento.fotoProducto}
             alt=""
-            style={{ height: "80px" }}
+            style={{ height: "80px", width:"10%" }}
         />
 
         <Divider
@@ -49,7 +46,7 @@ export default function CardSeguimientoVendedor({setMostrarSeguimientoVendedor, 
                 width: "100%",
             }}
             >
-            Pedido 1
+            {seguimiento.nombreProducto}
             </Typography>
             <Typography
             sx={{
@@ -59,7 +56,7 @@ export default function CardSeguimientoVendedor({setMostrarSeguimientoVendedor, 
                 width: "100%",
             }}
             >
-            Cliente 1
+            {seguimiento.nombreCliente} {seguimiento.apellidoCliente}
             </Typography>
             <Typography
             sx={{
@@ -69,7 +66,7 @@ export default function CardSeguimientoVendedor({setMostrarSeguimientoVendedor, 
                 width: "100%",
             }}
             >
-            Fecha 1
+            {new Date(seguimiento.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
             </Typography>
         </Box>
 
@@ -113,11 +110,18 @@ export default function CardSeguimientoVendedor({setMostrarSeguimientoVendedor, 
                 width: "100%",
             }}
             >
-            <CheckCircleIcon sx={{ color: "#286C23", fontSize: "26px" }} />
+            {seguimiento.estadoPedido === 1?
+            (
+                <ReportProblemIcon sx={{ color: "#86882D", fontSize: "26px" }}/>
+            )
+            :
+            (
+                <CheckCircleIcon sx={{ color: "#286C23", fontSize: "26px" }} />
+            )}
             <Typography
-                sx={{ color: "#286C23", fontWeight: "bold", fontSize: "26px" }}
+            sx={{ color: seguimiento.estadoPedido?"#86882D" : "#286C23", fontWeight: "bold", fontSize: "26px", marginLeft:"10px" }}
             >
-                Solucionado
+                {seguimiento.estadoPedido === 1? "Pendiente": seguimiento.estadoPedido === 2? "Completado" : ""}
             </Typography>
         </Box>
 
@@ -147,7 +151,7 @@ export default function CardSeguimientoVendedor({setMostrarSeguimientoVendedor, 
             marginLeft: "40px",
             "&:hover": { backgroundColor: "#286C23" },
             }}
-            onClick={handleChangeDetalleSeguimiento}
+            onClick={()=>{HandleChangeSeguimientoSeleccionado(seguimiento);}}
         >
             <ChatIcon sx={{ fontSize: "60px", color: "black" }} />
         </Button>

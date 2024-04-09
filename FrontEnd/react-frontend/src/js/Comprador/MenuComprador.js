@@ -39,6 +39,7 @@ export default function MenuComprador() {
 
   const [ProductoSeleccionado, setProductoSeleccionado] = useState();
   const [PedidoSeleccionado, setPedidoSeleccionado] = useState();
+  const [SeguimientoSeleccionado, setSeguimientoSeleccionado] = useState();
   const [conteoCarritoCompra, setConteoCarritoCompra] = useState(0);
   const [productos, setProductos] = useState([]);
 
@@ -52,6 +53,12 @@ export default function MenuComprador() {
     setPedidoSeleccionado(pedido);
     setMostrarDetallePedido(true);
     setMostrarPedidos(false);
+  }
+
+  const HandleChangeSeguimientoSeleccionado = (seguimiento) =>{
+    setSeguimientoSeleccionado(seguimiento);
+    setMostrarDetalleSeguimiento(true);
+    setMostrarSeguimiento(false);
   }
 
   return (
@@ -100,10 +107,10 @@ export default function MenuComprador() {
         productos={productos} setProductos={setProductos} setConteoCarritoCompra={setConteoCarritoCompra} conteoCarritoCompra={conteoCarritoCompra}
         />}
         
-        {mostrarSeguimiento && <SeguimientoComprador setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
-          idUsuario={idUsuario}/>}
+        {mostrarSeguimiento && <SeguimientoComprador HandleChangeSeguimientoSeleccionado={HandleChangeSeguimientoSeleccionado} idUsuario={idUsuario}/>}
 
-        {mostrarDetalleSeguimiento && <DetalleSeguimiento setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}/>}
+        {mostrarDetalleSeguimiento && <DetalleSeguimiento setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
+        SeguimientoSeleccionado={SeguimientoSeleccionado} idUsuario={idUsuario}/>}
 
         {mostrarReclamo && <ReclamoComprador idUsuario={idUsuario}/>}
 

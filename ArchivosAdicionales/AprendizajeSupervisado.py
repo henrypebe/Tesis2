@@ -49,7 +49,7 @@ ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude.txt")
 datos_procesados = procesar_archivo(ruta_archivo)
 # imprimir_datos(datos_procesados)
 
-df = pd.DataFrame(datos_procesados, columns=['Nombre', 'Fecha_Hora', 'Direccion', 'Precio', 'Cuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Fraude'])
+df = pd.DataFrame(datos_procesados, columns=['Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Fraude'])
 
 label_encoders = {}
 
@@ -59,15 +59,15 @@ for column in ['Direccion', 'Tipo_Producto', 'Fraude']:
     
 df['Fecha_Hora'] = pd.to_datetime(df['Fecha_Hora'], errors='coerce', format='%Y-%m-%d %H:%M:%S')
 df = df.dropna(subset=['Fecha_Hora'])
-df['Año'] = df['Fecha_Hora'].dt.year
+df['Anho'] = df['Fecha_Hora'].dt.year
 df['Mes'] = df['Fecha_Hora'].dt.month
 df['Dia'] = df['Fecha_Hora'].dt.day
 df['Hora'] = df['Fecha_Hora'].dt.hour
 df['Minuto'] = df['Fecha_Hora'].dt.minute
 df['Segundo'] = df['Fecha_Hora'].dt.second
 
-# Se verifica los puntos importantes
-features = ['Direccion', 'Precio', 'Cuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Año', 'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
+# # Se verifica los puntos importantes
+features = ['Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Anho', 'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
 X = df[features]
 y = df['Fraude']
 

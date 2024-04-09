@@ -59,6 +59,7 @@ CREATE TABLE Mensajes (
     IdMensaje INT AUTO_INCREMENT PRIMARY KEY,
     ChatId INT NOT NULL,
     Contenido TEXT,
+    EsTienda boolean,
     EmisorId INT NOT NULL,
     FOREIGN KEY (ChatId) REFERENCES Chat(IdChat),
     FOREIGN KEY (EmisorId) REFERENCES Usuario(IdUsuario),
@@ -149,6 +150,7 @@ SELECT * FROM Tienda;
 SELECT * FROM Pedidos;
 SELECT * FROM Chat;
 SELECT * FROM PedidoXProducto;
+SELECT * FROM Mensajes;
 
 SELECT * FROM Producto;
 
@@ -162,6 +164,8 @@ ALTER TABLE Producto ADD CostoEnvio DOUBLE;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
+ALTER TABLE Mensajes ADD EsTienda boolean;
+ALTER TABLE Chat DROP COLUMN EsTienda;
 
 SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreUsuario
 FROM Pedidos p
@@ -171,14 +175,19 @@ INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
 INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
 INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
 WHERE p.UsuarioID = 3 AND pp.TieneSeguimiento=true;
-
-SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
-	                   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho,
-	                   pp.ProductoID, pp.Cantidad, pr.Precio, pr.Nombre as NombreProducto, u.IdUsuario as IdDuenho, pp.TieneSeguimiento,
-                       pp.IdPedidoXProducto
-                       FROM Pedidos p 
-                       INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
-                       INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-                       INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-                       INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-                       WHERE p.UsuarioID = 3 AND p.Estado = 1
+                       
+SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreCliente,u.Apellido AS ApellidoCliente, c.IdChat, pr.Nombre AS NombreProducto,
+                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo
+                        FROM Pedidos p
+                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                        INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
+                        INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
+                        WHERE c.TiendaID = 1 AND pp.TieneSeguimiento=true;
+                        
+SELECT m.IdMensaje, m.Contenido, m.EmisorId, m.FechaEnvio, u.Nombre AS NombreEmisor,
+	u.Apellido AS ApellidoEmisor, u.EsComprador, u.EsVendedor
+	FROM Mensajes m
+	INNER JOIN Usuario u ON u.IdUsuario = m.EmisorId
+	WHERE ChatId = 1;
