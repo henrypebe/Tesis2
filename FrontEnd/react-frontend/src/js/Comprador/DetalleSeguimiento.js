@@ -1,5 +1,6 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography, Modal, IconButton } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 export default function DetalleSeguimiento({
   setMostrarSeguimiento,
@@ -10,6 +11,8 @@ export default function DetalleSeguimiento({
   
   const [ListaMensaje, setListaMensaje] = useState();
   const [mensajeEnviado, setMensajeEnviado] = useState('');
+
+  const [ModalConfirmar, setModalConfirmar] = useState(false);
   
   const handleBackPedido = () => {
     setMostrarSeguimiento(true);
@@ -19,6 +22,20 @@ export default function DetalleSeguimiento({
   const handleChangeMensajeEnviado = (e) =>{
     setMensajeEnviado(e.target.value);
   }
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 1000,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    padding: "10px",
+    borderRadius: "8px",
+    height: "31%",
+  };
 
   const obtenerListaMensaje = async () => {
     try {
@@ -89,7 +106,7 @@ export default function DetalleSeguimiento({
           if (response.ok) {
             const ListSeguimiento = await response.json();
             setListaMensaje(ListSeguimiento);
-            console.log(ListSeguimiento);
+            // console.log(ListSeguimiento);
           } else if (response.status === 404) {
             throw new Error("Seguimiento no encontrado");
           } else {
@@ -157,6 +174,35 @@ export default function DetalleSeguimiento({
     }
   };
 
+  const handleOpen = () => {
+    setModalConfirmar(true);
+  };
+  
+  const handleClose = () => {
+    setModalConfirmar(false);
+  };
+
+  const handleFinalizarChat = async() =>{
+    const response = await fetch(
+      `https://localhost:7240/FinalizarChatCliente?idChat=${SeguimientoSeleccionado.idChat}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      setMostrarSeguimiento(true);
+      setMostrarDetalleSeguimiento(false);
+    } else if (response.status === 404) {
+      throw new Error("Chat no encontrado");
+    } else {
+      throw new Error("Error al finalizar el chat");
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -212,7 +258,7 @@ export default function DetalleSeguimiento({
         }}
       />
 
-      <Box sx={{border: "2px solid black", height: "74%", overflowY:"scroll", display:"flex", flexDirection:"column"}} 
+      <Box sx={{border: "2px solid black", height: SeguimientoSeleccionado.finalizarCliente?"91%":"74%", overflowY:"scroll", display:"flex", flexDirection:"column"}} 
         ref={scrollContainerRef} onScroll={handleScroll}>
         {ListaMensaje && ListaMensaje.map((mensaje) => (
           <Box
@@ -229,43 +275,133 @@ export default function DetalleSeguimiento({
         ))}
       </Box>
 
-      <Box sx={{ display: "flex", flexDirection: "row", marginTop:"10px", height:"6%", marginBottom:"10px"}}>
-        <TextField
-          id="outlined-basic"
-          variant="outlined"
-          sx={{
-            height: 40,
-            width:"90%",
-            '& .MuiInputBase-root': {
-              height: '100%',
-            },
-          }}
-          value={mensajeEnviado}
-          onChange={handleChangeMensajeEnviado}
-        />
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#1C2536",
-            width: "15%", marginLeft:"10px",
-            "&:hover": { backgroundColor: "#1C2536" },
-          }}
-          onClick={HandleCreateMensaje}
-        >
-          Enviar mensaje
-        </Button>
-      </Box>
+      {SeguimientoSeleccionado && !SeguimientoSeleccionado.finalizarCliente?
+      (
+        <>
+          <Box sx={{ display: "flex", flexDirection: "row", marginTop:"10px", height:"6%", marginBottom:"10px"}}>
+            <TextField
+              id="outlined-basic"
+              variant="outlined"
+              sx={{
+                height: 40,
+                width:"90%",
+                '& .MuiInputBase-root': {
+                  height: '100%',
+                },
+              }}
+              value={mensajeEnviado}
+              onChange={handleChangeMensajeEnviado}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#1C2536",
+                width: "15%", marginLeft:"10px",
+                "&:hover": { backgroundColor: "#1C2536" },
+              }}
+              onClick={HandleCreateMensaje}
+            >
+              Enviar mensaje
+            </Button>
+          </Box>
 
-      <Button
-        variant="contained"
-        sx={{
-          backgroundColor: "#1C2536",
-          width: "100%",
-          "&:hover": { backgroundColor: "#1C2536" },
-        }}
-      >
-        Finalizar seguimiento
-      </Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#1C2536",
+              width: "100%",
+              "&:hover": { backgroundColor: "#1C2536" },
+            }}
+            onClick={handleOpen}
+          >
+            Finalizar seguimiento
+          </Button>
+        </>
+      ):
+      (
+        <></>
+      )}
+
+      <Modal
+          open={ModalConfirmar}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={{ ...style }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: "30px",
+                  width: "100%",
+                }}
+              >
+                Confirmación de eliminación
+              </Typography>
+
+              <IconButton
+                sx={{
+                  backgroundColor: "white",
+                  color: "black",
+                  width: "80px",
+                  fontSize: "17px",
+                  fontWeight: "bold",
+                  "&:hover": { backgroundColor: "white" },
+                }}
+                onClick={handleClose}
+              >
+                <CancelIcon sx={{ fontSize: "50px" }} />
+              </IconButton>
+            </Box>
+
+            <hr
+              style={{
+                margin: "10px 0",
+                border: "0",
+                borderTop: "2px solid #ccc",
+                marginTop: "10px",
+                marginBottom: "30px",
+              }}
+            />
+
+            <Box sx={{display:"flex", justifyContent:"center"}}>
+              <Typography
+                  sx={{
+                    color: "black",
+                    fontSize: "26px",
+                    width: "80%",
+                    textAlign:"center"
+                  }}
+              >
+                  ¿Seguro que desea finalizar el chat sobre el producto? (se cerrará definitivamente)
+              </Typography>
+            </Box>
+
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#1C2536",
+                marginTop: "25px",
+                fontSize: "25px",
+                height: "20%",
+                width: "100%",
+                "&:hover": { backgroundColor: "#1C2536" },
+              }}
+              onClick={handleFinalizarChat}
+            >
+              Confirmar
+            </Button>
+          </Box>
+        </Modal>
     </Box>
   );
 }

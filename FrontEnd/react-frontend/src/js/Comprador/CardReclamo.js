@@ -4,7 +4,7 @@ import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function CardReclamo({seguimiento}) {
+export default function CardReclamo({seguimiento, obtenerListaSeguimiento}) {
 
   const handleReclamo = async() =>{
     const response = await fetch(
@@ -19,6 +19,7 @@ export default function CardReclamo({seguimiento}) {
 
     if (response.ok) {
       toast.success('El producto fue reclamado', { autoClose: 2000 });
+      obtenerListaSeguimiento();
     }
   }
 
@@ -101,7 +102,7 @@ export default function CardReclamo({seguimiento}) {
         }}
       />
 
-      {seguimiento.tieneReclamo?
+      {seguimiento && seguimiento.tieneReclamo?
       (
         <Box sx={{border:"2px solid #850E0E", width:"26%", borderRadius:"6px", backgroundColor:"#850E0E", padding:"5px", height:"70px",
           display:"flex", alignItems:"center", justifyContent:"center"}}>

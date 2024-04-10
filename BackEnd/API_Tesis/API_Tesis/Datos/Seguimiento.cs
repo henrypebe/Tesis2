@@ -14,5 +14,6 @@
         public int EstadoPedido { get; set; }
         public DateTime FechaCreacion { get; set; }
         public bool TieneReclamo { get; set; }
+        public bool FinalizarCliente { get; set; }
     }
 }

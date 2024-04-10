@@ -147,7 +147,7 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
                 <Typography sx={{fontWeight:"bold", fontSize:"28px", width:"100%", marginLeft:"10px", justifyContent:"center", marginTop:"5px",
                     height:ProductoSeleccionado.cantidadOferta>0?"20%":"30%", display:"flex", alignItems:"center"}}>
                     S/.{ProductoSeleccionado.cantidadOferta > 0? 
-                    ProductoSeleccionado.precio - (ProductoSeleccionado.precio * ProductoSeleccionado.cantidadOferta/100).toFixed(2):
+                    (ProductoSeleccionado.precio - (ProductoSeleccionado.precio * ProductoSeleccionado.cantidadOferta/100)).toFixed(2):
                     ProductoSeleccionado.precio.toFixed(2)}
                 </Typography>
                 <Typography sx={{fontWeight:"bold", fontSize:"20px", width:"100%", marginLeft:"10px", textAlign:"center", marginTop:"5px", color:"#026700"}}>

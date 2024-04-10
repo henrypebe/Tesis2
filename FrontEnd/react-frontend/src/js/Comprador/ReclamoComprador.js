@@ -5,6 +5,33 @@ import CardReclamo from './CardReclamo'
 export default function ReclamoComprador({idUsuario}) {
   const [ListaSeguimiento, setListaSeguimiento] = React.useState();
 
+  const obtenerListaSeguimiento = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7240/VisualizarSeguimientoPorUsuario?idUsuario=${idUsuario}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const ListSeguimiento = await response.json();
+        console.log(ListSeguimiento);
+        setListaSeguimiento(ListSeguimiento);
+      } else if (response.status === 404) {
+        throw new Error("Seguimiento no encontrado");
+      } else {
+        throw new Error("Error al obtener la lista de seguimientos");
+      }
+    } catch (error) {
+      console.error("Error al obtener la lista de seguimientos", error);
+      throw new Error("Error al obtener la lista de seguimientos");
+    }
+  };
+  
   useEffect(() => {
     const obtenerListaSeguimiento = async () => {
         try {
@@ -44,14 +71,14 @@ export default function ReclamoComprador({idUsuario}) {
         {ListaSeguimiento && ListaSeguimiento.length > 0 ? 
         (
           ListaSeguimiento.map(seguimiento => (
-            <CardReclamo seguimiento={seguimiento}
+            <CardReclamo seguimiento={seguimiento} obtenerListaSeguimiento={obtenerListaSeguimiento}
             />
           ))
         ):
         (
           <Box>
             <Typography sx={{fontSize:"20px", fontWeight:"bold"}}>
-              No se tiene productos con seguimientos
+              No se tiene productos con reclamos
             </Typography>
           </Box>
         )

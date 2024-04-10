@@ -48,6 +48,7 @@ CREATE TABLE Chat (
     IdChat INT AUTO_INCREMENT PRIMARY KEY,
     Estado TEXT,
     FechaCreacion datetime,
+    FinalizarCliente bool,
     CompradorID INT NOT NULL,
     TiendaID INT NOT NULL,
     PedidoXProductoID INT NOT NULL,
@@ -165,7 +166,9 @@ ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
 ALTER TABLE Mensajes ADD EsTienda boolean;
-ALTER TABLE Chat DROP COLUMN EsTienda;
+ALTER TABLE Chat DROP COLUMN FinalizarTienda;
+ALTER TABLE Chat ADD FinalizarCliente boolean;
+ALTER TABLE Chat ADD FinalizarTienda boolean;
 
 SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreUsuario
 FROM Pedidos p
@@ -186,8 +189,26 @@ SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreCliente,u.Apellido AS Apellid
                         INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
                         WHERE c.TiendaID = 1 AND pp.TieneSeguimiento=true;
                         
-SELECT m.IdMensaje, m.Contenido, m.EmisorId, m.FechaEnvio, u.Nombre AS NombreEmisor,
-	u.Apellido AS ApellidoEmisor, u.EsComprador, u.EsVendedor
-	FROM Mensajes m
-	INNER JOIN Usuario u ON u.IdUsuario = m.EmisorId
-	WHERE ChatId = 1;
+SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
+	p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, 
+    u.Apellido AS ApellidoDuenho, pp.ProductoID, pp.Cantidad, pr.Precio, 
+    pr.Nombre as NombreProducto, u.IdUsuario as IdDuenho, pp.TieneSeguimiento,
+	pp.IdPedidoXProducto, pp.TieneReclamo, c.FinalizarCliente
+	FROM Pedidos p 
+	INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+	INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
+	INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+	INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+	INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+	WHERE p.UsuarioID = 3;
+    
+SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
+	p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, pp.ProductoID, pp.Cantidad, pr.Precio, 
+    pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto, pp.TieneReclamo,
+    u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho
+FROM Pedidos p
+INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+WHERE p.UsuarioID = 3;

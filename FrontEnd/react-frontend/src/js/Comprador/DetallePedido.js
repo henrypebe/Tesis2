@@ -139,7 +139,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"40%"}}>
                 Productos comprados:
             </Typography>
-            <Paper sx={{ width: '100%', overflow: 'hidden', border:"2px solid black", borderRadius:"6px", marginTop:"10px", height:"450px"}}>
+            <Paper sx={{ width: '100%', overflow: 'hidden', border:"2px solid black", borderRadius:"6px", marginTop:"10px", height:"410px"}}>
                 <TableContainer sx={{ height:"87%" }}>
                     <Table stickyHeader aria-label="sticky table">
                     <TableHead>
@@ -186,7 +186,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                 <TablePagination
                     rowsPerPageOptions={[10, 25, 100]}
                     component="div"
-                    count={PedidoSeleccionado.length}
+                    count={PedidoSeleccionado.productosLista.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

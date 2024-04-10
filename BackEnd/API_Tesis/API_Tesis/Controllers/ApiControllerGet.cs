@@ -408,15 +408,15 @@ namespace API_Tesis.Controllers
 
                     string query = @"
                         SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
-	                   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho,
-	                   pp.ProductoID, pp.Cantidad, pr.Precio, pr.Nombre as NombreProducto, u.IdUsuario as IdDuenho, pp.TieneSeguimiento,
-                       pp.IdPedidoXProducto
-                       FROM Pedidos p 
-                       INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
-                       INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-                       INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-                       INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-                       WHERE p.UsuarioID = @IdUsuario AND p.Estado = 1";
+	                    p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, pp.ProductoID, pp.Cantidad, pr.Precio, 
+                        pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto, pp.TieneReclamo,
+                        u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho
+                        FROM Pedidos p
+                        INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        WHERE p.UsuarioID = @IdUsuario";
 
                     if (FechaFiltro != DateTime.MinValue)
                     {
@@ -464,7 +464,9 @@ namespace API_Tesis.Controllers
                                     NombreProducto = reader.GetString("NombreProducto"),
                                     Cantidad = reader.GetInt32("Cantidad"),
                                     Precio = reader.GetDouble("Precio"),
-                                    TieneSeguimiento = _tieneSeguimiento
+                                    TieneSeguimiento = _tieneSeguimiento,
+                                    TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                    //FinalizarCliente = reader.GetBoolean("FinalizarCliente")
                                 });
                             }
                             return Ok(pedidos);
@@ -571,7 +573,7 @@ namespace API_Tesis.Controllers
 
                     string query = @"
                         SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreCliente,u.Apellido AS ApellidoCliente, c.IdChat, pr.Nombre AS NombreProducto,
-                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, p.FechaCreacion
+                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, p.FechaCreacion, c.FinalizarCliente
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                         INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
@@ -603,6 +605,7 @@ namespace API_Tesis.Controllers
                                         EstadoPedido = reader.GetInt32("EstadoPedido"),
                                         FechaCreacion = reader.GetDateTime("FechaCreacion"),
                                         TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                        FinalizarCliente = reader.GetBoolean("FinalizarCliente"),
                                     };
 
                                     seguimientos.Add(seguimientoExistente);
@@ -632,14 +635,14 @@ namespace API_Tesis.Controllers
 
                     string query = @"
                         SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho,u.Apellido AS ApellidoDuenho, c.IdChat, pr.Nombre AS NombreProducto,
-                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo
+                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, c.FinalizarCliente
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                         INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
                         INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-                        WHERE p.UsuarioID = @IdUsuario AND pp.TieneSeguimiento=true";
+                        WHERE p.UsuarioID = @IdUsuario";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -663,6 +666,7 @@ namespace API_Tesis.Controllers
                                         FotoProducto = ConvertirBytesAImagen(reader["FotoProducto"] as byte[]),
                                         EstadoPedido = reader.GetInt32("EstadoPedido"),
                                         TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                        FinalizarCliente = reader.GetBoolean("FinalizarCliente"),
                                     };
 
                                     seguimientos.Add(seguimientoExistente);

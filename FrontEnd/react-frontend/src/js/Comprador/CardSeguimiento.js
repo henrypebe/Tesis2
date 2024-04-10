@@ -120,7 +120,7 @@ export default function CardSeguimiento({HandleChangeSeguimientoSeleccionado, se
             <CheckCircleIcon sx={{ color: "#286C23", fontSize: "26px" }} />
           )}
           <Typography
-            sx={{ color: seguimiento.estadoPedido?"#86882D" : "#286C23", fontWeight: "bold", fontSize: "26px", marginLeft:"10px" }}
+            sx={{ color: seguimiento.estadoPedido === 1?"#86882D" : "#286C23", fontWeight: "bold", fontSize: "26px", marginLeft:"10px" }}
           >
             {seguimiento.estadoPedido === 1? "Pendiente": seguimiento.estadoPedido === 2? "Completado" : ""}
           </Typography>
@@ -142,18 +142,26 @@ export default function CardSeguimiento({HandleChangeSeguimientoSeleccionado, se
       <Button
         sx={{
           width: "15%",
-          backgroundColor: "#286C23",
+          backgroundColor: seguimiento.finalizarCliente? "#286C23" : "#86882D",
           height: "80%",
           borderRadius: "8px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           marginLeft: "40px",
-          "&:hover": { backgroundColor: "#286C23" },
+          "&:hover": { backgroundColor: seguimiento.finalizarCliente?"#286C23" : "#86882D"},
         }}
         onClick={() => {HandleChangeSeguimientoSeleccionado(seguimiento);}}
       >
         <ChatIcon sx={{ fontSize: "60px", color: "black" }} />
+        {seguimiento.finalizarCliente?
+        (
+          <Typography sx={{color:"black", fontWeight:"bold"}}>Finalizado</Typography>
+        )
+        :
+        (
+          <></>
+        )}
       </Button>
     </Box>
   );

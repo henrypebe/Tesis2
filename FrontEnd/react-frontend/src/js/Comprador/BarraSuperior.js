@@ -715,6 +715,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                       }}
                       defaultValue={correoCambiado}
                       onChange={(e) => setCorreoCambiado(e.target.value)}
+                      disabled={true}
                     />
                   </Box>
                 </Box>
@@ -774,7 +775,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                         width: "90%",
                       }}
                     >
-                      Dirección de entrega:
+                      Dirección:
                     </Typography>
                     <TextField
                       sx={{

@@ -12,5 +12,7 @@
         public int Cantidad { get; set; }
         public double Precio { get; set; }
         public Boolean TieneSeguimiento { get; set; }
+        public Boolean TieneReclamo { get; set; }
+        public Boolean FinalizarCliente { get; set; }
     }
 }

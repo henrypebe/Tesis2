@@ -4,9 +4,15 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 
-const columns = [
+const columnsPendiente = [
   { id: 'fechaEntregado', label: 'Fecha entregado', minWidth: 80, maxWidth: 100},
-  { id: 'producto', label: 'Nombre de tienda predominante', minWidth: 200, maxWidth: 200 },
+  { id: 'producto', label: 'Nombre de tienda', minWidth: 200, maxWidth: 200 },
+  { id: 'costoTotal', label: 'Costo total', minWidth: 200, maxWidth: 200 },
+  // { id: 'boton', label: '', minWidth: 100, maxWidth: 100},
+];
+const columnsComplete = [
+  { id: 'fechaEntregado', label: 'Fecha entregado', minWidth: 80, maxWidth: 100},
+  { id: 'producto', label: 'Nombre de tienda', minWidth: 200, maxWidth: 200 },
   { id: 'costoTotal', label: 'Costo total', minWidth: 200, maxWidth: 200 },
   { id: 'boton', label: '', minWidth: 100, maxWidth: 100},
 ];
@@ -35,6 +41,21 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
   };
 
   useEffect(() => {
+    const handleActualizarFecha = async () => {
+      try {
+        await fetch(
+          `https://localhost:7240/ActualizarFechasPedidos`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Error al obtener Actualizar Fechas de pedidos", error);
+      }
+    };
     const handlePedidoCompleteList = async () => {
         try {
           
@@ -55,14 +76,15 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
           if (response.ok) {
             const pedido = await response.json();
             // console.log(pedido);
-            const fechaActual = new Date();
+            // const fechaActual = new Date();
             const pedidosFuturos = pedido.filter(_pedido => {
-              const fechaEntrega = new Date(_pedido.fechaEntrega);
-              return fechaEntrega > fechaActual;
+              const EstadoPedido = _pedido.estado
+              return EstadoPedido===1;
             });
+            // console.log(pedidosFuturos);
             const pedidosPasados = pedido.filter(_pedido => {
-              const fechaEntrega = new Date(_pedido.fechaEntrega);
-              return fechaEntrega <= fechaActual;
+              const EstadoPedido = _pedido.estado
+              return EstadoPedido===2;
             });
             setPedidosCompleteList(pedidosPasados);
             setPedidosPendienteList(pedidosFuturos);
@@ -76,6 +98,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
           throw new Error("Error al obtener la lista de pedidos");
         }
       };
+      handleActualizarFecha();
       handlePedidoCompleteList();
   }, [idUsuario, BusquedaFecha, fechaHabilitada]);
 
@@ -137,7 +160,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    {columns.map((column) => (
+                    {columnsComplete.map((column) => (
                       <TableCell
                         key={column.id}
                         align={column.align}
@@ -167,7 +190,9 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                         <Button 
                           variant="contained" 
                           sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
-                          onClick={() => HandleChangePedidoSeleccionado(pedido)}>Ver Detalles
+                          onClick={() => HandleChangePedidoSeleccionado(pedido)}
+                          disabled={pedido.tieneReclamo || pedido.finalizarReclamo}
+                          >Ver Detalles
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -205,7 +230,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
-                    {columns.map((column) => (
+                    {columnsPendiente.map((column) => (
                       <TableCell
                         key={column.id}
                         align={column.align}
@@ -229,15 +254,15 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
                       <TableCell>{fechaFormateada}</TableCell>
-                      <TableCell sx={{width:"30%"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
-                      <TableCell>S/. {pedido.total.toFixed(2)}</TableCell>
-                      <TableCell>
+                      <TableCell sx={{width:"50%"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
+                      <TableCell sx={{width:"30%"}}>S/. {pedido.total.toFixed(2)}</TableCell>
+                      {/* <TableCell>
                         <Button 
                           variant="contained" 
                           sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
                           onClick={() => HandleChangePedidoSeleccionado(pedido)}>Ver Detalles
                         </Button>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   );
                 })}

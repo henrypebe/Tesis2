@@ -115,8 +115,6 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
     
       const handleScroll = () => {
         const scrollContainer = scrollContainerRef.current;
-    
-        // Verifica si el usuario ha desplazado hacia arriba
         if (scrollContainer) {
           setUserScrolledUp(scrollContainer.scrollTop < scrollContainer.scrollHeight - scrollContainer.clientHeight);
         }
@@ -176,7 +174,7 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
                 marginBottom: "15px",
                 }}
             />
-            <Box sx={{border: "2px solid black", height: "74%", overflowY: "scroll", display:"flex", flexDirection:"column"}} 
+            <Box sx={{border: "2px solid black", height: SeguimientoSeleccionado.finalizarCliente?"91%":"74%", overflowY: "scroll", display:"flex", flexDirection:"column"}} 
                 ref={scrollContainerRef} onScroll={handleScroll}>
                 {ListaMensaje && ListaMensaje.map((mensaje) => (
                     <Box
@@ -193,43 +191,52 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
                 ))}
             </Box>
 
-            <Box sx={{ display: "flex", flexDirection: "row", marginTop:"10px", height:"6%", marginBottom:"10px"}}>
-                <TextField
-                    id="outlined-basic"
-                    variant="outlined"
-                    sx={{
-                        height: 40,
-                        width:"90%",
-                        '& .MuiInputBase-root': {
-                        height: '100%',
-                        },
-                    }}
-                    value={mensajeEnviado}
-                    onChange={handleChangeMensajeEnviado}
-                />
-                <Button
-                variant="contained"
-                sx={{
-                    backgroundColor: "#1C2536",
-                    width: "15%", marginLeft:"10px",
-                    "&:hover": { backgroundColor: "#1C2536" },
-                }}
-                onClick={HandleCreateMensaje}
-                >
-                Enviar mensaje
-                </Button>
-            </Box>
+            {SeguimientoSeleccionado && !SeguimientoSeleccionado.finalizarCliente?
+            (
+              <>
+                <Box sx={{ display: "flex", flexDirection: "row", marginTop:"10px", height:"6%", marginBottom:"10px"}}>
+                  <TextField
+                      id="outlined-basic"
+                      variant="outlined"
+                      sx={{
+                          height: 40,
+                          width:"90%",
+                          '& .MuiInputBase-root': {
+                          height: '100%',
+                          },
+                      }}
+                      value={mensajeEnviado}
+                      onChange={handleChangeMensajeEnviado}
+                  />
+                  <Button
+                  variant="contained"
+                  sx={{
+                      backgroundColor: "#1C2536",
+                      width: "15%", marginLeft:"10px",
+                      "&:hover": { backgroundColor: "#1C2536" },
+                  }}
+                  onClick={HandleCreateMensaje}
+                  >
+                  Enviar mensaje
+                  </Button>
+                </Box>
 
-            <Button
-                variant="contained"
-                sx={{
-                backgroundColor: "#1C2536",
-                width: "100%",
-                "&:hover": { backgroundColor: "#1C2536" },
-                }}
-            >
-                Finalizar seguimiento
-            </Button>
+                <Button
+                    variant="contained"
+                    sx={{
+                    backgroundColor: "#1C2536",
+                    width: "100%",
+                    "&:hover": { backgroundColor: "#1C2536" },
+                    }}
+                >
+                    Finalizar seguimiento
+                </Button>
+              </>
+            )
+            :
+            (
+              <></>
+            )}
         </Box>
     )
 }

@@ -15,12 +15,14 @@ namespace API_Tesis.Controllers
         {
             _configuration = configuration;
             _context = context;
-            var timer = new System.Timers.Timer(TimeSpan.FromHours(24).TotalMilliseconds);
-            timer.AutoReset = true;
-            timer.Elapsed += (sender, e) => ActualizarEstadoPedidos();
-            timer.Start();
+            //var timer = new System.Timers.Timer(TimeSpan.FromHours(24).TotalMilliseconds);
+            //timer.AutoReset = true;
+            //timer.Elapsed += (sender, e) => ActualizarEstadoPedidos();
+            //timer.Start();
         }
-        private void ActualizarEstadoPedidos()
+        [HttpPut]
+        [Route("/ActualizarFechasPedidos")]
+        public async Task<IActionResult> ActualizarFechasPedidos()
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
             using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -29,10 +31,18 @@ namespace API_Tesis.Controllers
 
                 string query = "UPDATE Pedidos SET Estado = 2 WHERE DATE(FechaEntrega) <= DATE(NOW())";
 
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                MySqlCommand command = new MySqlCommand(query, connection);
+                int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                if (rowsAffected > 0)
                 {
-                    int rowsAffected = command.ExecuteNonQuery();
-                    Console.WriteLine($"Se actualizaron {rowsAffected} pedidos.");
+                    connection.Close();
+                    return Ok();
+                }
+                else
+                {
+                    connection.Close();
+                    return NotFound();
                 }
             }
         }
@@ -198,9 +208,11 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@IdPedidoXProducto", idPedidoXProducto);
 
                     await command.ExecuteNonQueryAsync();
+                    connection.Close();
+                    await connection.OpenAsync();
 
-                    string query = @"INSERT INTO Chat (Estado, FechaCreacion, CompradorID, TiendaID, PedidoXProductoID) 
-                        VALUES (@Estado, @FechaCreacion, @CompradorID, @TiendaID, @PedidoXProductoID);
+                    string query = @"INSERT INTO Chat (Estado, FechaCreacion, CompradorID, TiendaID, PedidoXProductoID, FinalizarCliente) 
+                        VALUES (@Estado, @FechaCreacion, @CompradorID, @TiendaID, @PedidoXProductoID, @FinalizarCliente);
                         SELECT LAST_INSERT_ID();";
                     MySqlCommand command2 = new MySqlCommand(query, connection);
                     command2.Parameters.AddWithValue("@Estado", "Pendiente");
@@ -208,6 +220,7 @@ namespace API_Tesis.Controllers
                     command2.Parameters.AddWithValue("@CompradorID", idUsuario);
                     command2.Parameters.AddWithValue("@TiendaID", idTienda);
                     command2.Parameters.AddWithValue("@PedidoXProductoID", idPedidoXProducto);
+                    command2.Parameters.AddWithValue("@FinalizarCliente", 0);
                     await command2.ExecuteNonQueryAsync();
                     connection.Close();
                     return Ok();
@@ -229,12 +242,49 @@ namespace API_Tesis.Controllers
                 {
                     await connection.OpenAsync();
 
-                    string updateQuery = "UPDATE PedidoXProducto SET TieneReclamo = @TieneReclamo AND TieneSeguimiento = @TieneSeguimiento" +
+                    string updateQuery = "UPDATE PedidoXProducto SET TieneReclamo = @TieneReclamo, TieneSeguimiento = @TieneSeguimiento " +
                         "WHERE IdPedidoXProducto = @IdPedidoXProducto";
                     MySqlCommand command = new MySqlCommand(updateQuery, connection);
                     command.Parameters.AddWithValue("@TieneReclamo", 1);
                     command.Parameters.AddWithValue("@TieneSeguimiento", 0);
                     command.Parameters.AddWithValue("@IdPedidoXProducto", idPedidoXProducto);
+
+                    await command.ExecuteNonQueryAsync();
+                    connection.Close();
+                    await connection.OpenAsync();
+
+                    string updateQuery2 = "UPDATE Chat SET FinalizarCliente = @FinalizarCliente " +
+                        "WHERE PedidoXProductoID = @IdPedidoXProducto";
+                    MySqlCommand command2 = new MySqlCommand(updateQuery2, connection);
+                    command2.Parameters.AddWithValue("@IdPedidoXProducto", idPedidoXProducto);
+                    command2.Parameters.AddWithValue("@FinalizarCliente", 1);
+
+                    await command2.ExecuteNonQueryAsync();
+                    
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/FinalizarChatCliente")]
+        public async Task<IActionResult> FinalizarChatCliente(int idChat)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE Chat SET FinalizarCliente = @FinalizarCliente " +
+                        "WHERE IdChat = @IdChat";
+                    MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                    command.Parameters.AddWithValue("@IdChat", idChat);
+                    command.Parameters.AddWithValue("@FinalizarCliente", 1);
 
                     await command.ExecuteNonQueryAsync();
                     connection.Close();
