@@ -116,7 +116,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     }
     
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Box
             sx={{
             display: "flex",

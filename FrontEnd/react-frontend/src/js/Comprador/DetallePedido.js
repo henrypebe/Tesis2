@@ -1,10 +1,37 @@
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 export default function DetallePedido({setMostrarDetallePedido, setMostrarPedidos, setMostrarSeguimiento, PedidoSeleccionado, idUsuario}) {
     // console.log(PedidoSeleccionado);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [FinalizarCliente, setFinalizarCliente] = React.useState();
+
+    useEffect(() => {
+        const handlePedidoCompleteList = async () => {
+            try {
+              const response = await fetch(
+                `https://localhost:7240/ObtenerInformacionChat?IdPedido=${PedidoSeleccionado.idPedido}`,
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+        
+              if (response.ok) {
+                const valor = await response.json();
+                setFinalizarCliente(valor);
+                // console.log(valor);
+              }
+            } catch (error) {
+              console.error("Error al obtener la lista de pedidos", error);
+              throw new Error("Error al obtener la lista de pedidos");
+            }
+        };
+        handlePedidoCompleteList();
+    }, [PedidoSeleccionado.idPedido]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -79,7 +106,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
     }
 
     return (
-    <Box sx={{width:"87.6%", marginTop:"-1.9px", height:"86vh", padding:"20px"}}>
+    <Box sx={{width:"87.1%", marginTop:"-1.9px", height:"88vh", padding:"20px"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Pedidos - {concatenarNombresTiendas(PedidoSeleccionado)}</Typography>
             <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
@@ -170,11 +197,18 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {producto.precio.toFixed(2)}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {(producto.precio * producto.cantidad).toFixed(2)}</TableCell>
                             <TableCell sx={{textAlign:"center", width:"20%"}}>
-                                <Button variant="contained" sx={{width:"100%", backgroundColor:"#1C2536", '&:hover':{backgroundColor:"#1C2536"}}}
+                                {FinalizarCliente && !FinalizarCliente.finalizarCliente?
+                                (
+                                    <>Se finalizó el seguimiento</>
+                                )
+                                :
+                                (
+                                    <Button variant="contained" sx={{width:"100%", backgroundColor:"#1C2536", '&:hover':{backgroundColor:"#1C2536"}}}
                                     onClick={() => {handleSeguimiento(producto)}}
-                                >
-                                    {producto.tieneSeguimiento? "Seguir Seguimiento": "Iniciar Seguimiento"}
-                                </Button>
+                                    >
+                                        {producto.tieneSeguimiento? "Seguir Seguimiento": "Iniciar Seguimiento"}
+                                    </Button>
+                                )}
                             </TableCell>
                         </TableRow>
                     );

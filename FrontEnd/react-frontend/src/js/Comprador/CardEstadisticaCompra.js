@@ -1,7 +1,15 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 
-export default function CardEstadisticaCompra() {
+export default function CardEstadisticaCompra({Estadistica, opcion}) {
+  const today = new Date();
+  const lastMonth = new Date(today);
+  lastMonth.setMonth(lastMonth.getMonth() - opcion);
+  const monthNames = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+  const lastMonthName = monthNames[lastMonth.getMonth()];
   return (
     <Box
       sx={{
@@ -21,7 +29,7 @@ export default function CardEstadisticaCompra() {
           width: "70%",
         }}
       >
-        Abril
+        {lastMonthName}
       </Typography>
       <Typography
         sx={{
@@ -34,7 +42,11 @@ export default function CardEstadisticaCompra() {
           justifyContent: "center",
         }}
       >
-        S/.45.00
+        S/.{Estadistica? 
+          opcion===1? Estadistica.sumaPreciosPedidosCompletadosMes1.toFixed(2): 
+          opcion===2? Estadistica.sumaPreciosPedidosCompletadosMes2.toFixed(2):
+          opcion===3? Estadistica.sumaPreciosPedidosCompletadosMes3.toFixed(2): 0
+          :0}
       </Typography>
     </Box>
   );

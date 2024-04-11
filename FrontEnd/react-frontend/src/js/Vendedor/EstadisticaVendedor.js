@@ -1,10 +1,42 @@
 import { Box, Typography } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import CardEstadisticaCompra from '../Comprador/CardEstadisticaCompra'
 
-export default function EstadisticaVendedor() {
-  return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
+export default function EstadisticaVendedor({informacionTienda}) {
+  const [Estadistica, setEstadistica] = useState();
+  
+  useEffect(() => {
+    const obtenerListaSeguimiento = async () => {
+        try {
+          const response = await fetch(
+            `https://localhost:7240/EstadisticaVendedor?idTienda=${informacionTienda.idTienda}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+    
+          if (response.ok) {
+            const Estadisticas = await response.json();
+            setEstadistica(Estadisticas);
+            console.log(Estadisticas);
+          } else if (response.status === 404) {
+            throw new Error("Seguimiento no encontrado");
+          } else {
+            throw new Error("Error al obtener la lista de seguimientos");
+          }
+        } catch (error) {
+          console.error("Error al obtener la lista de seguimientos", error);
+          throw new Error("Error al obtener la lista de seguimientos");
+        }
+      };
+      obtenerListaSeguimiento();
+  }, [informacionTienda.idTienda]);
+
+    return (
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Estadisticas</Typography>
         
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
@@ -21,22 +53,28 @@ export default function EstadisticaVendedor() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica? Estadistica.cantidadCliente.toFixed(0).padStart(2, '0'):0}
+                    </Typography>
                 </Box>
             </Box>
 
             <Box sx={{display:"flex", flexDirection:"row", marginRight:"10px", border:"2px solid black", alignItems:"center", width:"50%",
                 borderRadius:"6px"}}>
                 <Box sx={{backgroundColor:"#1FD367", padding:"8px", marginRight:"10px"}}>
-                    <img src='https://cdn-icons-png.flaticon.com/256/309/309276.png' alt='' style={{color:"white", height:"80px"}}/>
+                    <img src='https://cdn-icons-png.flaticon.com/512/1997/1997427.png' alt='' style={{color:"white", height:"80px"}}/>
                 </Box>
 
                 <Box sx={{marginRight:"10px", width:"60%"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Seguimientos completados:</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        Productos reclamados:
+                    </Typography>
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>25</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica?Estadistica.cantidadPedidoXProductoConReclamo.toFixed(0).padStart(2, '0'):0}
+                    </Typography>
                 </Box>
             </Box>
         </Box>
@@ -53,7 +91,9 @@ export default function EstadisticaVendedor() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>70</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica? Estadistica.cantidadProductosAprobados.toFixed(0).padStart(2, '0') : 0}
+                    </Typography>
                 </Box>
             </Box>
 
@@ -68,7 +108,9 @@ export default function EstadisticaVendedor() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica? Estadistica.cantidadPedidoXProductoConSeguimientoPendiente.toFixed(0).padStart(2, '0'): 0}
+                    </Typography>
                 </Box>
             </Box>
         </Box>
@@ -85,7 +127,9 @@ export default function EstadisticaVendedor() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica? Estadistica.cantidadPedidosEstadoPendiente.toFixed(0).padStart(2, '0'): 0}
+                    </Typography>
                 </Box>
             </Box>
 
@@ -100,7 +144,9 @@ export default function EstadisticaVendedor() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>200</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                    {Estadistica? Estadistica.cantidadPedidosEstadoCompletado.toFixed(0).padStart(2, '0'): 0}
+                    </Typography>
                 </Box>
             </Box>
         </Box>
@@ -108,19 +154,20 @@ export default function EstadisticaVendedor() {
         <Box sx={{display:"flex", flexDirection:"row", justifyContent:"center", marginTop:"20px"}}>
             <Box sx={{display:"flex", flexDirection:"column", marginRight:"10px", border:"2px solid black", alignItems:"center", width:"50%",
                 borderRadius:"6px"}}>
-                <Box sx={{display:"flex", flexDirection:"row", backgroundColor:"#6284DD", width:"97.2%", padding:"10px",
+                <Box sx={{display:"flex", flexDirection:"row", backgroundColor:"#6284DD", width:"97.7%", padding:"10px",
                 borderRadius:"6px 6px 0px 0px", borderBottom:"2px solid black"}}>
                     <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"70%", }}>
                         Cantidad de ventas totales:
                     </Typography>
                     <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"38.5%",
                     display:"flex", alignItems:"center", justifyContent:"center"}}>
-                        S/.400.00
+                        S/. {Estadistica? Estadistica.sumaPreciosPedidosCompletadosTotal.toFixed(2):0}
                     </Typography>
                 </Box>
 
-                <CardEstadisticaCompra />
-                <CardEstadisticaCompra />
+                <CardEstadisticaCompra Estadistica={Estadistica} opcion={1}/>
+                <CardEstadisticaCompra Estadistica={Estadistica} opcion={2}/>
+                <CardEstadisticaCompra Estadistica={Estadistica} opcion={3}/>
             </Box>
         </Box>
     </Box>

@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, Pagination } from '@mui/material'
 import React, { useEffect } from 'react'
 import CardSeguimientoVendedor from './CardSeguimientoVendedor'
 
@@ -32,19 +32,38 @@ export default function SeguimientoVendedor({informacionTienda, HandleChangeSegu
           throw new Error("Error al obtener la lista de seguimientos");
         }
       };
-      obtenerListaSeguimiento();
+      const interval = setInterval(() => {
+        obtenerListaSeguimiento();
+      }, 100);
+  
+      return () => clearInterval(interval);
+      // obtenerListaSeguimiento();
   }, [informacionTienda.idTienda]);
+
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const rowsPerPage = 5;
+  const handleChangePage = (event, newPage) => {
+      setCurrentPage(newPage - 1);
+  };
+    
   return (
-    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", minHeight:"86vh", maxHeight:"86vh"}}>
+    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", height:"88vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px", marginRight:"200px"}}>Seguimientos</Typography>
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
         {ListaSeguimiento && ListaSeguimiento.length > 0 ? 
         (
-          ListaSeguimiento.map(seguimiento => (
-            <CardSeguimientoVendedor HandleChangeSeguimientoSeleccionado={HandleChangeSeguimientoSeleccionado} seguimiento={seguimiento}/>
-          ))
+          <>
+            <Box sx={{height:"88%"}}>
+              {ListaSeguimiento.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(seguimiento => (
+                <CardSeguimientoVendedor HandleChangeSeguimientoSeleccionado={HandleChangeSeguimientoSeleccionado} seguimiento={seguimiento}/>
+              ))}
+            </Box>
+            <Box sx={{ display:"flex", justifyContent:"center"}}>
+              <Pagination count={Math.ceil(ListaSeguimiento.length / rowsPerPage)} page={currentPage + 1} onChange={handleChangePage}/>
+            </Box>
+          </>
         ):
         (
           <Box>

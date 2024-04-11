@@ -37,7 +37,7 @@ export default function DetalleVenta({setMostrarVentas, setMostrarDetalleVenta, 
     }
 
   return (
-    <Box sx={{width:"87.2%", marginTop:"-1.9px", height:"86vh", padding:"20px"}}>
+    <Box sx={{width:"87.2%", marginTop:"-1.9px", height:"88vh", padding:"20px"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Pedidos - {informacionTienda.nombre}</Typography>
             <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",

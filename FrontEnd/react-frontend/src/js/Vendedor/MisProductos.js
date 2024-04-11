@@ -1,13 +1,11 @@
-import { Box, Button, Divider, IconButton, TextField, Typography, Modal } from '@mui/material'
+import { Box, Button, IconButton, TextField, Typography, Modal, Pagination } from '@mui/material'
 import React, { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import EditIcon from '@mui/icons-material/Edit';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import CardMisProductos from './CardMisProductos';
-import DeleteIcon from '@mui/icons-material/Delete';
 import CancelIcon from "@mui/icons-material/Cancel";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ProductoMayorDem from './ProductoMayorDem';
 
 export default function MisProductos({setMostrarMisProductos, setMostrarDetalleProducto, setOpcionEditarProducto, setProductoInformacion, setMostrarEditarProducto,
     informacionTienda}) {
@@ -17,11 +15,6 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
     const [productoSeleccionado, setProductoSeleccionado] = useState(null);
     const [Busqueda, setBusqueda] = useState("");
     const [ModalEliminarProducto, setModalEliminarProducto] = useState(false);
-
-    const handleChangeDetalleProductoVendedor = () =>{
-        setMostrarMisProductos(false);
-        setMostrarDetalleProducto(true);
-    }
 
     const handleChangeEditarProducto = (value) =>{
         setMostrarMisProductos(false);
@@ -85,6 +78,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
           if (response.ok) {
             const producto = await response.json();
             setProductosList(producto);
+            console.log(producto);
           } else if (response.status === 404) {
             throw new Error("Productos no encontrado");
           } else {
@@ -125,8 +119,14 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
         obtenerListaProducto();
       }, [idTienda, Busqueda]);
 
+    const [currentPage, setCurrentPage] = React.useState(0);
+    const rowsPerPage = 5;
+    const handleChangePage = (event, newPage) => {
+        setCurrentPage(newPage - 1);
+    };
+
   return (
-    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", minHeight:"86vh", maxHeight:"auto"}}>
+    <Box sx={{padding:"20px", width:"87%", marginTop:"-1.9px", height:"87.8vh"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px", marginRight:"20px"}}>Mis Productos</Typography>
             <TextField
@@ -161,102 +161,40 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
 
         {productosList && productosList.length>0?
         (
-            <Box sx={{marginTop:"10px", border:"2px solid black", borderRadius:"6px", width:"100%", padding:"10px"}}>
-                <Typography sx={{fontWeight:"bold", fontSize:"24px", marginRight:"200px", color:"#00A307"}}>
-                    Producto con mayor venta:
-                </Typography>
-
-                <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-                    <img src={productosList && productosList[0].imagen} alt="Descripción de la imagen" 
-                        style={{height:"110px", maxWidth:"180px", minWidth:"180px"}}
-                    />
-                    <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
-                    <Box sx={{display:"flex", flexDirection:"column", width:"50%"}}>
-                        <Typography
-                            sx={{
-                                color: "black",
-                                fontWeight: "bold",
-                                fontSize: "24px",
-                                width: "100%",
-                            }}
-                            >
-                            {productosList && productosList[0].nombre}
-                            </Typography>
-                            <Typography
-                            sx={{
-                                color: "black",
-                                fontWeight: "bold",
-                                fontSize: "24px",
-                                width: "100%",
-                            }}
-                            >
-                            Fecha de creación: {productosList && new Date(productosList[0].fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {productosList && new Date(productosList[0].fechaCreacion).toLocaleTimeString()}
-                            </Typography>
-                            <Typography
-                            sx={{
-                                color: "black",
-                                fontWeight: "bold",
-                                fontSize: "24px",
-                                width: "100%",
-                            }}
-                            >
-                            {productosList && productosList[0].cantidadVentas} {productosList && productosList[0].cantidadVentas>1?"ventas":"venta"} - Cantidad de Stock: <b style={{color:productosList && productosList[0].stock===0?"red":"#286C23"}}>{productosList && productosList[0].stock}</b>
-                        </Typography>
-                    </Box>
-                    <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
-                    <Box sx={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", width:"20%"}}>
-                        <Typography
-                            sx={{
-                                color: "black",
-                                fontWeight: "bold",
-                                fontSize: "24px",
-                            }}
-                        >
-                            Estado:
-                        </Typography>
-                        <Typography
-                            sx={{
-                                color: productosList && productosList[0].estadoAprobacion==="Aprobado"?"#019935": 
-                                productosList && productosList[0].estadoAprobacion==="Pendiente"?"#999301":"#990A01",
-                                fontWeight: "bold",
-                                fontSize: "24px",
-                            }}
-                        >
-                            {productosList && productosList[0]? productosList[0].estadoAprobacion === "Pendiente"? "En espera" : productosList[0].estadoAprobacion : ""}
-                        </Typography>
-                    </Box>
-                    <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
-                    <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"12%", justifyContent:"center"}}>
-                        <IconButton sx={{marginRight:"10px", height:"50%"}} onClick={() => handleChangeEditarProducto(2)}>
-                            <EditIcon sx={{fontSize:"40px"}}/>
-                        </IconButton>
-                        <IconButton sx={{marginRight:"10px", height:"50%"}} onClick={handleChangeDetalleProductoVendedor}>
-                            <VisibilityIcon sx={{fontSize:"40px"}}/>
-                        </IconButton>
-                        <IconButton sx={{marginRight:"10px", height:"50%"}} onClick={() => {handleOpenModal(productosList[0]);}}>
-                            <DeleteIcon sx={{fontSize:"40px"}}/>
-                        </IconButton>
-                    </Box>
+            <>
+                <Box sx={{height:"82%"}}>
+                    {productosList && productosList.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((producto, index) => {
+                        const isFirstElement = index === 0;
+                        return isFirstElement ? 
+                        (
+                            <ProductoMayorDem productoPrimero={producto}
+                            handleChangeEditarProducto={handleChangeEditarProducto} handleOpenModal={handleOpenModal}
+                            setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
+                            />
+                        )
+                        : (
+                            <CardMisProductos
+                                key={producto.IdProducto}
+                                producto={producto}
+                                setMostrarMisProductos={setMostrarMisProductos}
+                                setMostrarDetalleProducto={setMostrarDetalleProducto}
+                                setProductoInformacion={setProductoInformacion}
+                                setOpcionEditarProducto={setOpcionEditarProducto}
+                                setMostrarEditarProducto={setMostrarEditarProducto}
+                                handleOpenModal={handleOpenModal}
+                            />
+                        );
+                    })}
                 </Box>
-            </Box>
+                <Box sx={{ display:"flex", justifyContent:"center"}}>
+                    <Pagination count={Math.ceil(productosList.length / rowsPerPage)} page={currentPage + 1} onChange={handleChangePage}/>
+                </Box>
+            </>
         )
         :
         (
             <></>
         )}
-
-        {productosList && productosList.slice(1).map(producto => (
-            <CardMisProductos
-                key={producto.IdProducto}
-                producto={producto}
-                setMostrarMisProductos={setMostrarMisProductos}
-                setMostrarDetalleProducto={setMostrarDetalleProducto}
-                setProductoInformacion={setProductoInformacion}
-                setOpcionEditarProducto={setOpcionEditarProducto}
-                setMostrarEditarProducto={setMostrarEditarProducto}
-                handleOpenModal={handleOpenModal}
-            />
-        ))}
 
         <Modal
           open={ModalEliminarProducto}

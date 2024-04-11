@@ -36,7 +36,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
   }
 
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"84vh"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"88vh"}}>
       <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px"}}>Información</Typography>
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px", marginTop:"20px"}}>
         <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"930px",

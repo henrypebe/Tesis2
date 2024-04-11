@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, Pagination } from '@mui/material'
 import React, { useEffect } from 'react'
 import CardReclamo from './CardReclamo'
 
@@ -62,18 +62,31 @@ export default function ReclamoComprador({idUsuario}) {
       obtenerListaSeguimiento();
   }, [idUsuario]);
   
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const rowsPerPage = 5;
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage - 1);
+  };
+
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"86vh", maxHeight:"auto"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Reclamos</Typography>
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
         {ListaSeguimiento && ListaSeguimiento.length > 0 ? 
         (
-          ListaSeguimiento.map(seguimiento => (
-            <CardReclamo seguimiento={seguimiento} obtenerListaSeguimiento={obtenerListaSeguimiento}
-            />
-          ))
+          <>
+            <Box sx={{height:"88%"}}>
+              {ListaSeguimiento.map(seguimiento => (
+                <CardReclamo seguimiento={seguimiento} obtenerListaSeguimiento={obtenerListaSeguimiento}
+                />
+              ))}
+            </Box>
+            <Box sx={{ display:"flex", justifyContent:"center"}}>
+              <Pagination count={Math.ceil(ListaSeguimiento.length / rowsPerPage)} page={currentPage + 1} onChange={handleChangePage}/>
+            </Box>
+          </>
         ):
         (
           <Box>

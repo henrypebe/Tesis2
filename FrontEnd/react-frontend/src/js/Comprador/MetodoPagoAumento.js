@@ -12,7 +12,7 @@ export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMet
         setMetodoPagoAumento(false);
       }
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"86vh", maxHeight:"86vh"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Box
             sx={{
             display: "flex",

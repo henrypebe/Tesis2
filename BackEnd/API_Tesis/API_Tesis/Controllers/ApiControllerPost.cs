@@ -31,21 +31,21 @@ namespace API_Tesis.Controllers
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT IdUsuario, EsAdministrador, EsComprador, EsVendedor FROM Usuario WHERE Correo = @Correo AND contrasenha = @Contrasenha";
+                    string query1 = "SELECT IdUsuario, EsAdministrador, EsComprador, EsVendedor FROM Usuario WHERE Correo = @Correo AND contrasenha = @Contrasenha";
 
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    using (MySqlCommand command1 = new MySqlCommand(query1, connection))
                     {
-                        command.Parameters.AddWithValue("@Correo", _correo);
-                        command.Parameters.AddWithValue("@Contrasenha", _contrasenha);
+                        command1.Parameters.AddWithValue("@Correo", _correo);
+                        command1.Parameters.AddWithValue("@Contrasenha", _contrasenha);
 
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        using (MySqlDataReader reader1 = command1.ExecuteReader())
                         {
-                            if (reader.Read())
+                            if (reader1.Read())
                             {
-                                idUsuario = reader.GetInt32(0);
+                                idUsuario = reader1.GetInt32(0);
                                 Guid token = Guid.NewGuid();
                                 string tokenString = token.ToString();
-                                reader.Close();
+                                reader1.Close();
                                 string updateQuery = "UPDATE Usuario SET Token = @Token WHERE Correo = @Correo AND contrasenha = @Contrasenha";
                                 using (MySqlCommand updateCommand = new MySqlCommand(updateQuery, connection))
                                 {
@@ -54,35 +54,44 @@ namespace API_Tesis.Controllers
                                     updateCommand.Parameters.AddWithValue("@Correo", _correo);
                                     updateCommand.ExecuteNonQuery();
                                 }
-
-                                string correoOrigen = "test@sbperu.net";
-                                string contraseñaCorreo = "oyzlwfgvducseiga";
-
-                                string asunto = $"Token de acceso para el login";
-                                StringBuilder htmlBody = new StringBuilder();
-                                htmlBody.Append("<h3>Se hace entrega del token para acceso al sistema:</h3>");
-                                htmlBody.Append($"<p>{tokenString}</p>");
-                                htmlBody.Append($"<p>Es importante mencionar que no debe de divulgar su token de acceso por seguridad.</p>");
-
-                                MailMessage message = new MailMessage
+                                string query2 = "SELECT Correo, Contrasenha FROM CorreoEmisor WHERE IdCorreoEmisor=1;";
+                                using (MySqlCommand command2 = new MySqlCommand(query2, connection))
                                 {
-                                    From = new MailAddress(correoOrigen, "Prueba Tesis 2"),
-                                    Subject = asunto,
-                                    Body = htmlBody.ToString(),
-                                    IsBodyHtml = true
-                                };
+                                    using (MySqlDataReader reader2 = command2.ExecuteReader())
+                                    {
+                                        while (reader2.Read())
+                                        {
+                                            string correoOrigen = reader2.GetString("Correo");
+                                            string contraseñaCorreo = reader2.GetString("Contrasenha");
 
-                                message.To.Add(_correo);
+                                            string asunto = $"Token de acceso para el login";
+                                            StringBuilder htmlBody = new StringBuilder();
+                                            htmlBody.Append("<h3>Se hace entrega del token para acceso al sistema:</h3>");
+                                            htmlBody.Append($"<p>{tokenString}</p>");
+                                            htmlBody.Append($"<p>Es importante mencionar que no debe de divulgar su token de acceso por seguridad.</p>");
 
-                                SmtpClient clienteSmtp = new SmtpClient("smtp.gmail.com")
-                                {
-                                    Port = 587,
-                                    Credentials = new NetworkCredential(correoOrigen, contraseñaCorreo),
-                                    EnableSsl = true
-                                };
+                                            MailMessage message = new MailMessage
+                                            {
+                                                From = new MailAddress(correoOrigen, "Prueba Tesis 2"),
+                                                Subject = asunto,
+                                                Body = htmlBody.ToString(),
+                                                IsBodyHtml = true
+                                            };
 
-                                await clienteSmtp.SendMailAsync(message);
-                                Console.WriteLine("Correo enviado con la información de los tickets sin tareas.");
+                                            message.To.Add(_correo);
+
+                                            SmtpClient clienteSmtp = new SmtpClient("smtp.gmail.com")
+                                            {
+                                                Port = 587,
+                                                Credentials = new NetworkCredential(correoOrigen, contraseñaCorreo),
+                                                EnableSsl = true
+                                            };
+
+                                            await clienteSmtp.SendMailAsync(message);
+                                            Console.WriteLine("Correo enviado con la información de los tickets sin tareas.");
+                                        }
+                                    }
+                                }
                             }
                         }
                         if (idUsuario == 0) idUsuario = -1;

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CardProducto from './CardProducto';
 import SearchIcon from '@mui/icons-material/Search';
+import Pagination from '@mui/material/Pagination';
 
 export default function ProductoComprador({setMostrarDetalleProducto, setMostrarProductos, setMostrarCarrito, setMostrarOpcionCarrito, HandleChangeProductoSeleccionado,
   conteoCarritoCompra}) {
@@ -46,8 +47,14 @@ export default function ProductoComprador({setMostrarDetalleProducto, setMostrar
       obtenerListaProducto();
   }, [Busqueda]);
   
+  const [currentPage, setCurrentPage] = useState(0);
+  const rowsPerPage = 12;
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage - 1);
+  };
+
   return (
-    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", minHeight:"86vh", maxHeight:"auto"}}>
+    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
       <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px", width:"90%"}}>Productos</Typography>
         
@@ -91,9 +98,16 @@ export default function ProductoComprador({setMostrarDetalleProducto, setMostrar
       <Box sx={{height:"91%"}}>
         {productosList && productosList.length > 0 ? 
         (
-          productosList.map(producto => (
-            <CardProducto HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado} producto={producto}/>
-          ))
+          <>
+            <Box sx={{height:"87%"}}>
+              {productosList.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(producto => (
+              <CardProducto HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado} producto={producto}/>
+              ))}
+            </Box>
+            <Box sx={{ display:"flex", justifyContent:"center"}}>
+              <Pagination count={Math.ceil(productosList.length / rowsPerPage)} page={currentPage + 1} onChange={handleChangePage}/>
+            </Box>
+          </>
         ):
         (
           <Box>

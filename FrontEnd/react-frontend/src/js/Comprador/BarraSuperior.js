@@ -87,10 +87,12 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
       if (response.ok) {
         const tienda = await response.json();
-        console.log(tienda);
+        // console.log(tienda);
         setInformacionTienda(tienda);
-        setOpenModaQuinto(true);
-        setOpen(false);
+        setTimeout(() => {
+          setOpenModaQuinto(true);
+          setOpen(false);
+        }, 100);
       } else if (response.status === 404) {
         throw new Error("Tienda no encontrado");
       } else {

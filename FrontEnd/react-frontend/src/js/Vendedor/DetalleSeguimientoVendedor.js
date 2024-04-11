@@ -84,7 +84,7 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
               if (response.ok) {
                 const ListSeguimiento = await response.json();
                 setListaMensaje(ListSeguimiento);
-                console.log(ListSeguimiento);
+                // console.log(ListSeguimiento);
               } else if (response.status === 404) {
                 throw new Error("Seguimiento no encontrado");
               } else {

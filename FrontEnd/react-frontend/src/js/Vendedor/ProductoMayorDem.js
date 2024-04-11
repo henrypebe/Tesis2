@@ -1,25 +1,14 @@
-import { Box, Divider, IconButton, Typography } from "@mui/material";
 import React from "react";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Divider, IconButton, Typography} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function CardMisProductos({producto, setMostrarMisProductos, setMostrarDetalleProducto, setProductoInformacion, 
-  setOpcionEditarProducto, setMostrarEditarProducto, handleOpenModal}) {
+export default function ProductoMayorDem({productoPrimero, handleChangeEditarProducto, handleOpenModal, setMostrarMisProductos, setMostrarDetalleProducto}) {
     const handleChangeDetalleProductoVendedor = () =>{
         setMostrarMisProductos(false);
         setMostrarDetalleProducto(true);
-        setProductoInformacion(producto);
     }
-
-    const handleChangeEditarProducto = () =>{
-        setMostrarMisProductos(false);
-        setProductoInformacion(producto);
-        setOpcionEditarProducto(0);
-        setMostrarEditarProducto(true);
-    }
-
-    // console.log(producto);
     return (
     <Box
       sx={{
@@ -30,11 +19,22 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
         padding: "10px",
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems:"center" }}>
+      <Typography
+        sx={{
+          fontWeight: "bold",
+          fontSize: "24px",
+          marginRight: "200px",
+          color: "#00A307",
+        }}
+      >
+        Producto con mayor venta:
+      </Typography>
+
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         <img
-          src={producto.imagen}
-          alt={producto.nombre}
-          style={{ height: "110px", maxWidth:"180px", minWidth:"180px" }}
+          src={productoPrimero && productoPrimero.imagen}
+          alt="Descripción de la imagen"
+          style={{ height: "110px", maxWidth: "180px", minWidth: "180px" }}
         />
         <Divider
           orientation="vertical"
@@ -56,7 +56,7 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
               width: "100%",
             }}
           >
-            {producto.nombre}
+            {productoPrimero && productoPrimero.nombre}
           </Typography>
           <Typography
             sx={{
@@ -66,7 +66,14 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
               width: "100%",
             }}
           >
-            Fecha de creación: {new Date(producto.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {new Date(producto.fechaCreacion).toLocaleTimeString()}
+            Fecha de creación:{" "}
+            {productoPrimero &&
+              new Date(productoPrimero.fechaCreacion).toLocaleDateString(
+                "es-ES",
+                { day: "2-digit", month: "2-digit", year: "numeric" }
+              )}{" "}
+            {productoPrimero &&
+              new Date(productoPrimero.fechaCreacion).toLocaleTimeString()}
           </Typography>
           <Typography
             sx={{
@@ -76,7 +83,21 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
               width: "100%",
             }}
           >
-            {producto.cantidadVentas} {producto.cantidadVentas>1?"ventas":"venta"} - Cantidad de Stock: <b style={{color:producto.stock===0?"red":"#286C23"}}>{producto.stock}</b>
+            {productoPrimero && productoPrimero.cantidadVentas}{" "}
+            {productoPrimero && productoPrimero.cantidadVentas > 1
+              ? "ventas"
+              : "venta"}{" "}
+            - Cantidad de Stock:{" "}
+            <b
+              style={{
+                color:
+                productoPrimero && productoPrimero.stock === 0
+                    ? "red"
+                    : "#286C23",
+              }}
+            >
+              {productoPrimero && productoPrimero.stock}
+            </b>
           </Typography>
         </Box>
         <Divider
@@ -110,12 +131,23 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
           </Typography>
           <Typography
             sx={{
-              color: producto.estadoAprobacion==="Aprobado"?"#019935": producto.estadoAprobacion==="Pendiente"?"#999301":"#990A01",
+              color:
+                productoPrimero &&
+                productoPrimero.estadoAprobacion === "Aprobado"
+                  ? "#019935"
+                  : productoPrimero &&
+                    productoPrimero.estadoAprobacion === "Pendiente"
+                  ? "#999301"
+                  : "#990A01",
               fontWeight: "bold",
               fontSize: "24px",
             }}
           >
-            {producto.estadoAprobacion === "Pendiente"? "En espera" : producto.estadoAprobacion}
+            {productoPrimero && productoPrimero
+              ? productoPrimero.estadoAprobacion === "Pendiente"
+                ? "En espera"
+                : productoPrimero.estadoAprobacion
+              : ""}
           </Typography>
         </Box>
         <Divider
@@ -138,14 +170,25 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
             justifyContent: "center",
           }}
         >
-          <IconButton sx={{ marginRight: "10px", height: "50%" }} onClick={handleChangeEditarProducto}>
+          <IconButton
+            sx={{ marginRight: "10px", height: "50%" }}
+            onClick={() => handleChangeEditarProducto(2)}
+          >
             <EditIcon sx={{ fontSize: "40px" }} />
           </IconButton>
-          <IconButton sx={{ marginRight: "10px", height: "50%" }} onClick={handleChangeDetalleProductoVendedor}>
+          <IconButton
+            sx={{ marginRight: "10px", height: "50%" }}
+            onClick={handleChangeDetalleProductoVendedor}
+          >
             <VisibilityIcon sx={{ fontSize: "40px" }} />
           </IconButton>
-          <IconButton sx={{marginRight:"10px", height:"50%"}} onClick={() => {handleOpenModal(producto);}}>
-            <DeleteIcon sx={{fontSize:"40px"}}/>
+          <IconButton
+            sx={{ marginRight: "10px", height: "50%" }}
+            onClick={() => {
+              handleOpenModal(productoPrimero);
+            }}
+          >
+            <DeleteIcon sx={{ fontSize: "40px" }} />
           </IconButton>
         </Box>
       </Box>

@@ -163,7 +163,7 @@ export default function MenuVendedor() {
 
             {mostrarReclamo && <ReclamoVendedor informacionTienda={informacionTienda}/>}
 
-            {mostrarEstadisticaVendedor && <EstadisticaVendedor />}
+            {mostrarEstadisticaVendedor && <EstadisticaVendedor informacionTienda={informacionTienda}/>}
 
             {mostrarBilletera && <BilleteraVendedor setMostrarBilletera={setMostrarBilletera} setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}/>}
 

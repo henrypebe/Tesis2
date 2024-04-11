@@ -8,7 +8,7 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
     setMostrarOpcionCarrito, setMostrarCarrito, ProductoSeleccionado, conteoCarritoCompra, setConteoCarritoCompra, setProductos,
     productos}) {
     
-        // console.log(ProductoSeleccionado);
+        console.log(ProductoSeleccionado);
 
     const handleChange = () =>{
         setMostrarDetalleProducto(false);
@@ -82,7 +82,7 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
     }
   
     return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Box sx={{display:"flex", flexDirection:"row"}}>
             
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Detalle de producto</Typography>
@@ -120,7 +120,7 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
             </Typography>
         </Box>
 
-        <Box sx={{display:"flex", flexDirection:"row", padding:"5px", justifyContent:"center", height:"220px", marginTop:"10px"}}>
+        <Box sx={{display:"flex", flexDirection:"row", padding:"5px", justifyContent:"center", height:"33%", marginTop:"10px"}}>
             <Box sx={{display:"flex", justifyContent:"center", alignItems:"center"}}>
                 <img src={ProductoSeleccionado.imagen} alt="Descripción de la imagen" 
                 style={{height:"200px"}}
@@ -151,6 +151,9 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
                     ProductoSeleccionado.precio.toFixed(2)}
                 </Typography>
                 <Typography sx={{fontWeight:"bold", fontSize:"20px", width:"100%", marginLeft:"10px", textAlign:"center", marginTop:"5px", color:"#026700"}}>
+                    <b>Tipo de producto: {ProductoSeleccionado.tipoProducto}</b>
+                </Typography>
+                <Typography sx={{fontWeight:"bold", fontSize:"20px", width:"100%", marginLeft:"10px", textAlign:"center", marginTop:"5px", color:"#026700"}}>
                     <b>Costo de envío: S/.{ProductoSeleccionado.costoEnvio.toFixed(2)} - Tiempo de envío: {ProductoSeleccionado.fechaEnvio}</b>
                 </Typography>
                 <Typography sx={{fontWeight:"bold", fontSize:"20px", width:"100%", marginLeft:"10px", textAlign:"center", marginTop:"2px", color:"#026700"}}>
@@ -159,7 +162,7 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
             </Box>
         </Box>
 
-        <Box sx={{marginBottom:"10px", height:"40%"}}>
+        <Box sx={{marginBottom:"10px", height:"37%"}}>
             <Typography sx={{fontWeight:"bold", fontSize:"24px", width:"30%", marginTop:"0px"}}>
                 Descripción
             </Typography>

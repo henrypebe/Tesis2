@@ -465,8 +465,7 @@ namespace API_Tesis.Controllers
                                     Cantidad = reader.GetInt32("Cantidad"),
                                     Precio = reader.GetDouble("Precio"),
                                     TieneSeguimiento = _tieneSeguimiento,
-                                    TieneReclamo = reader.GetBoolean("TieneReclamo"),
-                                    //FinalizarCliente = reader.GetBoolean("FinalizarCliente")
+                                    TieneReclamo = reader.GetBoolean("TieneReclamo")
                                 });
                             }
                             return Ok(pedidos);
@@ -477,6 +476,46 @@ namespace API_Tesis.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ObtenerInformacionChat")]
+        public async Task<IActionResult> ObtenerInformacionChat(int IdPedido)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            List<object> valores = new List<object>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                string query = @"
+                        SELECT pp.IdPedidoXProducto, c.FinalizarCliente FROM Chat c 
+                        INNER JOIN PedidoXProducto pp ON pp.IdPedidoXProducto = c.PedidoXProductoID
+                        INNER JOIN Pedidos p ON p.IdPedido = pp.PedidoID
+                        WHERE p.IdPedido = @IdPedido";
+
+
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@IdPedido", IdPedido);
+                    
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            bool FinalizarCliente = reader.GetBoolean("FinalizarCliente");
+
+                            var valor = new
+                            {
+                                IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
+                                FinalizarCliente = FinalizarCliente
+                            };
+
+                            valores.Add(valor);
+                        }
+                        return Ok(valores);
+                    }
+                }
             }
         }
         [HttpGet]
@@ -500,7 +539,7 @@ namespace API_Tesis.Controllers
                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
-                       WHERE pr.TiendaID = @IdTienda AND p.Estado = 1";
+                       WHERE pr.TiendaID = @IdTienda";
 
                     if (FechaFiltro != DateTime.MinValue)
                     {
@@ -642,7 +681,7 @@ namespace API_Tesis.Controllers
                         INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-                        WHERE p.UsuarioID = @IdUsuario";
+                        WHERE p.UsuarioID = @IdUsuario ORDER BY c.FinalizarCliente ASC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -842,6 +881,140 @@ namespace API_Tesis.Controllers
                                 }
                             }
                             return Ok(ProductosReclamos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/EstadisticaVendedor")]
+        public async Task<IActionResult> EstadisticaVendedor(int idTienda)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT
+	                        (SELECT COUNT(DISTINCT p.UsuarioID) AS CantidadClientes
+	                        FROM PedidoXProducto pxp
+	                        JOIN Pedidos p ON pxp.PedidoID = p.IdPedido
+	                        JOIN Producto pr ON pxp.ProductoID = pr.IdProducto
+	                        JOIN Tienda t ON pr.TiendaID = t.IdTienda
+	                        WHERE t.IdTienda = @IdTienda) AS CantidadCliente,
+    
+                            (SELECT COUNT(*) 
+                             FROM Producto 
+                             WHERE TiendaID = @IdTienda AND EstadoAprobacion = 'Aprobado') 
+                             AS CantidadProductosAprobados,
+    
+                            (SELECT COUNT(p.IdPedido) AS PedidosEstado2
+                            FROM Pedidos p
+                            JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                            JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                            JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                            WHERE p.Estado = 1 AND t.IdTienda = @IdTienda) AS CantidadPedidosEstadoPendiente,
+    
+                            (SELECT COUNT(p.IdPedido) AS PedidosEstado2
+                            FROM Pedidos p
+                            JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                            JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                            JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                            WHERE p.Estado = 2 AND t.IdTienda = @IdTienda) AS CantidadPedidosEstadoCompletado,
+    
+                            (SELECT COUNT(*) 
+                             FROM PedidoXProducto pxp
+                             JOIN Pedidos p ON pxp.PedidoID = p.IdPedido
+                             JOIN Producto pr ON pxp.ProductoID = pr.IdProducto
+                             JOIN Chat c ON c.PedidoXProductoID = pxp.IdPedidoXProducto
+                             WHERE pxp.TieneSeguimiento = true AND c.FinalizarCliente = false
+                             AND pr.TiendaID = @IdTienda) AS CantidadPedidoXProductoConSeguimientoPendiente,
+    
+                            (SELECT COUNT(pxp.IdPedidoXProducto) AS CantidadPedidoXProductoConReclamo
+	                        FROM PedidoXProducto pxp
+	                        JOIN Pedidos p ON pxp.PedidoID = p.IdPedido
+	                        JOIN Producto pr ON pxp.ProductoID = pr.IdProducto
+	                        JOIN Tienda t ON pr.TiendaID = t.IdTienda
+	                        WHERE pxp.TieneReclamo = true AND t.IdTienda = @IdTienda) 
+                            AS CantidadPedidoXProductoConReclamo,
+                            
+                            (SELECT SUM(pr.Precio*pp.Cantidad) AS SumaPreciosPedidosCompletadosTotal
+                            FROM Pedidos p
+                            JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                            JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                            JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                            WHERE p.Estado = 2 AND t.IdTienda = @IdTienda
+                            AND p.FechaCreacion >= CURDATE() - INTERVAL 3 MONTH)
+                            AS SumaPreciosPedidosCompletadosTotal,
+
+                            (SELECT SUM(pr.Precio * pp.Cantidad) AS SumaPreciosPedidosCompletadosMes1
+                            FROM Pedidos p
+                            JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                            JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                            JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                            WHERE p.Estado = 2 AND t.IdTienda = @IdTienda
+                            AND YEAR(p.FechaCreacion) = YEAR(CURDATE())
+                            AND MONTH(p.FechaCreacion) = MONTH(CURDATE()))
+                            AS SumaPreciosPedidosCompletadosMes1,
+
+                            (SELECT SUM(pr.Precio * pp.Cantidad) AS SumaPreciosPedidosCompletadosMes2
+                            FROM Pedidos p
+                            JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                            JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                            JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                            WHERE p.Estado = 2 AND t.IdTienda = @IdTienda
+                            AND YEAR(p.FechaCreacion) = YEAR(CURDATE() - INTERVAL 1 MONTH)
+                            AND MONTH(p.FechaCreacion) = MONTH(CURDATE() - INTERVAL 1 MONTH))
+                            AS SumaPreciosPedidosCompletadosMes2,
+
+                            (SELECT SUM(pr.Precio * pp.Cantidad) AS SumaPreciosPedidosCompletadosMes3
+                            FROM Pedidos p
+                            JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                            JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                            JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                            WHERE p.Estado = 2 AND t.IdTienda = @IdTienda
+                            AND YEAR(p.FechaCreacion) = YEAR(CURDATE() - INTERVAL 2 MONTH)
+                            AND MONTH(p.FechaCreacion) = MONTH(CURDATE() - INTERVAL 2 MONTH))
+                            AS SumaPreciosPedidosCompletadosMes3;
+                     ";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdTienda", idTienda);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                EstadisticaVendedor estadistica = new EstadisticaVendedor
+                                {
+                                    CantidadCliente = reader.GetInt32("CantidadCliente"),
+                                    CantidadProductosAprobados = reader.GetInt32("CantidadProductosAprobados"),
+                                    CantidadPedidosEstadoPendiente = reader.GetInt32("CantidadPedidosEstadoPendiente"),
+                                    CantidadPedidosEstadoCompletado = reader.GetInt32("CantidadPedidosEstadoCompletado"),
+                                    CantidadPedidoXProductoConSeguimientoPendiente = reader.GetInt32("CantidadPedidoXProductoConSeguimientoPendiente"),
+                                    CantidadPedidoXProductoConReclamo = reader.GetInt32("CantidadPedidoXProductoConReclamo"),
+                                    SumaPreciosPedidosCompletadosTotal = reader.IsDBNull(reader.GetOrdinal("SumaPreciosPedidosCompletadosTotal")) ? 
+                                                             0: reader.GetDouble("SumaPreciosPedidosCompletadosTotal"),
+                                    SumaPreciosPedidosCompletadosMes1 = reader.IsDBNull(reader.GetOrdinal("SumaPreciosPedidosCompletadosMes1")) ? 0 :
+                                    reader.GetDouble("SumaPreciosPedidosCompletadosMes1"),
+                                    SumaPreciosPedidosCompletadosMes2 = reader.IsDBNull(reader.GetOrdinal("SumaPreciosPedidosCompletadosMes2")) ? 0 :
+                                    reader.GetDouble("SumaPreciosPedidosCompletadosMes2"),
+                                    SumaPreciosPedidosCompletadosMes3 = reader.IsDBNull(reader.GetOrdinal("SumaPreciosPedidosCompletadosMes3")) ? 0 :
+                                    reader.GetDouble("SumaPreciosPedidosCompletadosMes3"),
+                                };
+                                return Ok(estadistica);
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
                         }
                     }
                 }

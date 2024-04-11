@@ -119,7 +119,7 @@ export default function CardSeguimientoVendedor({HandleChangeSeguimientoSeleccio
                 <CheckCircleIcon sx={{ color: "#286C23", fontSize: "26px" }} />
             )}
             <Typography
-            sx={{ color: seguimiento.estadoPedido?"#86882D" : "#286C23", fontWeight: "bold", fontSize: "26px", marginLeft:"10px" }}
+            sx={{ color: seguimiento.estadoPedido === 1? "#86882D" : "#286C23", fontWeight: "bold", fontSize: "26px", marginLeft:"10px" }}
             >
                 {seguimiento.estadoPedido === 1? "Pendiente": seguimiento.estadoPedido === 2? "Completado" : ""}
             </Typography>

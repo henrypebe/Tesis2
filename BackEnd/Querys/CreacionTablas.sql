@@ -137,8 +137,16 @@ CREATE TABLE PedidoXProducto(
     FOREIGN KEY (PedidoID) REFERENCES Pedidos(IdPedido)
 );
 
+CREATE TABLE CorreoEmisor(
+	IdCorreoEmisor INT auto_increment PRIMARY KEY,
+    Correo TEXT,
+    Contrasenha TEXT
+);
+
 INSERT INTO KeyEncript (KeyVar) 
 VALUES ('tesis2');
+
+INSERT INTO CorreoEmisor(Correo, Contrasenha) VALUES ('test@sbperu.net','oyzlwfgvducseiga');
 
 INSERT INTO Usuario (Correo, contrasenha, Token, Nombre, Apellido, DNI, Telefono, Direccion, EsAdministrador, EsComprador, EsVendedor) 
 VALUES ('a20191425@pucp.edu.pe', 'henrypebe11', 'token123', 'Henry', 'Pebe', 12345678, 987654321, 'Calle 123', 1, 0, 0);
@@ -152,9 +160,9 @@ SELECT * FROM Pedidos;
 SELECT * FROM Chat;
 SELECT * FROM PedidoXProducto;
 SELECT * FROM Mensajes;
-
+SELECT * FROM CorreoEmisor;
 SELECT * FROM Producto;
-
+SELECT * FROM Pedidos;
 SELECT * FROM Usuario WHERE Estado = 1;
 
 ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
@@ -170,45 +178,9 @@ ALTER TABLE Chat DROP COLUMN FinalizarTienda;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE Chat ADD FinalizarTienda boolean;
 
-SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreUsuario
+SELECT COUNT(p.IdPedido) AS PedidosEstado2
 FROM Pedidos p
-INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
-INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
-INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
-INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-WHERE p.UsuarioID = 3 AND pp.TieneSeguimiento=true;
-                       
-SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreCliente,u.Apellido AS ApellidoCliente, c.IdChat, pr.Nombre AS NombreProducto,
-                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo
-                        FROM Pedidos p
-                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
-                        INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
-                        INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
-                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
-                        WHERE c.TiendaID = 1 AND pp.TieneSeguimiento=true;
-                        
-SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
-	p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, 
-    u.Apellido AS ApellidoDuenho, pp.ProductoID, pp.Cantidad, pr.Precio, 
-    pr.Nombre as NombreProducto, u.IdUsuario as IdDuenho, pp.TieneSeguimiento,
-	pp.IdPedidoXProducto, pp.TieneReclamo, c.FinalizarCliente
-	FROM Pedidos p 
-	INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
-	INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
-	INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-	INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-	INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-	WHERE p.UsuarioID = 3;
-    
-SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
-	p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, pp.ProductoID, pp.Cantidad, pr.Precio, 
-    pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto, pp.TieneReclamo,
-    u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho
-FROM Pedidos p
-INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
-INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-WHERE p.UsuarioID = 3;
+JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+JOIN Tienda t ON t.IdTienda = pr.TiendaID
+WHERE p.Estado = 2 AND t.IdTienda = 2

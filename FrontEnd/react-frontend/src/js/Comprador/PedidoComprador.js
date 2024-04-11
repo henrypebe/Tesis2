@@ -19,21 +19,29 @@ const columnsComplete = [
 
 export default function PedidoComprador({idUsuario, HandleChangePedidoSeleccionado}) {
   const [fechaHabilitada, setFechaHabitada] = React.useState(true);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [pageCompleto, setPageCompleto] = React.useState(0);
+  const [pagePendiente, setPagePendiente] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(3);
 
   const [pedidosCompleteList, setPedidosCompleteList] = useState(null);
   const [pedidosPendienteList, setPedidosPendienteList] = useState(null);
-  console.log(pedidosPendienteList);
+  // console.log(pedidosPendienteList);
   const [BusquedaFecha, setBusquedaFecha] = useState(null);
   
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleChangePageComplete = (event, newPage) => {
+    setPageCompleto(newPage);
+  };
+  const handleChangePagePendiente = (event, newPage) => {
+    setPagePendiente(newPage);
   };
   
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPagePendiente = (event) => {
     setRowsPerPage(+event.target.value);
-    setPage(0);
+    setPagePendiente(0);
+  };
+  const handleChangeRowsPerPageCompleto = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPageCompleto(0);
   };
 
   const handleDateChange = (newDate) => {
@@ -126,7 +134,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{padding:"20px", width:"86.7%", marginTop:"-1.9px", height:"86vh"}}>
+      <Box sx={{padding:"20px", width:"86.7%", marginTop:"-1.9px", height:"88vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px"}}>Pedidos</Typography>
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
@@ -155,8 +163,8 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
 
         {pedidosCompleteList && pedidosCompleteList.length>0?
         (
-          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: 240 }}>
+          <Paper sx={{ width: '100%', overflow: 'hidden', height:"33%" }}>
+            <TableContainer sx={{ height:"80%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -164,7 +172,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                       <TableCell
                         key={column.id}
                         align={column.align}
-                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
+                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth, fontWeight:"bold", fontSize:"20px" }}
                       >
                         {column.label}
                       </TableCell>
@@ -173,7 +181,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                 </TableHead>
 
                 <TableBody>
-                {pedidosCompleteList && pedidosCompleteList.map((pedido) => {
+                {pedidosCompleteList && pedidosCompleteList.slice(pageCompleto * rowsPerPage, pageCompleto * rowsPerPage + rowsPerPage).map((pedido) => {
                   const fechaEntrega = new Date(pedido.fechaEntrega);
                   const dia = fechaEntrega.getDate();
                   const mes = fechaEntrega.getMonth() + 1;
@@ -183,9 +191,9 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                   const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
-                      <TableCell>{fechaFormateada}</TableCell>
-                      <TableCell>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
-                      <TableCell>S/. {pedido.total.toFixed(2)}</TableCell>
+                      <TableCell sx={{fontSize:"16px", width:"17%"}}>{fechaFormateada}</TableCell>
+                      <TableCell sx={{fontSize:"16px", width:"30%"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
+                      <TableCell sx={{fontSize:"16px"}}>S/. {pedido.total.toFixed(2)}</TableCell>
                       <TableCell>
                         <Button 
                           variant="contained" 
@@ -203,13 +211,13 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
             </TableContainer>
 
             <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
+              rowsPerPageOptions={[1]}
               component="div"
               count={pedidosCompleteList.length}
               rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              page={pageCompleto}
+              onPageChange={handleChangePageComplete}
+              onRowsPerPageChange={handleChangeRowsPerPageCompleto}
             />
           </Paper>
         ):
@@ -225,8 +233,8 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
 
         {pedidosPendienteList && pedidosPendienteList.length > 0?
         (
-          <Paper sx={{ width: '100%', overflow: 'hidden', height:"35%" }}>
-            <TableContainer sx={{ height:"80%" }}>
+          <Paper sx={{ width: '100%', overflow: 'hidden', height:"250px" }}>
+            <TableContainer sx={{ height:"200px" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -234,7 +242,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                       <TableCell
                         key={column.id}
                         align={column.align}
-                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth }}
+                        style={{ minWidth: column.minWidth, maxWidth: column.maxWidth, fontWeight:"bold", fontSize:"20px" }}
                       >
                         {column.label}
                       </TableCell>
@@ -243,7 +251,8 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                 </TableHead>
 
                 <TableBody>
-                {pedidosPendienteList && pedidosPendienteList.map((pedido) => {
+                {pedidosPendienteList && pedidosPendienteList.slice(pagePendiente * rowsPerPage, pagePendiente * rowsPerPage + rowsPerPage)
+                  .map((pedido) => {
                   const fechaEntrega = new Date(pedido.fechaEntrega);
                   const dia = fechaEntrega.getDate();
                   const mes = fechaEntrega.getMonth() + 1;
@@ -253,9 +262,9 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                   const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
-                      <TableCell>{fechaFormateada}</TableCell>
-                      <TableCell sx={{width:"50%"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
-                      <TableCell sx={{width:"30%"}}>S/. {pedido.total.toFixed(2)}</TableCell>
+                      <TableCell sx={{fontSize:"16px", width:"9.7%"}}>{fechaFormateada}</TableCell>
+                      <TableCell sx={{width:"17.4%", fontSize:"16px"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
+                      <TableCell sx={{width:"30%", fontSize:"16px"}}>S/. {pedido.total.toFixed(2)}</TableCell>
                       {/* <TableCell>
                         <Button 
                           variant="contained" 
@@ -271,13 +280,13 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
             </TableContainer>
 
             <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
+              rowsPerPageOptions={[1]}
               component="div"
               count={pedidosPendienteList.length}
               rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              page={pagePendiente}
+              onPageChange={handleChangePagePendiente}
+              onRowsPerPageChange={handleChangeRowsPerPagePendiente}
             />
           </Paper>
         )

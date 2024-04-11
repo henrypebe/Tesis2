@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@mui/material'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ItemShop from './ItemShop';
 
@@ -28,8 +28,37 @@ export default function CarritoCompra({setMostrarCarrito, setMostrarProductos, m
     );
   };
 
+  const convertirTiempoANumeros = tiempo => {
+    const partes = tiempo.split(' ');
+    const cantidad = parseInt(partes[0]);
+    switch (partes[1]) {
+      case 'Días':
+        return cantidad / 30;
+      case 'Meses':
+        return cantidad;
+      case 'Años':
+        return cantidad * 12;
+      default:
+        return 0;
+    }
+  };
+
+  const [productoMasLargo, setProductoMasLargo] = useState(null);
+
+  useEffect(() => {
+    const productosConCantidad = productos.filter(producto => producto.cantidad > 0);
+    setProductos(productosConCantidad);
+    let mayorTiempo = 0;
+    productos.forEach(producto => {
+      const tiempo = convertirTiempoANumeros(producto.fechaEnvio);
+      if (tiempo > mayorTiempo) {
+        mayorTiempo = tiempo;
+        setProductoMasLargo(producto);
+    }});
+  }, [productos, setProductos]);
+
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
        <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Mis compras</Typography>
             <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
@@ -43,19 +72,30 @@ export default function CarritoCompra({setMostrarCarrito, setMostrarProductos, m
         
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
           <ShoppingCartIcon sx={{fontSize:"100px", marginRight:"20px"}}/>
-          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"32px", width:"100%"}}>Total: S/. {productos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0).toFixed(2)}</Typography>
+          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"32px", width:"100%"}}>Total: S/. 
+          {productos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0).toFixed(2)} {productos.length>0 && productoMasLargo?`- Tiempo de 
+          entrega: ${productoMasLargo.fechaEnvio}`:""}</Typography>
         </Box>
 
-        {productos.map(producto => (
-          <ItemShop producto={producto} onCantidadChange={onCantidadChange} conteoCarritoCompra={conteoCarritoCompra}
-          setConteoCarritoCompra={setConteoCarritoCompra}/>
-        ))}
+        <Box sx={{height:"72%"}}>
+          {productos.map(producto => (
+            <ItemShop producto={producto} onCantidadChange={onCantidadChange} conteoCarritoCompra={conteoCarritoCompra}
+            setConteoCarritoCompra={setConteoCarritoCompra}/>
+          ))}
+        </Box>
         
-        <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
+        {productos.length>0?
+        (
+          <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
             onClick={handleProducto}
-        >
-          Pagar ahora
-        </Button>
+          >
+            Pagar ahora
+          </Button>
+        )
+        :
+        (
+          <></>
+        )}
     </Box>
   )
 }
