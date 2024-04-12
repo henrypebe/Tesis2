@@ -16,6 +16,7 @@ import EstadisticaComprador from './EstadisticaComprador';
 import MetodoPagoAdicionar from './MetodoPagoAdicionar';
 import MetodoPagoAumento from './MetodoPagoAumento';
 import { useParams } from 'react-router-dom';
+import DetalleReclamo from './DetalleReclamo';
 
 export default function MenuComprador() {
   const [mostrarInicio, setMostrarInicio] = useState(true);
@@ -32,8 +33,7 @@ export default function MenuComprador() {
   const [mostrarDetalleSeguimiento, setMostrarDetalleSeguimiento] = useState(false);
   const [mostrarReclamo, setMostrarReclamo] = useState(false);
   const [mostrarMetodoPagoAumento, setMetodoPagoAumento] = useState(false);
-
-  // const [chatId, setChatId] = useState(false);
+  const [mostrarDetalleReclamo, setDetalleReclamo] = useState(false);
 
   const { idUsuario } = useParams();
 
@@ -42,6 +42,7 @@ export default function MenuComprador() {
   const [SeguimientoSeleccionado, setSeguimientoSeleccionado] = useState();
   const [conteoCarritoCompra, setConteoCarritoCompra] = useState(0);
   const [productos, setProductos] = useState([]);
+  const [ReclamoSeleccionado, setReclamoSeleccionado] = useState();
 
   const HandleChangeProductoSeleccionado = (producto) =>{
     setProductoSeleccionado(producto);
@@ -61,6 +62,12 @@ export default function MenuComprador() {
     setMostrarSeguimiento(false);
   }
 
+  const HandleChangeReclamoSeleccionado = (reclamo) =>{
+    setReclamoSeleccionado(reclamo);
+    setDetalleReclamo(true);
+    setMostrarReclamo(false);
+  }
+
   return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
       <BarraSuperior idUsuario={idUsuario} />
@@ -75,6 +82,7 @@ export default function MenuComprador() {
           mostrarDetalleSeguimiento={mostrarDetalleSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
           mostrarReclamo={mostrarReclamo} setMostrarReclamo={setMostrarReclamo} mostrarMetodoPagoAumento={mostrarMetodoPagoAumento}
           setMetodoPagoAumento={setMetodoPagoAumento} setConteoCarritoCompra={setConteoCarritoCompra} setProductos={setProductos}
+          mostrarDetalleReclamo={mostrarDetalleReclamo} setDetalleReclamo={setDetalleReclamo}
           />
         {mostrarInicio && <InicioComprador onMostrarInicioChange={setMostrarInicio} onMostrarPedidosChange={setMostrarPedidos} 
         setMostrarProductos={setMostrarProductos} setMostrarSeguimiento={setMostrarSeguimiento}
@@ -112,9 +120,12 @@ export default function MenuComprador() {
         {mostrarDetalleSeguimiento && <DetalleSeguimiento setMostrarSeguimiento={setMostrarSeguimiento} setMostrarDetalleSeguimiento={setMostrarDetalleSeguimiento}
         SeguimientoSeleccionado={SeguimientoSeleccionado} idUsuario={idUsuario}/>}
 
-        {mostrarReclamo && <ReclamoComprador idUsuario={idUsuario}/>}
+        {mostrarReclamo && <ReclamoComprador idUsuario={idUsuario} HandleChangeReclamoSeleccionado={HandleChangeReclamoSeleccionado}/>}
 
-        {mostrarEstadistica && <EstadisticaComprador />}
+        {mostrarDetalleReclamo && <DetalleReclamo ReclamoSeleccionado={ReclamoSeleccionado} setMostrarReclamo={setMostrarReclamo}
+        setDetalleReclamo={setDetalleReclamo} setReclamoSeleccionado={setReclamoSeleccionado}/>}
+
+        {mostrarEstadistica && <EstadisticaComprador idUsuario={idUsuario}/>}
 
         {mostrarMetodoPagoAdicionar && <MetodoPagoAdicionar setMostrarMetodoPagoAdicionar={setMostrarMetodoPagoAdicionar}
         setMetodoPagoAumento={setMetodoPagoAumento}/>}

@@ -54,7 +54,7 @@ export default function ProductoComprador({setMostrarDetalleProducto, setMostrar
   };
 
   return (
-    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
+    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", height:"88vh"}}>
       <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px", width:"90%"}}>Productos</Typography>
         
@@ -95,11 +95,11 @@ export default function ProductoComprador({setMostrarDetalleProducto, setMostrar
 
       <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
-      <Box sx={{height:"91%"}}>
+      <Box sx={{height:"84.5%"}}>
         {productosList && productosList.length > 0 ? 
         (
           <>
-            <Box sx={{height:"87%"}}>
+            <Box sx={{height:"93%"}}>
               {productosList.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(producto => (
               <CardProducto HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado} producto={producto}/>
               ))}

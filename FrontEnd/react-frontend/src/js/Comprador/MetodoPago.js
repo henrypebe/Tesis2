@@ -82,7 +82,8 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         const fechaISO = fechaResultado.toISOString();
         const formData = new FormData();
         formData.append('FechaEntrega', fechaISO);
-        formData.append('Total', productos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0));
+        formData.append('Total', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad) - (producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
+        formData.append('TotalDescuento', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
         formData.append('Estado', 1);
         formData.append('CantidadProductos', conteoCarritoCompra);
         formData.append('MetodoPago', "Nada");

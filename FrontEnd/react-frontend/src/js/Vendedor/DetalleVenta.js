@@ -6,7 +6,7 @@ export default function DetalleVenta({setMostrarVentas, setMostrarDetalleVenta, 
     console.log(VentaSeleccionada);
 
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -21,6 +21,7 @@ export default function DetalleVenta({setMostrarVentas, setMostrarDetalleVenta, 
         { id: 'nombreProduct', label: 'Nombre', minWidth: 200, maxWidth: 200},
         { id: 'cantidadProduct', label: 'Cantidad', minWidth: 50, maxWidth: 50 },
         { id: 'costoUnitario', label: 'Costo Unitario', minWidth: 50, maxWidth: 50 },
+        { id: 'descuento', label: 'Descuento', minWidth: 70, maxWidth: 70 },
         { id: 'total', label: 'Total', minWidth: 50, maxWidth: 50},
         { id: 'accion', label: 'Accion', minWidth: 50, maxWidth: 50},
     ];
@@ -84,12 +85,21 @@ export default function DetalleVenta({setMostrarVentas, setMostrarDetalleVenta, 
             </Typography>
         </Box>
 
+        <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px"}}>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"40%"}}>
+                Ganancia total del pedido:
+            </Typography>
+            <Typography sx={{color:"black", fontSize:"24px", width:"100%"}}>
+                S/. {VentaSeleccionada.total.toFixed(2)}
+            </Typography>
+        </Box>
+
         <Box sx={{display:"flex", flexDirection:"column", marginBottom:"10px"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"40%"}}>
                 Productos comprados:
             </Typography>
-            <Paper sx={{ width: '100%', overflow: 'hidden', border:"2px solid black", borderRadius:"6px", marginTop:"10px", height:"465px"}}>
-                <TableContainer sx={{ height:"87%" }}>
+            <Paper sx={{ width: '100%', overflow: 'hidden', border:"2px solid black", borderRadius:"6px", marginTop:"10px", height:"425px"}}>
+                <TableContainer sx={{ height:"90%" }}>
                     <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -109,13 +119,16 @@ export default function DetalleVenta({setMostrarVentas, setMostrarDetalleVenta, 
                     </TableHead>
 
                     <TableBody>
-                        {VentaSeleccionada && VentaSeleccionada.productosLista.map((producto) => {
+                        {VentaSeleccionada && VentaSeleccionada.productosLista.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((producto) => {
                         return (
                             <TableRow hover role="checkbox" tabIndex={-1} key={producto.idProducto} sx={{border:"2px solid black"}}>
                                 <TableCell sx={{minWidth:"250px", maxWidth:"250px", fontSize:"16px"}}>{producto.nombreProducto}</TableCell>
                                 <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidad}</TableCell>
                                 <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {producto.precio.toFixed(2)}</TableCell>
-                                <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {(producto.precio * producto.cantidad).toFixed(2)}</TableCell>
+                                <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidadOferta}%</TableCell>
+                                <TableCell sx={{textAlign:"center", fontSize:"16px"}}>
+                                    S/. {(producto.precio * producto.cantidad - (producto.precio * producto.cantidad*producto.cantidadOferta/100)).toFixed(2)}
+                                </TableCell>
                                 <TableCell sx={{textAlign:"center", width:"20%"}}>
                                     {producto.tieneSeguimiento?
                                     (

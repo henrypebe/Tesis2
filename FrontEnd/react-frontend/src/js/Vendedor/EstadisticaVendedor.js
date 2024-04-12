@@ -21,7 +21,7 @@ export default function EstadisticaVendedor({informacionTienda}) {
           if (response.ok) {
             const Estadisticas = await response.json();
             setEstadistica(Estadisticas);
-            console.log(Estadisticas);
+            // console.log(Estadisticas);
           } else if (response.status === 404) {
             throw new Error("Seguimiento no encontrado");
           } else {
@@ -165,9 +165,9 @@ export default function EstadisticaVendedor({informacionTienda}) {
                     </Typography>
                 </Box>
 
-                <CardEstadisticaCompra Estadistica={Estadistica} opcion={1}/>
-                <CardEstadisticaCompra Estadistica={Estadistica} opcion={2}/>
-                <CardEstadisticaCompra Estadistica={Estadistica} opcion={3}/>
+                <CardEstadisticaCompra Estadistica={Estadistica} opcion={1} opcionComprador={0}/>
+                <CardEstadisticaCompra Estadistica={Estadistica} opcion={2} opcionComprador={0}/>
+                <CardEstadisticaCompra Estadistica={Estadistica} opcion={3} opcionComprador={0}/>
             </Box>
         </Box>
     </Box>

@@ -1,88 +1,82 @@
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
+import React from 'react';
+import { Box, Typography, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function DetallePedido({setMostrarDetallePedido, setMostrarPedidos, setMostrarSeguimiento, PedidoSeleccionado, idUsuario}) {
-    // console.log(PedidoSeleccionado);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [FinalizarCliente, setFinalizarCliente] = React.useState();
+export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, setDetalleReclamo, setReclamoSeleccionado}) {
+    
+    const HandleReclamar = async(reclamo) =>{
+        const response = await fetch(
+        `https://localhost:7240/EditarReclamoPedido?idPedidoXProducto=${reclamo.idPedidoXProducto}`,
+        {
+            method: "PUT",
+            headers: {
+            "Content-Type": "application/json",
+            },
+        }
+        );
 
-    useEffect(() => {
-        const handlePedidoCompleteList = async () => {
-            try {
-              const response = await fetch(
-                `https://localhost:7240/ObtenerInformacionChat?IdPedido=${PedidoSeleccionado.idPedido}`,
-                {
-                  method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-        
-              if (response.ok) {
-                const valor = await response.json();
-                setFinalizarCliente(valor);
-                // console.log(valor);
-              }
-            } catch (error) {
-              console.error("Error al obtener la lista de pedidos", error);
-              throw new Error("Error al obtener la lista de pedidos");
+        if (response.ok) {
+            toast.success('El producto fue reclamado', { autoClose: 2000 });
+            handleListarReclamo();
+        }
+    }
+
+    const handleListarReclamo = async() =>{
+        try {
+          const response = await fetch(
+            `https://localhost:7240/InformacionPedidoReclamo?IdPedido=${ReclamoSeleccionado[0].idPedido}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
-        };
-        handlePedidoCompleteList();
-    }, [PedidoSeleccionado.idPedido]);
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-      };
-
+          );
+    
+          if (response.ok) {
+            const valor = await response.json();
+            setReclamoSeleccionado(valor);
+          }
+        } catch (error) {
+          console.error("Error al obtener la lista de pedidos", error);
+          throw new Error("Error al obtener la lista de pedidos");
+        }
+      }
+    
     const columns = [
         { id: 'nombreProduct', label: 'Nombre', minWidth: 100, maxWidth: 100},
         { id: 'tienda', label: 'Tienda', minWidth: 100, maxWidth: 100},
         { id: 'cantidadProduct', label: 'Cantidad', minWidth: 50, maxWidth: 50 },
         { id: 'costoUnitario', label: 'Costo Unitario', minWidth: 50, maxWidth: 50 },
-        { id: 'descuento', label: 'Descuento', minWidth: 70, maxWidth: 70 },
         { id: 'total', label: 'Total', minWidth: 50, maxWidth: 50},
         { id: 'BtnSeguimiento', label: 'Acción', minWidth: 50, maxWidth: 50},
     ];
 
-    const handleBackPedido = () => {
-        setMostrarDetallePedido(false);
-        setMostrarPedidos(true);
+    const [currentPage, setCurrentPage] = React.useState(0);
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(2);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+        setCurrentPage(newPage);
     };
 
-    const handleSeguimiento = async (producto) => {
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
 
-        if(!producto.tieneSeguimiento){
-            const response = await fetch(
-                `https://localhost:7240/EditarSeguimientoPedido?idPedidoXProducto=${producto.idPedidoXProducto}&idUsuario=${idUsuario}&idTienda=${producto.idTienda}`,
-                {
-                  method: "PUT",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-            );
-    
-            if (response.ok) {
-                setMostrarSeguimiento(true);
-                setMostrarDetallePedido(false);
-                setMostrarPedidos(false);
-            }
-        }else{
-            setMostrarSeguimiento(true);
-            setMostrarDetallePedido(false);
-            setMostrarPedidos(false);
-        }
+    const handleBackPedido = () => {
+        setDetalleReclamo(false);
+        setMostrarReclamo(true);
     };
 
     function concatenarNombresTiendas(pedido) {
+        if (!pedido || !pedido.productosLista) {
+            return "";
+        }
+    
         const nombresTiendasSet = new Set();
     
         pedido.productosLista.forEach(producto => {
@@ -106,24 +100,24 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
         return nombresTiendasConcatenados;
     }
 
-    return (
-    <Box sx={{width:"87.1%", marginTop:"-1.9px", height:"88vh", padding:"20px"}}>
+  return (
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Pedidos - {concatenarNombresTiendas(PedidoSeleccionado)}</Typography>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Pedidos - {concatenarNombresTiendas(ReclamoSeleccionado[0])}</Typography>
             <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
             fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleBackPedido}>
                 Atrás
             </Button>
         </Box>
-
+        
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
-
+        
         <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"40%"}}>
                 Fecha creación:
             </Typography>
             <Typography sx={{color:"black", fontSize:"24px", width:"100%"}}>
-                {PedidoSeleccionado && new Date(PedidoSeleccionado.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                {ReclamoSeleccionado && new Date(ReclamoSeleccionado[0].fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
             </Typography>
         </Box>
 
@@ -132,7 +126,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                 Nombre del dueño:
             </Typography>
             <Typography sx={{color:"black", fontSize:"24px", width:"100%"}}>
-                {concatenarNombresDueño(PedidoSeleccionado)}
+                {concatenarNombresDueño(ReclamoSeleccionado[0])}
             </Typography>
         </Box>
 
@@ -141,7 +135,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                 Estado:
             </Typography>
             <Typography sx={{color:"black", fontSize:"24px", width:"100%"}}>
-                {PedidoSeleccionado.estado === 1? "Pendiente" : PedidoSeleccionado.estado === 2? "Completado" : PedidoSeleccionado.estado === 3? "Rechazado" : ""}
+                {ReclamoSeleccionado[0].estado === 1? "Pendiente" : ReclamoSeleccionado[0].estado === 2? "Completado" : ReclamoSeleccionado[0].estado === 3? "Rechazado" : ""}
             </Typography>
         </Box>
 
@@ -150,7 +144,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                 Fecha de entrega:
             </Typography>
             <Typography sx={{color:"black", fontSize:"24px", width:"100%"}}>
-                {PedidoSeleccionado && new Date(PedidoSeleccionado.fechaEntrega).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                {ReclamoSeleccionado[0] && new Date(ReclamoSeleccionado[0].fechaEntrega).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
             </Typography>
         </Box>
 
@@ -159,7 +153,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                 Costo total del pedido:
             </Typography>
             <Typography sx={{color:"black", fontSize:"24px", width:"100%"}}>
-                S/. {PedidoSeleccionado.total.toFixed(2)}
+                S/. {ReclamoSeleccionado[0].total.toFixed(2)}
             </Typography>
         </Box>
 
@@ -189,28 +183,25 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
 
                     <TableBody>
 
-                    {PedidoSeleccionado && PedidoSeleccionado.productosLista.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((producto) => {
+                    {ReclamoSeleccionado[0] && ReclamoSeleccionado[0].productosLista.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((producto) => {
                     return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={producto.idProducto} sx={{border:"2px solid black"}}>
                             <TableCell sx={{minWidth:"250px", maxWidth:"250px", fontSize:"16px"}}>{producto.nombreProducto}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.nombreTienda}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidad}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {producto.precio.toFixed(2)}</TableCell>
-                            <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidadOferta}%</TableCell>
-                            <TableCell sx={{textAlign:"center", fontSize:"16px"}}>
-                                S/. {(producto.precio * producto.cantidad - (producto.precio * producto.cantidad*producto.cantidadOferta/100)).toFixed(2)}
-                            </TableCell>
+                            <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {(producto.precio * producto.cantidad).toFixed(2)}</TableCell>
                             <TableCell sx={{textAlign:"center", width:"20%"}}>
-                                {FinalizarCliente && !FinalizarCliente.finalizarCliente?
+                                {producto && producto.tieneReclamo?
                                 (
-                                    <>Se finalizó el seguimiento</>
+                                    <>Se realizó el reclamo</>
                                 )
                                 :
                                 (
-                                    <Button variant="contained" sx={{width:"100%", backgroundColor:"#1C2536", '&:hover':{backgroundColor:"#1C2536"}}}
-                                    onClick={() => {handleSeguimiento(producto)}}
+                                    <Button variant="contained" sx={{width:"100%", backgroundColor:"#850E0E", '&:hover':{backgroundColor:"#850E0E"}}}
+                                    onClick={()=>{HandleReclamar(producto);}}
                                     >
-                                        {producto.tieneSeguimiento? "Seguir Seguimiento": "Iniciar Seguimiento"}
+                                        Realizar reclamo
                                     </Button>
                                 )}
                             </TableCell>
@@ -224,7 +215,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                 <TablePagination
                     rowsPerPageOptions={[10, 25, 100]}
                     component="div"
-                    count={PedidoSeleccionado.productosLista.length}
+                    count={ReclamoSeleccionado[0].productosLista.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

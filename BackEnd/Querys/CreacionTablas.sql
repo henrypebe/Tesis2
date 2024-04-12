@@ -105,9 +105,9 @@ CREATE TABLE Producto (
     Estado boolean
 );
 
-CREATE TABLE HistorialProducto (
+CREATE TABLE HistorialCambiosProducto (
     IdHistorialProducto INT AUTO_INCREMENT PRIMARY KEY,
-    FechaHora TEXT,
+    FechaHora Datetime,
     Descripcion TEXT,
     ProductoID INT NOT NULL,
     FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto)
@@ -118,6 +118,7 @@ CREATE TABLE Pedidos(
     FechaEntrega DateTime,
     FechaCreacion Datetime,
     Total Double,
+    TotalDescuento Double,
     Estado int,
     Reclamo boolean,
 	CantidadProductos int,
@@ -133,6 +134,7 @@ CREATE TABLE PedidoXProducto(
     Cantidad INT,
     TieneSeguimiento boolean,
     TieneReclamo boolean,
+    FechaReclamo datetime,
     FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto),
     FOREIGN KEY (PedidoID) REFERENCES Pedidos(IdPedido)
 );
@@ -141,6 +143,14 @@ CREATE TABLE CorreoEmisor(
 	IdCorreoEmisor INT auto_increment PRIMARY KEY,
     Correo TEXT,
     Contrasenha TEXT
+);
+
+CREATE TABLE Facturacion(
+	IdFacturacion INT auto_increment PRIMARY KEY,
+    Fecha date,
+    CantidadCompra DOUBLE,
+    PedidoID INT NOT NULL,
+    FOREIGN KEY (PedidoID) REFERENCES Pedidos(IdPedido)
 );
 
 INSERT INTO KeyEncript (KeyVar) 
@@ -169,18 +179,23 @@ ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Tienda MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
-ALTER TABLE Producto ADD CostoEnvio DOUBLE;
+ALTER TABLE Pedidos ADD TotalDescuento DOUBLE;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
 ALTER TABLE Mensajes ADD EsTienda boolean;
 ALTER TABLE Chat DROP COLUMN FinalizarTienda;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
-ALTER TABLE Chat ADD FinalizarTienda boolean;
+ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 
-SELECT COUNT(p.IdPedido) AS PedidosEstado2
-FROM Pedidos p
-JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
-JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-JOIN Tienda t ON t.IdTienda = pr.TiendaID
-WHERE p.Estado = 2 AND t.IdTienda = 2
+SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Estado, p.Total,
+                        t.Nombre AS NombreTienda, u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente,
+                        us.Nombre AS NombreDueño, us.Apellido AS ApellidoDuenho, pp.TieneReclamo, pp.FechaReclamo,
+                        pr.Nombre AS NombreProducto, pp.Cantidad AS CantidadProducto, pr.Precio, t.IdTienda,
+                        pp.ProductoID, pp.IdPedidoXProducto, pr.CantidadOferta
+                        FROM Pedidos p
+                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
+                        INNER JOIN Usuario us ON us.IdUsuario = t.UsuarioID

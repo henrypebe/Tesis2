@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 
-export default function CardEstadisticaCompra({Estadistica, opcion}) {
+export default function CardEstadisticaCompra({Estadistica, opcion, opcionComprador}) {
   const today = new Date();
   const lastMonth = new Date(today);
   lastMonth.setMonth(lastMonth.getMonth() - opcion);
@@ -42,11 +42,26 @@ export default function CardEstadisticaCompra({Estadistica, opcion}) {
           justifyContent: "center",
         }}
       >
-        S/.{Estadistica? 
-          opcion===1? Estadistica.sumaPreciosPedidosCompletadosMes1.toFixed(2): 
-          opcion===2? Estadistica.sumaPreciosPedidosCompletadosMes2.toFixed(2):
-          opcion===3? Estadistica.sumaPreciosPedidosCompletadosMes3.toFixed(2): 0
-          :0}
+        {opcionComprador === 1?
+        (
+          <>
+            - S/. {Estadistica? 
+                opcion===1? Estadistica.totalDescuentoMesActual.toFixed(2): 
+                opcion===2? Estadistica.totalDescuentoMesAnterior.toFixed(2):
+                opcion===3? Estadistica.totalDescuentoDosMesesAntes.toFixed(2): 0
+                :0}
+          </>
+        )
+        :
+        (
+          <>
+            S/. {Estadistica? 
+                opcion===1? Estadistica.sumaPreciosPedidosCompletadosMes1.toFixed(2): 
+                opcion===2? Estadistica.sumaPreciosPedidosCompletadosMes2.toFixed(2):
+                opcion===3? Estadistica.sumaPreciosPedidosCompletadosMes3.toFixed(2): 0
+                :0}
+          </>
+        )}
       </Typography>
     </Box>
   );

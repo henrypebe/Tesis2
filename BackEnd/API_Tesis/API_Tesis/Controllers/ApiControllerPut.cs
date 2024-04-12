@@ -242,12 +242,13 @@ namespace API_Tesis.Controllers
                 {
                     await connection.OpenAsync();
 
-                    string updateQuery = "UPDATE PedidoXProducto SET TieneReclamo = @TieneReclamo, TieneSeguimiento = @TieneSeguimiento " +
+                    string updateQuery = "UPDATE PedidoXProducto SET TieneReclamo = @TieneReclamo, TieneSeguimiento = @TieneSeguimiento, FechaReclamo = @FechaReclamo " +
                         "WHERE IdPedidoXProducto = @IdPedidoXProducto";
                     MySqlCommand command = new MySqlCommand(updateQuery, connection);
                     command.Parameters.AddWithValue("@TieneReclamo", 1);
                     command.Parameters.AddWithValue("@TieneSeguimiento", 0);
                     command.Parameters.AddWithValue("@IdPedidoXProducto", idPedidoXProducto);
+                    command.Parameters.AddWithValue("@FechaReclamo", DateTime.Today);
 
                     await command.ExecuteNonQueryAsync();
                     connection.Close();

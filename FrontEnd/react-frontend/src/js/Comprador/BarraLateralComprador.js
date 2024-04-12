@@ -12,7 +12,8 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
     setMostrarProductos, mostrarSeguimiento, setMostrarSeguimiento, mostrarEstadistica, setMostrarEstadistica, mostrarMetodoPagoAdicionar,
     setMostrarMetodoPagoAdicionar, mostrarDetalleProducto, setMostrarDetalleProducto, mostrarMetodoPago, setMostrarMetodoPago, mostrarDetallePedido,
     setMostrarDetallePedido, mostrarCarrito, setMostrarCarrito, mostrarDetalleSeguimiento, setMostrarDetalleSeguimiento, mostrarReclamo,
-    setMostrarReclamo, mostrarMetodoPagoAumento, setMetodoPagoAumento, setConteoCarritoCompra,setProductos}) {
+    setMostrarReclamo, mostrarMetodoPagoAumento, setMetodoPagoAumento, setConteoCarritoCompra,setProductos, mostrarDetalleReclamo,
+    setDetalleReclamo}) {
     const handleClickInicio = () => {
         onMostrarInicioChange(true);
         onMostrarPedidosChange(false);
@@ -29,6 +30,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMetodoPagoAumento(false);
         setConteoCarritoCompra(0);
         setProductos([]);
+        setDetalleReclamo(false);
     };
 
     const handleClickPedidos = () => {
@@ -47,6 +49,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMetodoPagoAumento(false);
         setConteoCarritoCompra(0);
         setProductos([]);
+        setDetalleReclamo(false);
     };
 
     const handleClickProductos = () => {
@@ -65,6 +68,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMetodoPagoAumento(false);
         setConteoCarritoCompra(0);
         setProductos([]);
+        setDetalleReclamo(false);
     };
 
     const handleClickSeguimiento = () => {
@@ -83,6 +87,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMetodoPagoAumento(false);
         setConteoCarritoCompra(0);
         setProductos([]);
+        setDetalleReclamo(false);
     };
 
     const handleClickReclamo = () => {
@@ -116,6 +121,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMetodoPagoAumento(false);
         setConteoCarritoCompra(0);
         setProductos([]);
+        setDetalleReclamo(false);
     };
 
     const handleClickMetodoPago = () => {
@@ -133,10 +139,11 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMetodoPagoAumento(false);
         setConteoCarritoCompra(0);
         setProductos([]);
+        setDetalleReclamo(false);
     };
 
     return (
-    <Box sx={{display:"flex", flexDirection:"column", maxHeight:"100%", minHeight:"100%", backgroundColor:"#777575", marginTop:"-1.9px", padding:"10px"}}>
+    <Box sx={{display:"flex", flexDirection:"column", maxHeight:"100%", minHeight:"100%", backgroundColor:"#D7B27B", marginTop:"-1.9px", padding:"10px"}}>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
             marginBottom:"10px", backgroundColor: mostrarInicio? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickInicio}
@@ -167,7 +174,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
             <Typography sx={{color:"black", fontWeight:"bold"}}>Seguimiento</Typography>
         </Button>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start", marginBottom:"10px",
-            backgroundColor:mostrarReclamo?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+            backgroundColor:mostrarReclamo || mostrarDetalleReclamo?"#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
             onClick={handleClickReclamo}
             >
             <NewReleasesIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>

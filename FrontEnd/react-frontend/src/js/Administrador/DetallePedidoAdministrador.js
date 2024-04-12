@@ -1,14 +1,14 @@
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 import React from 'react'
 
-export default function DetallePedidoAdministrador({setMostrarEstadistica, setMostrarPedidoDetalle}) {
+export default function DetallePedidoAdministrador({setMostrarEstadistica, setMostrarPedidoDetalle, PedidoSeleccionado}) {
     const handleChange = () =>{
         setMostrarPedidoDetalle(false);
         setMostrarEstadistica(true);
     }
 
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -20,23 +20,28 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
       };
 
     const columns = [
-        { id: 'nombreProduct', label: 'Nombre', minWidth: 200, maxWidth: 200},
+        { id: 'nombreProduct', label: 'Producto', minWidth: "auto", maxWidth: "auto"},
+        { id: 'nombreTienda', label: 'Tienda', minWidth: "auto", maxWidth: "auto"},
         { id: 'cantidadProduct', label: 'Cantidad', minWidth: 50, maxWidth: 50 },
         { id: 'costoUnitario', label: 'Costo Unitario', minWidth: 50, maxWidth: 50 },
+        { id: 'descuento', label: 'Descuento', minWidth: 50, maxWidth: 50 },
         { id: 'total', label: 'Total', minWidth: 50, maxWidth: 50},
+        { id: 'contieneReclamo', label: 'Reclamo', minWidth: 50, maxWidth: 50},
     ];
 
-    const rows = [
-        { nombreProduct: "Producto 01", cantidadProduct: "100", costoUnitario: "S/.100.00", total: "S/.1000"},
-        { nombreProduct: "Producto 01", cantidadProduct: "100", costoUnitario: "S/.100.00", total: "S/.1000"},
-        { nombreProduct: "Producto 01", cantidadProduct: "100", costoUnitario: "S/.100.00", total: "S/.1000"},
-        { nombreProduct: "Producto 01", cantidadProduct: "100", costoUnitario: "S/.100.00", total: "S/.1000"},
-        { nombreProduct: "Producto 01", cantidadProduct: "100", costoUnitario: "S/.100.00", total: "S/.1000"},
-        { nombreProduct: "Producto 01", cantidadProduct: "100", costoUnitario: "S/.100.00", total: "S/.1000"},
-        { nombreProduct: "Producto 01", cantidadProduct: "100", costoUnitario: "S/.100.00", total: "S/.1000"},
-    ];
+    function concatenarNombresDueño(pedido) {
+        const nombresTiendasSet = new Set();
+    
+        pedido.productosLista.forEach(producto => {
+          nombresTiendasSet.add(producto.nombreDueño + " " + producto.apellidoDuenho);
+        });
+        const nombresTiendasArray = Array.from(nombresTiendasSet);
+        const nombresTiendasConcatenados = nombresTiendasArray.join(", ");
+    
+        return nombresTiendasConcatenados;
+    }
     return (
-        <Box sx={{padding:"20px", width:"80.37%", marginTop:"-1.9px", height:"84vh"}}>
+        <Box sx={{padding:"20px", width:"80.37%", marginTop:"-1.9px", height:"88vh"}}>
             <Box sx={{display:"flex", flexDirection:"row"}}>
                 
                 <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Pedidos - Tienda 1</Typography>
@@ -55,7 +60,7 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
                     Fecha creación:
                 </Typography>
                 <Typography sx={{color:"black", fontSize:"20px", width:"100%"}}>
-                    29/02/2024
+                    {PedidoSeleccionado && new Date(PedidoSeleccionado.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </Typography>
             </Box>
 
@@ -64,7 +69,7 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
                     Nombre del dueño:
                 </Typography>
                 <Typography sx={{color:"black", fontSize:"20px", width:"100%"}}>
-                    Jorge Piñeda Lopez
+                    {concatenarNombresDueño(PedidoSeleccionado)}
                 </Typography>
             </Box>
 
@@ -73,7 +78,7 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
                     Estado:
                 </Typography>
                 <Typography sx={{color:"black", fontSize:"20px", width:"100%"}}>
-                    Completado
+                    {PedidoSeleccionado.estado === 1? "Pendiente" : PedidoSeleccionado.estado === 2? "Completado" : PedidoSeleccionado.estado === 3? "Rechazado" : ""}
                 </Typography>
             </Box>
 
@@ -82,7 +87,7 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
                     Fecha de entrega:
                 </Typography>
                 <Typography sx={{color:"black", fontSize:"20px", width:"100%"}}>
-                    29/02/2024
+                    {PedidoSeleccionado && new Date(PedidoSeleccionado.fechaEntrega).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </Typography>
             </Box>
 
@@ -91,17 +96,31 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
                     Presenta reclamo:
                 </Typography>
                 <Typography sx={{color:"black", fontSize:"20px", width:"100%"}}>
-                    Si (29/02/2024)
+                    {PedidoSeleccionado.productosLista.some(producto => producto.tieneReclamo) ? 
+                    "Si (" + PedidoSeleccionado.productosLista.filter(producto => producto.tieneReclamo)
+                        .map(producto => { const fecha = new Date(producto.fechaReclamo);
+                        return fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'});
+                        }).join(", ") + ")" 
+                    : "No"}
                 </Typography>
             </Box>
 
-            <Box sx={{display:"flex", flexDirection:"column", marginBottom:"10px"}}>
+            <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px"}}>
+                <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"40%"}}>
+                    Costo total:
+                </Typography>
+                <Typography sx={{color:"black", fontSize:"20px", width:"100%"}}>
+                    S/. {PedidoSeleccionado.total.toFixed(2)}
+                </Typography>
+            </Box>
+
+            <Box sx={{display:"flex", flexDirection:"column", marginBottom:"10px", height:"61%"}}>
                 <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"40%"}}>
                     Productos comprados:
                 </Typography>
 
-                <Paper sx={{ width: '100%', overflow: 'hidden', border:"2px solid black", borderRadius:"6px", marginTop:"10px"}}>
-                    <TableContainer sx={{ maxHeight: 240 }}>
+                <Paper sx={{ width: '100%', overflow: 'hidden', border:"2px solid black", borderRadius:"6px", marginTop:"10px", height:"90%"}}>
+                    <TableContainer sx={{ height:"90%" }}>
                         <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -121,24 +140,22 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
                         </TableHead>
 
                         <TableBody>
-                        {rows
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((row) => {
+                        {PedidoSeleccionado && PedidoSeleccionado.productosLista.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((producto) => {
                             return (
-                            <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                {columns.map((column) => {
-                                const value = row[column.id];
-                                return (
-                                    <TableCell key={column.id} align={column.align} sx={{minWidth: column.minWidth,
-                                        maxWidth: column.maxWidth,
-                                        textAlign: column.id !== 'nombreProduct' ? 'center' : undefined,
-                                        borderBottom:"1px solid black", fontSize:"18px"
-                                        }}>
-                                        {value}
+                                <TableRow hover role="checkbox" tabIndex={-1} key={producto.idProducto} sx={{border:"2px solid black"}}>
+                                    <TableCell sx={{width:"10%", fontSize:"16px"}}>{producto.nombreProducto}</TableCell>
+                                    <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.nombreTienda}</TableCell>
+                                    <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidad}</TableCell>
+                                    <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {producto.precio.toFixed(2)}</TableCell>
+                                    <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidadOferta}%</TableCell>
+                                    <TableCell sx={{textAlign:"center", fontSize:"16px"}}>
+                                        S/. {(producto.precio * producto.cantidad - (producto.precio * producto.cantidad*producto.cantidadOferta/100)).toFixed(2)}
                                     </TableCell>
-                                );
-                                })}
-                            </TableRow>
+                                    <TableCell sx={{textAlign:"center", width:"20%"}}>
+                                        {producto.tieneReclamo? "Contiene reclamo": "No tiene reclamo"}
+                                    </TableCell>
+                                </TableRow>
                             );
                         })}
                         </TableBody>
@@ -148,24 +165,13 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
                     <TablePagination
                         rowsPerPageOptions={[10, 25, 100]}
                         component="div"
-                        count={rows.length}
+                        count={PedidoSeleccionado.productosLista.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                 </Paper>
-
-                <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid black", marginTop:"10px", marginBottom:"10px"}} />
-
-                <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"100%", marginRight:"1010px"}}>
-                        Total
-                    </Typography>
-                    <Typography sx={{color:"black", fontSize:"20px", width:"100%"}}>
-                        S/. 3000.00
-                    </Typography>
-                </Box>
             </Box>
         </Box>
   )

@@ -1,25 +1,28 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
 import React from "react";
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
-export default function CardReclamo({seguimiento, obtenerListaSeguimiento}) {
+export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) {
 
   const handleReclamo = async() =>{
-    const response = await fetch(
-      `https://localhost:7240/EditarReclamoPedido?idPedidoXProducto=${seguimiento.idPedidoXProducto}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    try {
+      const response = await fetch(
+        `https://localhost:7240/InformacionPedidoReclamo?IdPedido=${reclamo.idPedido}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    if (response.ok) {
-      toast.success('El producto fue reclamado', { autoClose: 2000 });
-      obtenerListaSeguimiento();
+      if (response.ok) {
+        const valor = await response.json();
+        HandleChangeReclamoSeleccionado(valor);
+      }
+    } catch (error) {
+      console.error("Error al obtener la lista de pedidos", error);
+      throw new Error("Error al obtener la lista de pedidos");
     }
   }
 
@@ -37,26 +40,6 @@ export default function CardReclamo({seguimiento, obtenerListaSeguimiento}) {
         marginBottom: "10px",
       }}
     >
-      <Box sx={{width:"12%", display:"flex", alignItems:"center"}}>
-        <img
-          src={seguimiento.fotoProducto}
-          alt=""
-          style={{ height: "80px", width:"100%" }}
-        />
-      </Box>
-
-      <Divider
-        orientation="vertical"
-        flexItem
-        sx={{
-          backgroundColor: "black",
-          height: "auto",
-          marginRight: "20px",
-          marginLeft: "20px",
-          border: "2px solid black",
-        }}
-      />
-
       <Box sx={{ display: "flex", flexDirection: "column", width: "65%" }}>
         <Typography
           sx={{
@@ -66,7 +49,7 @@ export default function CardReclamo({seguimiento, obtenerListaSeguimiento}) {
             width: "100%",
           }}
         >
-          {seguimiento.nombreProducto}
+          Pedido ID: {reclamo.idPedido}
         </Typography>
         <Typography
           sx={{
@@ -76,7 +59,7 @@ export default function CardReclamo({seguimiento, obtenerListaSeguimiento}) {
             width: "100%",
           }}
         >
-          {seguimiento.nombreTienda}
+          Fecha de entrega: {reclamo.fechaEntrega}
         </Typography>
         <Typography
           sx={{
@@ -86,7 +69,7 @@ export default function CardReclamo({seguimiento, obtenerListaSeguimiento}) {
             width: "100%",
           }}
         >
-          {seguimiento.nombreDuenho} {seguimiento.apellidoDuenho}
+          Costo total: S/. {reclamo.total.toFixed(2)}
         </Typography>
       </Box>
 
@@ -101,28 +84,22 @@ export default function CardReclamo({seguimiento, obtenerListaSeguimiento}) {
           border: "2px solid black",
         }}
       />
-
-      {seguimiento && seguimiento.tieneReclamo?
-      (
-        <Box sx={{border:"2px solid #850E0E", width:"26%", borderRadius:"6px", backgroundColor:"#850E0E", padding:"5px", height:"70px",
-          display:"flex", alignItems:"center", justifyContent:"center"}}>
-          <Typography sx={{color:"white", textAlign:"center", fontSize:"30px", fontWeight:"bold"}}>
-            Reclamado
-          </Typography>
-        </Box>
-      )
-      :
-      (
-        <Button sx={{border:"2px solid #86882D", width:"27%", borderRadius:"6px", backgroundColor:"#86882D", padding:"5px", height:"70px",
-          display:"flex", alignItems:"center", justifyContent:"center", '&:hover':{backgroundColor:"#86882D"}}}
-          onClick={handleReclamo}
-          >
+      <Button sx={{ width:"27%", borderRadius:"6px", backgroundColor:reclamo.contieneReclamo?"#850E0E":"#86882D", padding:"5px", height:"70px",
+        display:"flex", alignItems:"center", justifyContent:"center", '&:hover':{backgroundColor:reclamo.contieneReclamo?"#850E0E":"#86882D"}}}
+        onClick={()=>{handleReclamo();}}
+      >
+        {reclamo.contieneReclamo?
+        (
+          <></>
+        )
+        :
+        (
           <ThumbDownOffAltIcon sx={{ fontSize: "50px", color: "white", marginRight:"10px" }} />
-          <Typography sx={{color:"white", textAlign:"center", fontSize:"30px", fontWeight:"bold"}}>
-            Realizar reclamo
-          </Typography>
-        </Button>
-      )}
+        )}
+        <Typography sx={{color:"white", textAlign:"center", fontSize:"30px", fontWeight:"bold"}}>
+          {reclamo.contieneReclamo? "Contiene reclamo":"Realizar reclamo"}
+        </Typography>
+      </Button>
     </Box>
   );
 }

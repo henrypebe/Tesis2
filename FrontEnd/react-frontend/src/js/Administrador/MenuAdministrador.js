@@ -20,11 +20,18 @@ export default function MenuAdministrador() {
   const [mostrarProductoDetalle, setMostrarProductoDetalle] = useState(false);
 
   const [ProductoSeleccionado, setMostrarProductoSeleccionado] = useState(false);
+  const [PedidoSeleccionado, setPedidoSeleccionado] = useState(false);
 
   const handleChangeProductoSeleccionado = (producto) =>{
     setMostrarProductoSeleccionado(producto);
     setMostrarGestionAprobacion(false);
     setMostrarProductoDetalle(true);
+  }
+
+  const handleChangePedidoSeleccionado = (pedido) =>{
+    setPedidoSeleccionado(pedido);
+    setMostrarEstadistica(false);
+    setMostrarPedidoDetalle(true);
   }
 
     return (
@@ -41,11 +48,10 @@ export default function MenuAdministrador() {
             {mostrarInicio && <InicioAdministrador setMostrarInicio={setMostrarInicio} setMostrarEstadistica={setMostrarEstadistica}
             setMostrarGestionAprobacion={setMostrarGestionAprobacion} />}
 
-            {mostrarEstadistica && <EstadisticaAdministrador setMostrarEstadistica={setMostrarEstadistica}
-            setMostrarPedidoDetalle={setMostrarPedidoDetalle}/>}
+            {mostrarEstadistica && <EstadisticaAdministrador handleChangePedidoSeleccionado={handleChangePedidoSeleccionado}/>}
 
             {mostrarPedidoDetalle && <DetallePedidoAdministrador setMostrarEstadistica={setMostrarEstadistica}
-            setMostrarPedidoDetalle={setMostrarPedidoDetalle}/>}
+            setMostrarPedidoDetalle={setMostrarPedidoDetalle} PedidoSeleccionado={PedidoSeleccionado}/>}
 
             {mostrarGestionAprobacion && <GestionAprobacion setMostrarGestionAprobacion={setMostrarGestionAprobacion}
             setMostrarProductoDetalle={setMostrarProductoDetalle} handleChangeProductoSeleccionado={handleChangeProductoSeleccionado}/>}

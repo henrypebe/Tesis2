@@ -1,11 +1,43 @@
 import { Box, Typography } from '@mui/material'
-import React from 'react';
+import React, { useEffect } from 'react';
 import MarkChatReadIcon from '@mui/icons-material/MarkChatRead';
 import MarkUnreadChatAltIcon from '@mui/icons-material/MarkUnreadChatAlt';
 import CardEstadisticaCompra from './CardEstadisticaCompra';
 
-export default function EstadisticaComprador() {
-  return (
+export default function EstadisticaComprador({idUsuario}) {
+    const [Estadistica, setEstadistica] = React.useState();
+
+    useEffect(() => {
+        const obtenerListaSeguimiento = async () => {
+            try {
+              const response = await fetch(
+                `https://localhost:7240/EstadisticaComprador?idUsuario=${idUsuario}`,
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+        
+              if (response.ok) {
+                const Estadisticas = await response.json();
+                setEstadistica(Estadisticas);
+                console.log(Estadisticas);
+              } else if (response.status === 404) {
+                throw new Error("Seguimiento no encontrado");
+              } else {
+                throw new Error("Error al obtener la lista de estadistica");
+              }
+            } catch (error) {
+              console.error("Error al obtener la lista de estadistica", error);
+              throw new Error("Error al obtener la lista de estadistica");
+            }
+          };
+          obtenerListaSeguimiento();
+    }, [idUsuario]);
+
+    return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Estadisticas</Typography>
 
@@ -22,7 +54,9 @@ export default function EstadisticaComprador() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica? Estadistica.cantidadPedidos.toFixed(0).padStart(2, '0'):"00"}
+                    </Typography>
                 </Box>
             </Box>
 
@@ -36,7 +70,9 @@ export default function EstadisticaComprador() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica? Estadistica.cantidadPedidosEstadoCompletado.toFixed(0).padStart(2, '0'):"00"}
+                    </Typography>
                 </Box>
             </Box>
         </Box>
@@ -52,7 +88,9 @@ export default function EstadisticaComprador() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica?Estadistica.cantidadPedidosEstadoPendiente.toFixed(0).padStart(2, '0'):"00"}
+                    </Typography>
                 </Box>
             </Box>
 
@@ -66,7 +104,9 @@ export default function EstadisticaComprador() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica?Estadistica.cantidadChatsFinalizados.toFixed(0).padStart(2, '0'):"00"}
+                    </Typography>
                 </Box>
             </Box>
         </Box>
@@ -82,7 +122,9 @@ export default function EstadisticaComprador() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica? Estadistica.cantidadChatsPendientes.toFixed(0).padStart(2, '0'):"00"}
+                    </Typography>
                 </Box>
             </Box>
 
@@ -96,42 +138,30 @@ export default function EstadisticaComprador() {
                 </Box>
 
                 <Box sx={{ width:"14%", textAlign:"center"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>10</Typography>
+                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                        {Estadistica?Estadistica.cantidadPedidosConReclamo.toFixed(0).padStart(2, '0'):"00"}
+                    </Typography>
                 </Box>
             </Box>
         </Box>
 
-        <Box sx={{display:"flex", flexDirection:"row", justifyContent:"space-between", marginTop:"20px"}}>
-            <Box sx={{display:"flex", flexDirection:"column", marginRight:"10px", border:"2px solid black", alignItems:"center", width:"50%",
-                borderRadius:"6px"}}>
-                <Box sx={{display:"flex", flexDirection:"row", backgroundColor:"#F3AC84", width:"98.65%", padding:"5px",
-                borderRadius:"6px 6px 0px 0px", borderBottom:"2px solid black"}}>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"70%", }}>
-                        Cantidad de compras totales:
-                    </Typography>
-                    <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"38.5%",
-                    display:"flex", alignItems:"center", justifyContent:"center"}}>
-                        S/.200.00
-                    </Typography>
-                </Box>
-
-                <CardEstadisticaCompra />
-            </Box>
-
+        <Box sx={{display:"flex", flexDirection:"row", justifyContent:"center", marginTop:"20px"}}>
             <Box sx={{display:"flex", flexDirection:"column", marginRight:"10px", border:"2px solid black", alignItems:"center", width:"50%",
                 borderRadius:"6px"}}>
                 <Box sx={{display:"flex", flexDirection:"row", backgroundColor:"#84D8F3", width:"98.65%", padding:"5px",
                 borderRadius:"6px 6px 0px 0px", borderBottom:"2px solid black"}}>
                     <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"70%"}}>
-                        Cantidad de productos solicitados:
+                        Cantidad de ahorros totales:
                     </Typography>
                     <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"38.5%",
                     display:"flex", alignItems:"center", justifyContent:"center"}}>
-                        200
+                        - S/. {Estadistica? Estadistica.totalDescuento.toFixed(2):"00"}
                     </Typography>
                 </Box>
 
-                <CardEstadisticaCompra />
+                <CardEstadisticaCompra opcion={1} Estadistica={Estadistica} opcionComprador={1}/>
+                <CardEstadisticaCompra opcion={2} Estadistica={Estadistica} opcionComprador={1}/>
+                <CardEstadisticaCompra opcion={3} Estadistica={Estadistica} opcionComprador={1}/>
             </Box>
         </Box>
 

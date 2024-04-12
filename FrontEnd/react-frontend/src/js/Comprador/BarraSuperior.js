@@ -418,7 +418,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
         sx={{
           display: "flex",
           flexDirection: "row",
-          backgroundColor: "#1C1B1B",
+          backgroundColor: "#CC984B",
           height: "43px",
           alignItems: "center",
           padding: "10px",
@@ -429,8 +429,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
           width: "98.8%",
         }}
       >
-        <MenuBookIcon sx={{ color: "white", marginRight: "20px" }} />
-        <Typography sx={{ color: "white", width: "200%" }}>
+        <MenuBookIcon sx={{ color: "black", marginRight: "20px", fontSize:"30px" }} />
+        <Typography sx={{ color: "black", width: "200%", fontWeight:"bold", fontSize:"25px"}}>
           Tesis 2 - ¡Bienvenido{" "}
           {informacionUsuario && informacionUsuario.nombre
             ? informacionUsuario.nombre
@@ -445,10 +445,10 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
             sx={{
               width: "40%",
               height: "95%",
-              border: "2px solid #D9D9D9",
+              border: "2px solid #FFFFFF",
               marginTop: "0px",
               borderRadius: "6px",
-              backgroundColor: "#D9D9D9",
+              backgroundColor: "#FFFFFF",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -471,10 +471,10 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
             sx={{
               width: "40%",
               height: "80%",
-              border: "2px solid #D9D9D9",
+              border: "2px solid #FFFFFF",
               marginTop: "0px",
               borderRadius: "6px",
-              backgroundColor: "#D9D9D9",
+              backgroundColor: "#FFFFFF",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -497,10 +497,10 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
             sx={{
               width: esVendedorAdministrador? "60%" : "45%",
               height: "80%",
-              border: "2px solid #D9D9D9",
+              border: "2px solid #FFFFFF",
               marginTop: "0px",
               borderRadius: "6px",
-              backgroundColor: "#D9D9D9",
+              backgroundColor: "#FFFFFF",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",

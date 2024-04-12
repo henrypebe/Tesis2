@@ -57,7 +57,19 @@ export default function ItemShop({producto, onCantidadChange, conteoCarritoCompr
         <Typography sx={{ fontSize: "25px" }}>
           {producto.nombreProducto} - {producto.tipoProducto}
         </Typography>
-        <Typography sx={{ fontSize: "25px" }}>S/. {producto.precio.toFixed(2)}</Typography>
+        <Box sx={{display:"flex", flexDirection:"row"}}>
+          <Typography sx={{ fontSize: "25px", marginRight:"10px"}}>S/. {producto.precio.toFixed(2)}</Typography>
+          {producto.cantidadOferta>0?
+          (
+            <Typography sx={{borderRadius:"5px", padding:"5px", border:"2px solid red", color:"red", fontSize:"14px", fontWeight:"bold"}}>
+              {producto.cantidadOferta}% OFF
+            </Typography>
+          )
+          :
+          (
+            <></>
+          )}
+        </Box>
       </Box>
 
       <Box

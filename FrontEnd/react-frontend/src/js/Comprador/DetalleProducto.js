@@ -72,7 +72,8 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
                 imagen: ProductoSeleccionado.imagen,
                 stockMaximo: ProductoSeleccionado.stock,
                 idTienda: ProductoSeleccionado.idTienda,
-                fechaEnvio: ProductoSeleccionado.fechaEnvio
+                fechaEnvio: ProductoSeleccionado.fechaEnvio,
+                cantidadOferta: ProductoSeleccionado.cantidadOferta
             };
 
             setProductos([...productos, nuevoProducto]);

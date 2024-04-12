@@ -410,13 +410,14 @@ namespace API_Tesis.Controllers
                         SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
 	                    p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, pp.ProductoID, pp.Cantidad, pr.Precio, 
                         pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto, pp.TieneReclamo,
-                        u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho
+                        u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho, pr.CantidadOferta
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-                        WHERE p.UsuarioID = @IdUsuario";
+                        WHERE p.UsuarioID = @IdUsuario
+                        ORDER BY p.FechaEntrega ASC";
 
                     if (FechaFiltro != DateTime.MinValue)
                     {
@@ -464,6 +465,7 @@ namespace API_Tesis.Controllers
                                     NombreProducto = reader.GetString("NombreProducto"),
                                     Cantidad = reader.GetInt32("Cantidad"),
                                     Precio = reader.GetDouble("Precio"),
+                                    CantidadOferta = reader.GetDouble("CantidadOferta"),
                                     TieneSeguimiento = _tieneSeguimiento,
                                     TieneReclamo = reader.GetBoolean("TieneReclamo")
                                 });
@@ -533,13 +535,15 @@ namespace API_Tesis.Controllers
                     string query = @"
                         SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
 	                   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente,
-	                   pp.ProductoID, pp.Cantidad, pr.Precio, pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto
+	                   pp.ProductoID, pp.Cantidad, pr.Precio, pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto,
+                       pr.CantidadOferta
                        FROM Pedidos p 
                        INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
-                       WHERE pr.TiendaID = @IdTienda";
+                       WHERE pr.TiendaID = @IdTienda
+                       ORDER BY p.FechaEntrega ASC";
 
                     if (FechaFiltro != DateTime.MinValue)
                     {
@@ -585,6 +589,7 @@ namespace API_Tesis.Controllers
                                     NombreProducto = reader.GetString("NombreProducto"),
                                     Cantidad = reader.GetInt32("Cantidad"),
                                     Precio = reader.GetDouble("Precio"),
+                                    CantidadOferta = reader.GetDouble("CantidadOferta"),
                                     TieneSeguimiento = reader.GetBoolean("TieneSeguimiento"),
                                 });
                             }
@@ -712,6 +717,128 @@ namespace API_Tesis.Controllers
                                 }
                             }
                             return Ok(seguimientos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/VisualizarReclamosPorUsuario")]
+        public async Task<IActionResult> VisualizarReclamosPorUsuario(int idUsuario)
+        {
+            try
+            {
+                Dictionary<int, object> pedidosConReclamo = new Dictionary<int, object>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                SELECT p.IdPedido, p.FechaEntrega, p.Total, pp.TieneReclamo 
+                FROM Pedidos p
+                INNER JOIN Usuario u ON p.UsuarioID = u.IdUsuario
+                INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                WHERE u.IdUsuario = @IdUsuario AND (pp.TieneSeguimiento=true
+                OR pp.TieneReclamo = true)
+                ORDER BY pp.TieneReclamo ASC";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int idPedido = reader.GetInt32("IdPedido");
+                                var usuario = new
+                                {
+                                    IdPedido = !reader.IsDBNull(reader.GetOrdinal("IdPedido")) ? reader.GetInt32("IdPedido") : (int?)null,
+                                    FechaEntrega = reader.IsDBNull(reader.GetOrdinal("FechaEntrega")) ? (DateTime?)null : reader.GetDateTime("FechaEntrega"),
+                                    Total = reader.IsDBNull(reader.GetOrdinal("Total")) ? (double?)null : reader.GetDouble("Total"),
+                                    ContieneReclamo = reader.IsDBNull(reader.GetOrdinal("TieneReclamo")) ? (bool?)null : reader.GetBoolean("TieneReclamo"),
+                                };
+
+                                if (!pedidosConReclamo.ContainsKey(idPedido))
+                                {
+                                    pedidosConReclamo.Add(idPedido, usuario);
+                                }
+                            }
+                        }
+                    }
+                }
+                return Ok(pedidosConReclamo.Values.ToList());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/InformacionPedidoReclamo")]
+        public async Task<IActionResult> InformacionPedidoReclamo(int IdPedido)
+        {
+            try
+            {
+                List<Pedido> listaPedidos = new List<Pedido>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado,
+                        pr.IdProducto, pr.Nombre AS NombreProducto, pp.Cantidad AS CantidadProducto,
+                        pr.Precio, pp.TieneReclamo, t.Nombre AS NombreTienda, pp.IdPedidoXProducto,
+                        pp.ProductoID, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho
+                        FROM Pedidos p
+                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        WHERE p.IdPedido = @IdPedido";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdPedido", IdPedido);
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int idPedido = reader.GetInt32("IdPedido");
+                                Pedido pedidoExistente = listaPedidos.FirstOrDefault(p => p.IdPedido == idPedido);
+                                if (pedidoExistente == null)
+                                {
+                                    pedidoExistente = new Pedido
+                                    {
+                                        IdPedido = idPedido,
+                                        FechaEntrega = reader.GetDateTime("FechaEntrega"),
+                                        FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                        Total = reader.GetDouble("Total"),
+                                        Estado = reader.GetInt32("Estado"),
+                                        ProductosLista = new List<ProductoPedido>()
+                                    };
+
+                                    listaPedidos.Add(pedidoExistente);
+                                }
+                                pedidoExistente.ProductosLista.Add(new ProductoPedido
+                                {
+                                    IdProducto = reader.GetInt32("ProductoID"),
+                                    IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
+                                    NombreTienda = reader.GetString("NombreTienda"),
+                                    NombreProducto = reader.GetString("NombreProducto"),
+                                    NombreDueño = reader.GetString("NombreDuenho"),
+                                    ApellidoDuenho = reader.GetString("ApellidoDuenho"),
+                                    Cantidad = reader.GetInt32("CantidadProducto"),
+                                    Precio = reader.GetDouble("Precio"),
+                                    TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                });
+                            }
+                            return Ok(listaPedidos);
                         }
                     }
                 }
@@ -1009,6 +1136,300 @@ namespace API_Tesis.Controllers
                                     reader.GetDouble("SumaPreciosPedidosCompletadosMes3"),
                                 };
                                 return Ok(estadistica);
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/EstadisticaComprador")]
+        public async Task<IActionResult> EstadisticaComprador(int idUsuario)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                       SELECT 
+                        (SELECT COUNT(*) 
+                         FROM Usuario 
+                         JOIN Pedidos ON Usuario.IdUsuario = Pedidos.UsuarioID 
+                         WHERE Usuario.IdUsuario = @IdUsuario 
+                         GROUP BY Usuario.IdUsuario, Usuario.Nombre, Usuario.Apellido) AS CantidadPedidos,
+    
+                        (SELECT COUNT(*) 
+                         FROM Usuario 
+                         JOIN Pedidos ON Usuario.IdUsuario = Pedidos.UsuarioID 
+                         WHERE Usuario.IdUsuario = @IdUsuario  AND Pedidos.Estado = 1 
+                         GROUP BY Usuario.IdUsuario, Usuario.Nombre, Usuario.Apellido) AS CantidadPedidosEstadoPendiente,
+    
+                        (SELECT COUNT(*) 
+                         FROM Usuario 
+                         JOIN Pedidos ON Usuario.IdUsuario = Pedidos.UsuarioID 
+                         WHERE Usuario.IdUsuario = @IdUsuario  AND Pedidos.Estado = 2 
+                         GROUP BY Usuario.IdUsuario, Usuario.Nombre, Usuario.Apellido) AS CantidadPedidosEstadoCompletado,
+    
+                        (SELECT COUNT(*) 
+                         FROM Chat 
+                         JOIN PedidoXProducto ON Chat.PedidoXProductoID = PedidoXProducto.IdPedidoXProducto 
+                         JOIN Pedidos ON PedidoXProducto.PedidoID = Pedidos.IdPedido 
+                         WHERE Chat.FinalizarCliente = 1 AND Pedidos.UsuarioID = @IdUsuario) AS CantidadChatsFinalizados,
+    
+                        (SELECT COUNT(*) 
+                         FROM Chat 
+                         JOIN PedidoXProducto ON Chat.PedidoXProductoID = PedidoXProducto.IdPedidoXProducto 
+                         JOIN Pedidos ON PedidoXProducto.PedidoID = Pedidos.IdPedido 
+                         WHERE Chat.FinalizarCliente = 0 AND Pedidos.UsuarioID = @IdUsuario) AS CantidadChatsPendientes,
+    
+                        (SELECT COUNT(DISTINCT Pedidos.IdPedido) 
+                         FROM Pedidos 
+                         JOIN PedidoXProducto ON Pedidos.IdPedido = PedidoXProducto.PedidoID 
+                         WHERE PedidoXProducto.TieneReclamo = true 
+                         AND Pedidos.UsuarioID = @IdUsuario) AS CantidadPedidosConReclamo,
+    
+                        (SELECT IFNULL(SUM(DISTINCT p.TotalDescuento), 0) AS TotalDescuento
+                        FROM Pedidos p
+                        JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                        JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                        WHERE p.Estado = 1 
+                        AND p.UsuarioID = 3
+                        AND p.FechaCreacion >= CURDATE() - INTERVAL 3 MONTH) AS TotalDescuento,
+
+                        (SELECT IFNULL(SUM(DISTINCT p.TotalDescuento),0) 
+                         FROM Pedidos p 
+                         JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID 
+                         JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
+                         WHERE p.Estado = 1 AND p.UsuarioID = @IdUsuario 
+                         AND YEAR(p.FechaCreacion) = YEAR(CURDATE()) 
+                         AND MONTH(p.FechaCreacion) = MONTH(CURDATE())) AS TotalDescuentoMesActual,
+    
+                        (SELECT IFNULL(SUM(DISTINCT p.TotalDescuento), 0) 
+                         FROM Pedidos p 
+                         JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID 
+                         JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
+                         WHERE p.Estado = 1 
+                         AND p.UsuarioID = @IdUsuario
+                         AND YEAR(p.FechaCreacion) = YEAR(CURDATE() - INTERVAL 1 MONTH) 
+                         AND MONTH(p.FechaCreacion) = MONTH(CURDATE() - INTERVAL 1 MONTH)) AS TotalDescuentoMesAnterior,
+    
+                        (SELECT IFNULL(SUM(DISTINCT p.TotalDescuento), 0) 
+                         FROM Pedidos p 
+                         JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID 
+                         JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
+                         WHERE p.Estado = 1 
+                         AND p.UsuarioID = @IdUsuario
+                         AND YEAR(p.FechaCreacion) = YEAR(CURDATE() - INTERVAL 2 MONTH) 
+                         AND MONTH(p.FechaCreacion) = MONTH(CURDATE() - INTERVAL 2 MONTH)) AS TotalDescuentoDosMesesAntes;
+                     ";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                EstadisticaComprador estadistica = new EstadisticaComprador
+                                {
+                                    CantidadPedidos = reader.GetInt32("CantidadPedidos"),
+                                    CantidadPedidosEstadoPendiente = reader.GetInt32("CantidadPedidosEstadoPendiente"),
+                                    CantidadPedidosEstadoCompletado = reader.GetInt32("CantidadPedidosEstadoCompletado"),
+                                    CantidadChatsFinalizados = reader.GetInt32("CantidadChatsFinalizados"),
+                                    CantidadChatsPendientes = reader.GetInt32("CantidadChatsPendientes"),
+                                    CantidadPedidosConReclamo = reader.GetInt32("CantidadPedidosConReclamo"),
+                                    TotalDescuento = reader.IsDBNull(reader.GetOrdinal("TotalDescuento")) ?
+                                                             0 : reader.GetDouble("TotalDescuento"),
+                                    TotalDescuentoMesActual = reader.IsDBNull(reader.GetOrdinal("TotalDescuentoMesActual")) ? 0 :
+                                    reader.GetDouble("TotalDescuentoMesActual"),
+                                    TotalDescuentoMesAnterior = reader.IsDBNull(reader.GetOrdinal("TotalDescuentoMesAnterior")) ? 0 :
+                                    reader.GetDouble("TotalDescuentoMesAnterior"),
+                                    TotalDescuentoDosMesesAntes = reader.IsDBNull(reader.GetOrdinal("TotalDescuentoDosMesesAntes")) ? 0 :
+                                    reader.GetDouble("TotalDescuentoDosMesesAntes"),
+                                };
+                                return Ok(estadistica);
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarPedidosAdministrador")]
+        public async Task<IActionResult> ListarPedidosAdministrador(bool completados, bool pendientes)
+        {
+            try
+            {
+                List<Pedido> pedidos = new List<Pedido>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                      SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Estado AS EstadoPedido, p.Total,
+                        t.Nombre AS NombreTienda, u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente,
+                        us.Nombre AS NombreDueño, us.Apellido AS ApellidoDuenho, pp.TieneReclamo, pp.FechaReclamo,
+                        pr.Nombre AS NombreProducto, pp.Cantidad AS CantidadProducto, pr.Precio, t.IdTienda,
+                        pp.ProductoID, pp.IdPedidoXProducto,  pr.CantidadOferta
+                        FROM Pedidos p
+                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
+                        INNER JOIN Usuario us ON us.IdUsuario = t.UsuarioID
+                     ";
+
+                    if (completados && !pendientes) query += " WHERE p.Estado = 2";
+                    else if (!completados && pendientes) query += " WHERE p.Estado = 1";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                do
+                                {
+                                    int idPedido = reader.GetInt32("IdPedido");
+                                    Pedido pedidoExistente = pedidos.FirstOrDefault(p => p.IdPedido == idPedido);
+                                    if (pedidoExistente == null)
+                                    {
+                                        pedidoExistente = new Pedido
+                                        {
+                                            IdPedido = idPedido,
+                                            NombreCliente = reader.GetString("NombreCliente"),
+                                            ApellidoCliente = reader.GetString("ApellidoCliente"),
+                                            FechaEntrega = reader.GetDateTime("FechaEntrega"),
+                                            FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                            Total = reader.GetDouble("Total"),
+                                            Estado = reader.GetInt32("EstadoPedido"),
+                                            ProductosLista = new List<ProductoPedido>()
+                                        };
+
+                                        pedidos.Add(pedidoExistente);
+                                    }
+                                    pedidoExistente.ProductosLista.Add(new ProductoPedido
+                                    {
+                                        IdTienda = reader.GetInt32("IdTienda"),
+                                        IdProducto = reader.GetInt32("ProductoID"),
+                                        IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
+                                        NombreTienda = reader.GetString("NombreTienda"),
+                                        NombreDueño = reader.GetString("NombreDueño"),
+                                        ApellidoDuenho = reader.GetString("ApellidoDuenho"),
+                                        NombreProducto = reader.GetString("NombreProducto"),
+                                        Cantidad = reader.GetInt32("CantidadProducto"),
+                                        Precio = reader.GetDouble("Precio"),
+                                        TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                        FechaReclamo = reader.GetDateTime("FechaReclamo"),
+                                        CantidadOferta = reader.GetDouble("CantidadOferta"),
+                                    });
+                                } while (reader.Read());
+                                return Ok(pedidos);
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarPedidosReclamosAdministrador")]
+        public async Task<IActionResult> ListarPedidosReclamosAdministrador()
+        {
+            try
+            {
+                List<Pedido> pedidos = new List<Pedido>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                      SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Estado, p.Total,
+                        t.Nombre AS NombreTienda, u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente,
+                        us.Nombre AS NombreDueño, us.Apellido AS ApellidoDuenho, pp.TieneReclamo, pp.FechaReclamo,
+                        pr.Nombre AS NombreProducto, pp.Cantidad AS CantidadProducto, pr.Precio,  t.IdTienda,
+                        pp.ProductoID, pp.IdPedidoXProducto
+                        FROM Pedidos p
+                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
+                        INNER JOIN Usuario us ON us.IdUsuario = t.UsuarioID
+                        WHERE pp.TieneReclamo = 1;
+                     ";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                while (reader.Read())
+                                {
+                                    int idPedido = reader.GetInt32("IdPedido");
+                                    Pedido pedidoExistente = pedidos.FirstOrDefault(p => p.IdPedido == idPedido);
+                                    if (pedidoExistente == null)
+                                    {
+                                        pedidoExistente = new Pedido
+                                        {
+                                            IdPedido = idPedido,
+                                            NombreCliente = reader.GetString("NombreCliente"),
+                                            ApellidoCliente = reader.GetString("ApellidoCliente"),
+                                            FechaEntrega = reader.GetDateTime("FechaEntrega"),
+                                            FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                            Total = reader.GetDouble("Total"),
+                                            Estado = reader.GetInt32("Estado"),
+                                            ProductosLista = new List<ProductoPedido>()
+                                        };
+
+                                        pedidos.Add(pedidoExistente);
+                                    }
+                                    pedidoExistente.ProductosLista.Add(new ProductoPedido
+                                    {
+                                        IdTienda = reader.GetInt32("IdTienda"),
+                                        IdProducto = reader.GetInt32("ProductoID"),
+                                        IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
+                                        NombreTienda = reader.GetString("NombreTienda"),
+                                        NombreDueño = reader.GetString("NombreDueño"),
+                                        ApellidoDuenho = reader.GetString("ApellidoDuenho"),
+                                        NombreProducto = reader.GetString("NombreProducto"),
+                                        Cantidad = reader.GetInt32("CantidadProducto"),
+                                        Precio = reader.GetDouble("Precio"),
+                                        TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                        FechaReclamo = reader.GetDateTime("FechaReclamo"),
+                                    });
+                                }
+                                return Ok(pedidos);
                             }
                             else
                             {

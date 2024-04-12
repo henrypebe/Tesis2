@@ -73,7 +73,8 @@ export default function CarritoCompra({setMostrarCarrito, setMostrarProductos, m
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
           <ShoppingCartIcon sx={{fontSize:"100px", marginRight:"20px"}}/>
           <Typography sx={{color:"black", fontWeight:"bold", fontSize:"32px", width:"100%"}}>Total: S/. 
-          {productos.reduce((total, producto) => total + producto.precio * producto.cantidad, 0).toFixed(2)} {productos.length>0 && productoMasLargo?`- Tiempo de 
+          {productos.reduce((total, producto) => total + ((producto.precio*producto.cantidad) - (producto.precio*producto.cantidad*producto.cantidadOferta/100)), 0).toFixed(2)}
+           {productos.length>0 && productoMasLargo?`- Tiempo de 
           entrega: ${productoMasLargo.fechaEnvio}`:""}</Typography>
         </Box>
 

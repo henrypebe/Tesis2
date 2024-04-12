@@ -13,5 +13,7 @@
         public double Precio { get; set; }
         public Boolean TieneSeguimiento { get; set; }
         public Boolean TieneReclamo { get; set; }
+        public DateTime FechaReclamo { get; set; }
+        public double CantidadOferta { get; set; }
     }
 }
