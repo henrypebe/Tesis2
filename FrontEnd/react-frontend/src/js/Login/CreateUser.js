@@ -40,10 +40,16 @@ export default function CreateUser() {
                 }
             });
             if (response.ok) {
-              const idUsuario = await response.json();
-              window.location.href = `/Rol/${idUsuario}`;
+              const { idUsuarioExistente, existente } = await response.json();
+              // console.log(idUsuarioExistente);
+              window.location.href = `/Rol/${idUsuarioExistente}/${existente?1:0}`;
             } else {
-                throw new Error('Error al enviar el correo electrónico');
+              if (response.status === 400) {
+                const errorMessage = await response.text();
+                toast.error(errorMessage);
+              } else {
+                  toast.error('Error al ingresar los datos, verifique nuevamente.');
+              }
             }
           }else{
             toast.error('Las contraseñas no coinciden, intente nuevamente.');

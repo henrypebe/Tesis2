@@ -5,6 +5,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, setDetalleReclamo, setReclamoSeleccionado}) {
     
+    console.log(ReclamoSeleccionado[0]);
+
     const HandleReclamar = async(reclamo) =>{
         const response = await fetch(
         `https://localhost:7240/EditarReclamoPedido?idPedidoXProducto=${reclamo.idPedidoXProducto}`,
@@ -72,6 +74,23 @@ export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, 
         setMostrarReclamo(true);
     };
 
+    const handleRealizarReclamoPedido = async() => {
+        const response = await fetch(
+            `https://localhost:7240/RealizarReclamoPedido?idPedido=${ReclamoSeleccionado[0].idPedido}`,
+            {
+                method: "PUT",
+                headers: {
+                "Content-Type": "application/json",
+                },
+            }
+        );
+    
+        if (response.ok) {
+            toast.success('El pedido fue reclamado', { autoClose: 2000 });
+            handleListarReclamo();
+        }
+    };
+
     function concatenarNombresTiendas(pedido) {
         if (!pedido || !pedido.productosLista) {
             return "";
@@ -104,10 +123,26 @@ export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, 
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Pedidos - {concatenarNombresTiendas(ReclamoSeleccionado[0])}</Typography>
-            <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
-            fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleBackPedido}>
-                Atrás
-            </Button>
+            <Box sx={{width:"40%", display:"flex", flexDirection:"row", justifyContent:"flex-end", alignItems:"center"}}>
+                {ReclamoSeleccionado[0].reclamoPedido?
+                (
+                    <Box sx={{backgroundColor:"#850E0E", height:"40px", width:"270px", padding:"5px", borderRadius:"6px", color:"white", fontWeight:"bold",
+                    display:"flex", alignItems:"center", justifyContent:"center", fontSize:"23px"}}>
+                        Hecho reclamo
+                    </Box>
+                )
+                :
+                (
+                    <Button variant="contained" sx={{backgroundColor:"#1C2536", color:"white", border:"2px solid black", width:"270px", fontSize:"17px", height:"45px",
+                    fontWeight:"bold", '&:hover':{backgroundColor:"#1C2536"}}} onClick={handleRealizarReclamoPedido}>
+                        Realizar Reclamo
+                    </Button>
+                )}
+                <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px", marginLeft:"10px",
+                fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleBackPedido}>
+                    Atrás
+                </Button>
+            </Box>
         </Box>
         
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
@@ -191,10 +226,13 @@ export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, 
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidad}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {producto.precio.toFixed(2)}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {(producto.precio * producto.cantidad).toFixed(2)}</TableCell>
-                            <TableCell sx={{textAlign:"center", width:"20%"}}>
+                            <TableCell sx={{textAlign:"center", width:"90.4%", display:"flex", alignItems:"center", justifyContent:"center"}}>
                                 {producto && producto.tieneReclamo?
                                 (
-                                    <>Se realizó el reclamo</>
+                                    <Box sx={{backgroundColor:"#850E0E", height:"40px", width:"60%", padding:"5px", borderRadius:"6px", color:"white", fontWeight:"bold",
+                                    display:"flex", alignItems:"center", justifyContent:"center", fontSize:"23px"}}>
+                                        Hecho reclamo
+                                    </Box>
                                 )
                                 :
                                 (

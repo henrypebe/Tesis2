@@ -85,6 +85,8 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
             const pedido = await response.json();
             // console.log(pedido);
             // const fechaActual = new Date();
+            setPageCompleto(0);
+            setPagePendiente(0);
             const pedidosFuturos = pedido.filter(_pedido => {
               const EstadoPedido = _pedido.estado
               return EstadoPedido===1;
@@ -131,6 +133,34 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
         return nombresTiendas;
     }
   }
+
+  // function concatenarFechasEntregasSeparadas(pedido) {
+  //   const nombresTiendasSet = new Set();
+
+  //   pedido.productosLista.forEach(producto => {
+  //     const fechaEntrega = new Date(producto.fechaEnvio);
+  //     const dia = fechaEntrega.getDate();
+  //     const mes = fechaEntrega.getMonth() + 1;
+  //     const año = fechaEntrega.getFullYear();
+  //     const diaFormateado = dia < 10 ? '0' + dia : dia;
+  //     const mesFormateado = mes < 10 ? '0' + mes : mes;
+  //     const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
+  //     nombresTiendasSet.add(fechaFormateada);
+  //   });
+  //   const nombresTiendasArray = Array.from(nombresTiendasSet);
+  //   const nombresTiendasConcatenados = nombresTiendasArray.join(", ");
+
+  //   return nombresTiendasConcatenados;
+  // }
+  // function concatenarFechasEntregasSeparadasConRecorte(pedidos) {
+  //   const nombresTiendas = concatenarFechasEntregasSeparadas(pedidos);
+  //   const maxLongitud = 100;
+  //   if (nombresTiendas.length > maxLongitud) {
+  //       return nombresTiendas.substring(0, maxLongitud) + " ...";
+  //   } else {
+  //       return nombresTiendas;
+  //   }
+  // }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -191,7 +221,9 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                   const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
-                      <TableCell sx={{fontSize:"16px", width:"17%"}}>{fechaFormateada}</TableCell>
+                      <TableCell sx={{fontSize:"16px", width:"17%"}}>
+                        {fechaFormateada}
+                      </TableCell>
                       <TableCell sx={{fontSize:"16px", width:"30%"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
                       <TableCell sx={{fontSize:"16px"}}>S/. {pedido.total.toFixed(2)}</TableCell>
                       <TableCell>
@@ -262,7 +294,9 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                   const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
-                      <TableCell sx={{fontSize:"16px", width:"9.7%"}}>{fechaFormateada}</TableCell>
+                      <TableCell sx={{fontSize:"16px", width:"9.7%"}}>
+                        {fechaFormateada}
+                      </TableCell>
                       <TableCell sx={{width:"17.4%", fontSize:"16px"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
                       <TableCell sx={{width:"30%", fontSize:"16px"}}>S/. {pedido.total.toFixed(2)}</TableCell>
                       {/* <TableCell>

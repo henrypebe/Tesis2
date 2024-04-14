@@ -1,0 +1,44 @@
+.payment-form {
+  width: 97.4%;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  margin-top: 20px;
+}
+
+.form-row {
+  margin-bottom: 15px;
+  border: "2px solid black";
+  width: "80%";
+}
+
+.form-row label{
+    border: "2px solid black";
+}
+
+.card-input-element {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.pay-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.error-message {
+  color: #dc3545;
+}
+
+.success-message {
+  color: #28a745;
+}

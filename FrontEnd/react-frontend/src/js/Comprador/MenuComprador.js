@@ -86,7 +86,8 @@ export default function MenuComprador() {
           />
         {mostrarInicio && <InicioComprador onMostrarInicioChange={setMostrarInicio} onMostrarPedidosChange={setMostrarPedidos} 
         setMostrarProductos={setMostrarProductos} setMostrarSeguimiento={setMostrarSeguimiento}
-        setMostrarEstadistica={setMostrarEstadistica} setMostrarMetodoPago={setMostrarMetodoPago}/>}
+        setMostrarEstadistica={setMostrarEstadistica} setMostrarMetodoPago={setMostrarMetodoPago} setMostrarReclamo={setMostrarReclamo}
+        idUsuario={idUsuario}/>}
 
         {mostrarPedidos && <PedidoComprador idUsuario={idUsuario} HandleChangePedidoSeleccionado={HandleChangePedidoSeleccionado}
         />}

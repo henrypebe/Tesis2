@@ -23,7 +23,7 @@ export default function EstadisticaComprador({idUsuario}) {
               if (response.ok) {
                 const Estadisticas = await response.json();
                 setEstadistica(Estadisticas);
-                console.log(Estadisticas);
+                // console.log(Estadisticas);
               } else if (response.status === 404) {
                 throw new Error("Seguimiento no encontrado");
               } else {

@@ -23,9 +23,13 @@ export default function LoginPage() {
           const idUsuario = parseInt(await response.text());
           if(idUsuario !== -1) window.location.href = `/TokenPantalla/${idUsuario}`;
           else toast.error('Error al ingresar los datos, verifique nuevamente.');
-          
         } else {
-          toast.error('Error al ingresar los datos, verifique nuevamente.');
+          if (response.status === 400) {
+            const errorMessage = await response.text();
+            toast.error(errorMessage);
+          } else {
+              toast.error('Error al ingresar los datos, verifique nuevamente.');
+          }
         }
       }else{
         toast.error('Debe ingresar todos los datos solicitados.');

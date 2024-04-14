@@ -26,6 +26,13 @@ export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) 
     }
   }
 
+  const fechaEntrega = new Date(reclamo.fechaEntrega);
+
+  const dia = String(fechaEntrega.getDate()).padStart(2, '0');
+  const mes = String(fechaEntrega.getMonth() + 1).padStart(2, '0');
+  const anio = fechaEntrega.getFullYear();
+  const fechaFormateada = `${dia}/${mes}/${anio}`;
+
   return (
     <Box
       sx={{
@@ -59,7 +66,7 @@ export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) 
             width: "100%",
           }}
         >
-          Fecha de entrega: {reclamo.fechaEntrega}
+          Fecha de entrega: {fechaFormateada}
         </Typography>
         <Typography
           sx={{

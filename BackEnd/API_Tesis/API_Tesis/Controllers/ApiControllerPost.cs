@@ -31,7 +31,7 @@ namespace API_Tesis.Controllers
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-                    string query1 = "SELECT IdUsuario, EsAdministrador, EsComprador, EsVendedor FROM Usuario WHERE Correo = @Correo AND contrasenha = @Contrasenha";
+                    string query1 = "SELECT IdUsuario, Estado, EsAdministrador, EsComprador, EsVendedor FROM Usuario WHERE Correo = @Correo AND contrasenha = @Contrasenha";
 
                     using (MySqlCommand command1 = new MySqlCommand(query1, connection))
                     {
@@ -42,11 +42,19 @@ namespace API_Tesis.Controllers
                         {
                             if (reader1.Read())
                             {
-                                idUsuario = reader1.GetInt32(0);
+                                int estadoUsuario = reader1.GetInt32("Estado");
+                                if (estadoUsuario == 0)
+                                {
+                                    return BadRequest("El usuario está eliminado.");
+                                }
+
+                                idUsuario = reader1.GetInt32("IdUsuario");
                                 Guid token = Guid.NewGuid();
                                 string tokenString = token.ToString();
                                 reader1.Close();
-                                string updateQuery = "UPDATE Usuario SET Token = @Token WHERE Correo = @Correo AND contrasenha = @Contrasenha";
+
+                                // Actualizar el token solo si el usuario está activo
+                                string updateQuery = "UPDATE Usuario SET Token = @Token WHERE Correo = @Correo";
                                 using (MySqlCommand updateCommand = new MySqlCommand(updateQuery, connection))
                                 {
                                     updateCommand.Parameters.AddWithValue("@Token", tokenString);
@@ -54,6 +62,7 @@ namespace API_Tesis.Controllers
                                     updateCommand.Parameters.AddWithValue("@Correo", _correo);
                                     updateCommand.ExecuteNonQuery();
                                 }
+
                                 string query2 = "SELECT Correo, Contrasenha FROM CorreoEmisor WHERE IdCorreoEmisor=1;";
                                 using (MySqlCommand command2 = new MySqlCommand(query2, connection))
                                 {
@@ -93,6 +102,10 @@ namespace API_Tesis.Controllers
                                     }
                                 }
                             }
+                            else
+                            {
+                                return BadRequest("El usuario no existe en el sistema");
+                            }
                         }
                         if (idUsuario == 0) idUsuario = -1;
                     }
@@ -109,69 +122,138 @@ namespace API_Tesis.Controllers
         }
         [HttpPost]
         [Route("/CreateUsuario")]
-        public async Task<ActionResult<int>> CrearUsuario(int DNI, string nombreApellido, string correo, string contrasenha, string contrasenhaVariado)
+        public async Task<IActionResult> CrearUsuario(int DNI, string nombreApellido, string correo, string contrasenha, string contrasenhaVariado)
         {
-            if (VerificarDNIExistente(DNI))
+            (int countDNI, bool estadoUsuarioDNI) = VerificarDNIExistente(DNI);
+            if (countDNI>0)
             {
-                return BadRequest("El DNI ya está registrado");
+                if (estadoUsuarioDNI) return BadRequest("El DNI ya está registrado");
             }
-            if (VerificarCorreoExistente(correo))
+            (int count, bool estadoUsuario, int idUsuarioExistente) = VerificarCorreoExistente(correo);
+            if (count>0)
             {
-                return BadRequest("El correo electrónico ya está registrado");
+                if(estadoUsuario) return BadRequest("El correo electrónico ya está registrado");
             }
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            if(!(count>0))
             {
-                connection.Open();
-                string secretKey;
-                string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
-                using (MySqlCommand command = new MySqlCommand(query2, connection))
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    using (MySqlDataReader reader = await command.ExecuteReaderAsync())
+                    connection.Open();
+                    string secretKey;
+                    string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
+                    using (MySqlCommand command = new MySqlCommand(query2, connection))
                     {
-                        if (await reader.ReadAsync())
+                        using (MySqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            secretKey = reader.GetString("KeyVar");
+                            if (await reader.ReadAsync())
+                            {
+                                secretKey = reader.GetString("KeyVar");
+                            }
+                            else
+                            {
+                                throw new Exception("No se encontró ningún secretKey en la tabla KeyEncript");
+                            }
+                        }
+                    }
+                    byte[] salt = Encoding.UTF8.GetBytes("saltValue");
+                    byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
+                    string base64Key = Convert.ToBase64String(keyBytes);
+                    string encryptedText = Encrypt(contrasenhaVariado, base64Key);
+                    string[] nombreApellidoArray = nombreApellido.Split(' ');
+                    string nombre = nombreApellidoArray[0];
+                    string apellido = nombreApellidoArray.Length > 1 ? nombreApellidoArray[1] : string.Empty;
+                    string query = "INSERT INTO Usuario (DNI, Nombre, Apellido, Correo, contrasenha, ContrasenhaVariado, Estado, EsAdministrador) " +
+                        "VALUES (@DNI, @Nombre, @Apellido, @Correo, @Contrasenha, @ContrasenhaVariado, @Estado, @EsAdministrador)";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@DNI", DNI);
+                        command.Parameters.AddWithValue("@Nombre", nombre);
+                        command.Parameters.AddWithValue("@Apellido", apellido);
+                        command.Parameters.AddWithValue("@Correo", correo);
+                        command.Parameters.AddWithValue("@Contrasenha", contrasenha);
+                        command.Parameters.AddWithValue("@ContrasenhaVariado", encryptedText);
+                        command.Parameters.AddWithValue("@Estado", 1);
+                        command.Parameters.AddWithValue("@EsAdministrador", false);
+
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected > 0)
+                        {
+                            command.CommandText = "SELECT LAST_INSERT_ID()";
+                            int idUsuario = Convert.ToInt32(command.ExecuteScalar());
+
+                            return Ok(new { idUsuarioExistente, existente = false });
                         }
                         else
                         {
-                            throw new Exception("No se encontró ningún secretKey en la tabla KeyEncript");
+                            return BadRequest();
                         }
                     }
                 }
-                byte[] salt = Encoding.UTF8.GetBytes("saltValue");
-                byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
-                string base64Key = Convert.ToBase64String(keyBytes);
-                string encryptedText = Encrypt(contrasenhaVariado, base64Key);
-                string[] nombreApellidoArray = nombreApellido.Split(' ');
-                string nombre = nombreApellidoArray[0];
-                string apellido = nombreApellidoArray.Length > 1 ? nombreApellidoArray[1] : string.Empty;
-                string query = "INSERT INTO Usuario (DNI, Nombre, Apellido, Correo, contrasenha, ContrasenhaVariado, Estado, EsAdministrador) " +
-                    "VALUES (@DNI, @Nombre, @Apellido, @Correo, @Contrasenha, @ContrasenhaVariado, @Estado, @EsAdministrador)";
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+            }
+            else
+            {
+                try
                 {
-                    command.Parameters.AddWithValue("@DNI", DNI);
-                    command.Parameters.AddWithValue("@Nombre", nombre);
-                    command.Parameters.AddWithValue("@Apellido", apellido);
-                    command.Parameters.AddWithValue("@Correo", correo);
-                    command.Parameters.AddWithValue("@Contrasenha", contrasenha);
-                    command.Parameters.AddWithValue("@ContrasenhaVariado", encryptedText);
-                    command.Parameters.AddWithValue("@Estado", 1);
-                    command.Parameters.AddWithValue("@EsAdministrador", false);
-
-                    int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                    if (rowsAffected > 0)
+                    string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                    using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
-                        command.CommandText = "SELECT LAST_INSERT_ID()";
-                        int idUsuario = Convert.ToInt32(command.ExecuteScalar());
-                        
-                        return Ok(idUsuario);
+                        connection.Open();
+                        string secretKey;
+                        string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
+                        using (MySqlCommand command = new MySqlCommand(query2, connection))
+                        {
+                            using (MySqlDataReader reader = await command.ExecuteReaderAsync())
+                            {
+                                if (await reader.ReadAsync())
+                                {
+                                    secretKey = reader.GetString("KeyVar");
+                                }
+                                else
+                                {
+                                    throw new Exception("No se encontró ningún secretKey en la tabla KeyEncript");
+                                }
+                            }
+                        }
+                        byte[] salt = Encoding.UTF8.GetBytes("saltValue");
+                        byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
+                        string base64Key = Convert.ToBase64String(keyBytes);
+                        string encryptedText = Encrypt(contrasenhaVariado, base64Key);
+                        string[] nombreApellidoArray = nombreApellido.Split(' ');
+                        string nombre = nombreApellidoArray[0];
+                        string apellido = nombreApellidoArray.Length > 1 ? nombreApellidoArray[1] : string.Empty;
+                        string query = @"UPDATE Usuario SET DNI = @DNI, Nombre=@Nombre, Apellido=@Apellido, Correo=@Correo, Contrasenha=@Contrasenha, Estado=@Estado " +
+                           "WHERE IdUsuario = @IdUsuario";
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@DNI", DNI);
+                            command.Parameters.AddWithValue("@Nombre", nombre);
+                            command.Parameters.AddWithValue("@Apellido", apellido);
+                            command.Parameters.AddWithValue("@Correo", correo);
+                            command.Parameters.AddWithValue("@Contrasenha", contrasenha);
+                            command.Parameters.AddWithValue("@ContrasenhaVariado", encryptedText);
+                            command.Parameters.AddWithValue("@Estado", 1);
+                            command.Parameters.AddWithValue("@EsAdministrador", false);
+                            command.Parameters.AddWithValue("@IdUsuario", idUsuarioExistente);
+
+                            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                            if (rowsAffected > 0)
+                            {
+                                return Ok(new { idUsuarioExistente, existente = true });
+                            }
+                            else
+                            {
+                                return BadRequest();
+                            }
+                        }
                     }
-                    else
-                    {
-                        return BadRequest();
-                    }
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    return NotFound();
                 }
             }
         }
@@ -275,7 +357,7 @@ namespace API_Tesis.Controllers
         [HttpPost]
         [Route("/CreatePedido")]
         public async Task<ActionResult<int>> CrearPedido([FromForm] DateTime FechaEntrega, [FromForm] double Total, [FromForm] double TotalDescuento, [FromForm] int Estado, [FromForm] int CantidadProductos,
-            [FromForm] string MetodoPago, [FromForm] int UsuarioID)
+            [FromForm] string MetodoPago, [FromForm] int UsuarioID,  [FromForm] double CostoEnvio)
         {
             try
             {
@@ -284,8 +366,8 @@ namespace API_Tesis.Controllers
                 {
                     connection.Open();
 
-                    string query = @"INSERT INTO Pedidos (FechaEntrega, Total, Estado, Reclamo, CantidadProductos, MetodoPago, FechaCreacion, UsuarioID, TotalDescuento) VALUES 
-                    (@FechaEntrega, @Total, @Estado, @Reclamo, @CantidadProductos, @MetodoPago, @FechaCreacion, @UsuarioID, @TotalDescuento);
+                    string query = @"INSERT INTO Pedidos (FechaEntrega, Total, Estado, Reclamo, CantidadProductos, MetodoPago, FechaCreacion, UsuarioID, TotalDescuento, CostoEnvio) VALUES 
+                    (@FechaEntrega, @Total, @Estado, @Reclamo, @CantidadProductos, @MetodoPago, @FechaCreacion, @UsuarioID, @TotalDescuento, @CostoEnvio);
                      SELECT LAST_INSERT_ID();";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@FechaEntrega", FechaEntrega);
@@ -297,6 +379,7 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@FechaCreacion", DateTime.Now);
                     command.Parameters.AddWithValue("@UsuarioID", UsuarioID);
                     command.Parameters.AddWithValue("@TotalDescuento", TotalDescuento);
+                    command.Parameters.AddWithValue("@CostoEnvio", CostoEnvio);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 
                     return Ok(idGenerado);
@@ -310,7 +393,7 @@ namespace API_Tesis.Controllers
         }
         [HttpPost]
         [Route("/CreatePedidoXProducto")]
-        public async Task<ActionResult<int>> CrearPedido(int productoId, int pedidoId, int cantidad, int stock)
+        public async Task<ActionResult<int>> CreatePedidoXProducto([FromForm] int productoId, [FromForm] int pedidoId, [FromForm] int cantidad, [FromForm] int stock)
         {
             try
             {
@@ -503,49 +586,81 @@ namespace API_Tesis.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
-        private bool VerificarCorreoExistente(string correo)
+        private (int, bool, int) VerificarCorreoExistente(string correo)
         {
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            try
             {
-                connection.Open();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                int count = 0;
+                int idUsuario = 0;
+                bool estadoUsuario = false;
 
-                string query = "SELECT COUNT(*) FROM Usuario WHERE Correo = @Correo AND Estado = 1";
-
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.AddWithValue("@Correo", correo);
+                    connection.Open();
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    string query = "SELECT COUNT(*) FROM Usuario WHERE Correo = @Correo";
+                    string estadoQuery = "SELECT IdUsuario, Estado FROM Usuario WHERE Correo = @Correo";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Correo", correo);
+
+                        count = Convert.ToInt32(command.ExecuteScalar());
+                    }
+
+                    using (MySqlCommand estadoCommand = new MySqlCommand(estadoQuery, connection))
+                    {
+                        estadoCommand.Parameters.AddWithValue("@Correo", correo);
+
+                        using (MySqlDataReader reader = estadoCommand.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                idUsuario = reader.GetInt32("IdUsuario");
+                                estadoUsuario = reader.GetBoolean("Estado");
+                            }
+                        }
+                    }
 
                     connection.Close();
-                    // Si count es mayor que cero, significa que el correo ya está registrado
-                    return count > 0;
                 }
+
+                return (count, estadoUsuario, idUsuario);
+            }
+            catch(Exception ex)
+            {
+                return (0,false, 0);
             }
         }
-        private bool VerificarDNIExistente(int DNI)
+        private (int, bool) VerificarDNIExistente(int DNI)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            int count = 0;
+            bool estadoUsuario = false;
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
 
-                string query = "SELECT COUNT(*) FROM Usuario WHERE DNI = @DNI AND Estado = 1";
+                string query = "SELECT COUNT(*) FROM Usuario WHERE DNI = @DNI";
+                string estadoQuery = "SELECT Estado FROM Usuario WHERE DNI = @DNI";
 
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@DNI", DNI);
 
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    count = Convert.ToInt32(command.ExecuteScalar());
+                }
 
-                    connection.Close();
-                    // Si count es mayor que cero, significa que el correo ya está registrado
-                    return count > 0;
+                using (MySqlCommand estadoCommand = new MySqlCommand(estadoQuery, connection))
+                {
+                    estadoCommand.Parameters.AddWithValue("@DNI", DNI);
+
+                    estadoUsuario = Convert.ToBoolean(estadoCommand.ExecuteScalar());
                 }
             }
+            return (count, estadoUsuario);
         }
         private bool VerificarNombreTiendaExistente(string nombreTienda)
         {

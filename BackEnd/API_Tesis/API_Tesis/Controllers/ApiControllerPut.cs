@@ -271,6 +271,63 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpPut]
+        [Route("/IniciarTiendaExistente")]
+        public async Task<IActionResult> IniciarTiendaExistente(int idUsuario)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE Tienda SET Estado = @Estado " +
+                        "WHERE UsuarioID = @idUsuario";
+                    MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                    command.Parameters.AddWithValue("@Estado", 1);
+                    command.Parameters.AddWithValue("@idUsuario", idUsuario);
+
+                    await command.ExecuteNonQueryAsync();
+                    connection.Close();
+
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/RealizarReclamoPedido")]
+        public async Task<IActionResult> RealizarReclamoPedido(int idPedido)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE Pedidos SET Reclamo = @Reclamo " +
+                        "WHERE IdPedido = @IdPedido";
+                    MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                    command.Parameters.AddWithValue("@Reclamo", 1);
+                    command.Parameters.AddWithValue("@IdPedido", idPedido);
+
+                    await command.ExecuteNonQueryAsync();
+                    connection.Close();
+
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [HttpPut]
         [Route("/FinalizarChatCliente")]
         public async Task<IActionResult> FinalizarChatCliente(int idChat)
         {
@@ -289,6 +346,76 @@ namespace API_Tesis.Controllers
 
                     await command.ExecuteNonQueryAsync();
                     connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/EliminarCuentaComprador")]
+        public async Task<IActionResult> EliminarCuentaComprador(int idUsuario)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE Usuario SET Estado = @Estado " +
+                        "WHERE IdUsuario = @IdUsuario";
+                    MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                    command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                    command.Parameters.AddWithValue("@Estado", 0);
+                    await command.ExecuteNonQueryAsync();
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/EliminarCuentaVendedor")]
+        public async Task<IActionResult> EliminarCuentaVendedor(int idUsuario, bool esAdministrador)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    string updateQuery = "UPDATE Usuario SET Estado = @Estado " +
+                        "WHERE IdUsuario = @IdUsuario";
+                    MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                    command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                    command.Parameters.AddWithValue("@Estado", 0);
+                    await command.ExecuteNonQueryAsync();
+                    connection.Close();
+
+                    if (esAdministrador)
+                    {
+                        await connection.OpenAsync();
+                        updateQuery = "UPDATE Tienda SET Estado = 0 WHERE UsuarioID = @IdUsuario";
+                        command = new MySqlCommand(updateQuery, connection);
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        await command.ExecuteNonQueryAsync();
+                        connection.Close();
+
+                        await connection.OpenAsync();
+                        updateQuery = @"UPDATE Producto
+                                        SET Estado = 0
+                                        WHERE TiendaID IN(SELECT IdTienda FROM Tienda WHERE UsuarioID = @IdUsuario)";
+                        command = new MySqlCommand(updateQuery, connection);
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        await command.ExecuteNonQueryAsync();
+                        connection.Close();
+                    }
                     return Ok();
                 }
             }

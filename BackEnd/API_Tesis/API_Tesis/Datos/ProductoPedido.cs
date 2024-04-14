@@ -15,5 +15,6 @@
         public Boolean TieneReclamo { get; set; }
         public DateTime FechaReclamo { get; set; }
         public double CantidadOferta { get; set; }
+        //public DateTime FechaEnvio { get; set; }
     }
 }

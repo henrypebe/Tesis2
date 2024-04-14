@@ -136,7 +136,8 @@ export default function MenuVendedor() {
 
             {mostrarInicio && <InicioVendedor setMostrarInicio={setMostrarInicio} setMostrarEstadisticaVendedor={setMostrarEstadisticaVendedor}
             setMostrarVentas={setMostrarVentas} setMostrarMisProductos={setMostrarMisProductos}
-            setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor} setMostrarBilletera={setMostrarBilletera} setMostrarReclamo={setMostrarReclamo}/>}
+            setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor} setMostrarBilletera={setMostrarBilletera} setMostrarReclamo={setMostrarReclamo}
+            informacionTienda={informacionTienda}/>}
 
             {mostrarVentas && <Ventas HandleChangeVentaSeleccionado={HandleChangeVentaSeleccionado} informacionTienda={informacionTienda}/>}
 

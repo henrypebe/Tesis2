@@ -28,10 +28,10 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const handleOpen = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
   const handleClose = () => {setOpen(false);};
 
-  const handleOpenModalCuarto = () => {
-    setOpenModaCuarto(true);
-    setOpen(false);
-  };
+  // const handleOpenModalCuarto = () => {
+  //   setOpenModaCuarto(true);
+  //   setOpen(false);
+  // };
   const handleCloseModalCuarto = () => {
     setOpenModaCuarto(false);
     setOpen(true);
@@ -60,7 +60,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
       if (response.ok) {
         const usuario = await response.json();
-        // console.log(usuario);
+        console.log(usuario);
         setInformacionUsuario(usuario);
       } else if (response.status === 404) {
         throw new Error("Usuario no encontrado");
@@ -199,7 +199,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     boxShadow: 24,
     padding: "20px",
     borderRadius: "8px",
-    height: informacionUsuario && informacionUsuario.esVendedor ? "83%" : "79%",
+    height: informacionUsuario && informacionUsuario.esVendedor ? "85%" : "79%",
   };
   const styleCuarto = {
     position: "absolute",
@@ -234,6 +234,47 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     localStorage.removeItem("isLoggedInVendedor");
     window.location.href = "/Login";
   };
+
+  const handleChangeEliminarUsuario = async() =>{
+    
+    if(informacionUsuario.esVendedor){
+      const response = await fetch(
+        `https://localhost:7240/EliminarCuentaVendedor?idUsuario=${informacionUsuario.idUsuario}&esAdministrador=${informacionUsuario.esVendedorAdministrador}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.ok) {
+        toast.success("Usuario eliminado con éxito", { autoClose: 2000 });
+        localStorage.removeItem("isLoggedInComprador");
+        localStorage.removeItem("isLoggedInAdministrador");
+        localStorage.removeItem("isLoggedInVendedor");
+        window.location.href = "/Login";
+      }
+    }else{
+      const response = await fetch(
+        `https://localhost:7240/EliminarCuentaComprador?idUsuario=${informacionUsuario.idUsuario}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.ok) {
+        toast.success("Usuario eliminado con éxito", { autoClose: 2000 });
+        localStorage.removeItem("isLoggedInComprador");
+        localStorage.removeItem("isLoggedInAdministrador");
+        localStorage.removeItem("isLoggedInVendedor");
+        window.location.href = "/Login";
+      }
+    }
+  }
 
   const handleCambioContrasenha = () => {
     if (contrasenha !== "") {
@@ -907,6 +948,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                     "&:hover": { backgroundColor: "#1C2536" },
                   }}
                   onClick={handleOpenModalQuinto}
+                  disabled={!informacionUsuario.esVendedorAdministrador}
                 >
                   Editar Tienda
                 </Button>
@@ -937,7 +979,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                   fontSize: "20px",
                   "&:hover": { backgroundColor: "#FF7E62" },
                 }}
-                onClick={handleOpenModalCuarto}
+                onClick={handleChangeEliminarUsuario}
               >
                 Eliminar cuenta
               </Button>
@@ -1337,8 +1379,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                height: "37%",
-                marginTop: "15px"
+                height: "35%",
+                marginTop: "15px",
               }}
             >
               <Box
@@ -1362,7 +1404,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
               </Box>
               <TextField
                 multiline
-                rows={8}
+                rows={7}
                 sx={{
                   width: "100%"
                 }}
@@ -1376,7 +1418,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
               variant="contained"
               sx={{
                 backgroundColor: "#1C2536",
-                marginTop: "3px",
+                marginTop: "8px",
                 fontSize: "25px",
                 height: "7%",
                 width: "100%",

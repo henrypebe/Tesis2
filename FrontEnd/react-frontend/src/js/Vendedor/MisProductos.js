@@ -116,7 +116,11 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
               throw new Error("Error al obtener la lista de productos");
             }
           };
-        obtenerListaProducto();
+        // obtenerListaProducto();
+        const interval = setInterval(() => {
+          obtenerListaProducto();
+        }, 100);
+        return () => clearInterval(interval);
       }, [idTienda, Busqueda]);
 
     const [currentPage, setCurrentPage] = React.useState(0);

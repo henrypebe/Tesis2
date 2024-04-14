@@ -5,7 +5,7 @@ import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import { useParams } from 'react-router-dom';
 
 export default function RolDeterminar({onLoginComprador}) {
-    const { idUsuario } = useParams();
+    const { idUsuario, Existente } = useParams();
     const [esVendedor, setEsVendedor] = useState(false);
 
     const handleCheckboxChange = (newValue) => {
@@ -23,8 +23,8 @@ export default function RolDeterminar({onLoginComprador}) {
             
             if (response.ok) {
                 if(esVendedor){
-                    // window.location.href = `/TiendaInformacion/${idUsuario}`;
-                    window.location.href = `/RolVendedor/${idUsuario}`;
+                    if(Existente) window.location.href = `/SeleccionTienda/${idUsuario}`;
+                    else window.location.href = `/RolVendedor/${idUsuario}`;
                 }else{
                     // window.location.href = `/MenuVendedor/${idUsuario}`;
                     onLoginComprador(idUsuario);

@@ -410,19 +410,21 @@ namespace API_Tesis.Controllers
                         SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
 	                    p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, pp.ProductoID, pp.Cantidad, pr.Precio, 
                         pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto, pp.TieneReclamo,
-                        u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho, pr.CantidadOferta
+                        u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho, pr.CantidadOferta,
+                        p.CostoEnvio
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-                        WHERE p.UsuarioID = @IdUsuario
-                        ORDER BY p.FechaEntrega ASC";
+                        WHERE p.UsuarioID = @IdUsuario";
 
                     if (FechaFiltro != DateTime.MinValue)
                     {
-                        query += " AND DATE_FORMAT(p.FechaEntrega, '%Y-%m-%d') = @FechaFiltro";
+                        query += " AND (DATE_FORMAT(p.FechaEntrega, '%Y-%m-%d') = @FechaFiltro)";
                     }
+
+                    query += " ORDER BY p.FechaEntrega ASC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -448,6 +450,7 @@ namespace API_Tesis.Controllers
                                         FechaCreacion = reader.GetDateTime("FechaCreacion"),
                                         Total = reader.GetDouble("Total"),
                                         Estado = reader.GetInt32("Estado"),
+                                        CostoEnvio = reader.GetDouble("CostoEnvio"),
                                         ProductosLista = new List<ProductoPedido>()
                                     };
 
@@ -467,7 +470,7 @@ namespace API_Tesis.Controllers
                                     Precio = reader.GetDouble("Precio"),
                                     CantidadOferta = reader.GetDouble("CantidadOferta"),
                                     TieneSeguimiento = _tieneSeguimiento,
-                                    TieneReclamo = reader.GetBoolean("TieneReclamo")
+                                    TieneReclamo = reader.GetBoolean("TieneReclamo"),
                                 });
                             }
                             return Ok(pedidos);
@@ -739,13 +742,13 @@ namespace API_Tesis.Controllers
                     await connection.OpenAsync();
 
                     string query = @"
-                SELECT p.IdPedido, p.FechaEntrega, p.Total, pp.TieneReclamo 
-                FROM Pedidos p
-                INNER JOIN Usuario u ON p.UsuarioID = u.IdUsuario
-                INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
-                WHERE u.IdUsuario = @IdUsuario AND (pp.TieneSeguimiento=true
-                OR pp.TieneReclamo = true)
-                ORDER BY pp.TieneReclamo ASC";
+                    SELECT p.IdPedido, p.FechaEntrega, p.Total, pp.TieneReclamo, p.Reclamo
+                    FROM Pedidos p
+                    INNER JOIN Usuario u ON p.UsuarioID = u.IdUsuario
+                    INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+                    WHERE u.IdUsuario = @IdUsuario AND (pp.TieneSeguimiento=true
+                    OR pp.TieneReclamo = true OR p.Reclamo = 1)
+                    ORDER BY pp.TieneReclamo ASC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -794,7 +797,8 @@ namespace API_Tesis.Controllers
                         SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado,
                         pr.IdProducto, pr.Nombre AS NombreProducto, pp.Cantidad AS CantidadProducto,
                         pr.Precio, pp.TieneReclamo, t.Nombre AS NombreTienda, pp.IdPedidoXProducto,
-                        pp.ProductoID, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho
+                        pp.ProductoID, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho,
+                        p.Reclamo AS ReclamoPedido
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
@@ -820,6 +824,7 @@ namespace API_Tesis.Controllers
                                         FechaCreacion = reader.GetDateTime("FechaCreacion"),
                                         Total = reader.GetDouble("Total"),
                                         Estado = reader.GetInt32("Estado"),
+                                        ReclamoPedido = reader.GetBoolean("ReclamoPedido"),
                                         ProductosLista = new List<ProductoPedido>()
                                     };
 
@@ -1152,6 +1157,173 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
+        [Route("/InicioVendedor")]
+        public async Task<IActionResult> InicioVendedor(int idTienda)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                       SELECT 
+                        (SELECT SUM(p.Total + p.CostoEnvio) 
+                         FROM Pedidos p 
+                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido 
+                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
+                         WHERE pr.TiendaID = @idTienda AND p.Estado = 2) AS Ingresos,
+                        (SELECT SUM(p.Total + p.CostoEnvio) 
+                         FROM Pedidos p 
+                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido 
+                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
+                         WHERE pr.TiendaID = @idTienda AND p.Estado = 1) AS IngresosPendientes,
+                        (SELECT COUNT(distinct p.IdPedido) 
+                         FROM Pedidos p 
+                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido 
+                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
+                         WHERE pr.TiendaID = @idTienda AND p.Estado = 2) AS VentasCompletadas,
+                        (SELECT COUNT(distinct p.IdPedido) 
+                         FROM Pedidos p 
+                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido 
+                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
+                         WHERE pr.TiendaID = @idTienda AND p.Estado = 1) AS VentasPendientes,
+                        (SELECT COUNT(Distinct IdProducto) 
+                         FROM Producto pr 
+                         WHERE pr.EstadoAprobacion = 'Aprobado' AND pr.TiendaID = @idTienda) AS ProductosPublicados,
+                        (SELECT pr.Nombre 
+                         FROM Producto pr 
+                         WHERE pr.TiendaID = @idTienda AND pr.CantidadVentas =
+                                (SELECT MAX(CantidadVentas) 
+                                 FROM Producto pro 
+                                 WHERE pro.Estado = 1 AND pro.TiendaID = @idTienda)) AS ProductoMasVendido,
+                        (SELECT COUNT(Distinct IdChat) 
+                         FROM Chat c 
+                         WHERE c.TiendaID = @idTienda AND c.FinalizarCliente = 0) AS CantidadChatsPendientes,
+                        (SELECT 
+                             (SELECT COUNT(pp.IdPedidoXProducto) 
+                              FROM PedidoXProducto pp 
+                              INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
+                              WHERE pp.TieneReclamo = 0 AND pr.TiendaID = @idTienda)
+                              /
+                             (SELECT COUNT(pp.IdPedidoXProducto) 
+                              FROM PedidoXProducto pp 
+                              INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
+                              WHERE pr.TiendaID = @idTienda) AS Resultado)
+                        AS PorcentajeSatisfaccion,
+                        (SELECT COUNT(pp.IdPedidoXProducto) 
+                         FROM PedidoXProducto pp 
+                         INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
+                         WHERE pp.TieneReclamo = 1 AND pr.TiendaID = @idTienda) AS CantidadReclamo";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@idTienda", idTienda);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                InicioVendedor estadistica = new InicioVendedor
+                                {
+                                    Ingresos = reader.GetDouble("Ingresos"),
+                                    IngresosPendientes = reader.GetDouble("IngresosPendientes"),
+                                    VentasCompletadas = reader.GetInt32("VentasCompletadas"),
+                                    VentasPendientes = reader.GetInt32("VentasPendientes"),
+                                    ProductosPublicados = reader.GetInt32("ProductosPublicados"),
+                                    ProductoMasVendido = reader.GetString("ProductoMasVendido"),
+                                    PorcentajeSatisfaccion = reader.IsDBNull(reader.GetOrdinal("PorcentajeSatisfaccion")) ?
+                                                             0 : reader.GetDouble("PorcentajeSatisfaccion"),
+                                    CantidadChatsPendientes = reader.GetInt32("CantidadChatsPendientes"),
+                                    CantidadReclamo = reader.GetInt32("CantidadReclamo"),
+                                };
+                                return Ok(estadistica);
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/InicioComprador")]
+        public async Task<IActionResult> InicioComprador(int idUsuario)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                       SELECT 
+                        (SELECT COUNT(Distinct IdPedido) FROM Pedidos p WHERE p.UsuarioID = @IdUsuario) 
+                            AS TotalPedidosUsuario,
+                        (SELECT COUNT(Distinct IdPedido) FROM Pedidos p WHERE p.UsuarioID = @IdUsuario AND p.Estado=1) 
+                            AS TotalPedidosUsuarioPendiente,
+                        (SELECT COUNT(Distinct IdProducto) FROM Producto pr WHERE pr.EstadoAprobacion = 'Aprobado') 
+                            AS TotalProductosPublicados,
+                        (SELECT pr.Nombre FROM Producto pr WHERE pr.CantidadVentas =
+                            (SELECT MAX(CantidadVentas) FROM Producto pro WHERE pro.Estado = 1)) AS ProductoMasVendido,
+                        (SELECT COUNT(Distinct IdChat) FROM Chat c WHERE c.CompradorID = @IdUsuario) AS TotalChats,
+                        (SELECT COUNT(Distinct IdChat) FROM Chat c WHERE c.FinalizarCliente = 1 AND c.CompradorID = @IdUsuario) 
+                            AS TotalChatsFinalizadosCliente,
+                        (SELECT IFNULL(SUM(DISTINCT p.TotalDescuento), 0) FROM Pedidos p
+                            JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+                            JOIN Producto pr ON pr.IdProducto = pp.ProductoID WHERE p.Estado = 1 AND p.UsuarioID = @IdUsuario) 
+                            AS TotalDescuentoPedidosUsuario,
+                        (SELECT COUNT(p.IdPedido) FROM Pedidos p WHERE p.Reclamo = 1 AND p.UsuarioID = @IdUsuario) 
+                            AS TotalPedidosConReclamo,
+                        (SELECT COUNT(pp.IdPedidoXProducto) FROM PedidoXProducto pp INNER JOIN Pedidos p ON p.IdPedido = pp.PedidoID
+                        WHERE pp.TieneReclamo = 1 AND p.UsuarioID = @IdUsuario) 
+                            AS TotalProductosConReclamo";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                InicioComprador estadistica = new InicioComprador
+                                {
+                                    TotalPedidosUsuario = reader.GetInt32("TotalPedidosUsuario"),
+                                    TotalPedidosUsuarioPendiente = reader.GetInt32("TotalPedidosUsuarioPendiente"),
+                                    TotalProductosPublicados = reader.GetInt32("TotalProductosPublicados"),
+                                    ProductoMasVendido = reader.GetString("ProductoMasVendido"),
+                                    TotalChats = reader.GetInt32("TotalChats"),
+                                    TotalChatsFinalizadosCliente = reader.GetInt32("TotalChatsFinalizadosCliente"),
+                                    TotalDescuentoPedidosUsuario = reader.IsDBNull(reader.GetOrdinal("TotalDescuentoPedidosUsuario")) ?
+                                                             0 : reader.GetDouble("TotalDescuentoPedidosUsuario"),
+                                    TotalPedidosConReclamo = reader.GetInt32("TotalChats"),
+                                    TotalProductosConReclamo = reader.GetInt32("TotalProductosConReclamo"),
+                                };
+                                return Ok(estadistica);
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/EstadisticaComprador")]
         public async Task<IActionResult> EstadisticaComprador(int idUsuario)
         {
@@ -1205,7 +1377,7 @@ namespace API_Tesis.Controllers
                         JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
                         JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                         WHERE p.Estado = 1 
-                        AND p.UsuarioID = 3
+                        AND p.UsuarioID = @IdUsuario
                         AND p.FechaCreacion >= CURDATE() - INTERVAL 3 MONTH) AS TotalDescuento,
 
                         (SELECT IFNULL(SUM(DISTINCT p.TotalDescuento),0) 

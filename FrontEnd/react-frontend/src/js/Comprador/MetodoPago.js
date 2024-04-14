@@ -1,8 +1,9 @@
 import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-const { add  } = require('date-fns');
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import StripePaymentForm from './StripePaymentForm';
+
 
 export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, productos, conteoCarritoCompra,
     setProductos, setConteoCarritoCompra, idUsuario}) {
@@ -12,109 +13,33 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     const handleBackPedido = () =>{
         setMostrarMetodoPago(false);
         setMostrarProductos(true);
-    }
+    }    
 
-    const convertirTiempoANumeros = tiempo => {
-        const partes = tiempo.split(' ');
-        const cantidad = parseInt(partes[0]);
-        switch (partes[1]) {
-          case 'Días':
-            return cantidad / 30;
-          case 'Meses':
-            return cantidad;
-          case 'Años':
-            return cantidad * 12;
-          default:
-            return 0;
-        }
-    };
-
-    const agregarTiempo = (tiempo) => {
-        const [cantidad, unidad] = tiempo.split(' ');
-        let fechaResultado;
-        const fechaActual = new Date();
+    // const calcularFechaEnvio = (tiempo) => {
+    //     const partes = tiempo.split(' ');
+    //     const cantidad = parseInt(partes[0]);
+    //     const unidad = partes[1];
     
-        // Agregar la cantidad de tiempo correspondiente
-        if (unidad.toLowerCase() === 'días' || unidad.toLowerCase() === 'día') {
-            fechaResultado = add(fechaActual, { days: parseInt(cantidad) });
-        } else if (unidad.toLowerCase() === 'meses' || unidad.toLowerCase() === 'mes') {
-            fechaResultado = add(fechaActual, { months: parseInt(cantidad) });
-        } else if (unidad.toLowerCase() === 'años' || unidad.toLowerCase() === 'año') {
-            fechaResultado = add(fechaActual, { years: parseInt(cantidad) });
-        }
-
-        return fechaResultado;
-    };
-
-    const crearPedidoXProducto = async (producto, idPedido) => {
-        const response = await fetch(
-            `https://localhost:7240/CreatePedidoXProducto?productoId=${producto.idProducto}&pedidoId=${idPedido}&cantidad=${producto.cantidad}&stock=${producto.stockMaximo}`,
-            {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            }
-        );
-        if (response.ok) {
-            return 'Pedido creado correctamente';
-        } else if (response.status === 404) {
-            throw new Error("Pedido no encontrado");
-        } else {
-            throw new Error("Error al crear el pedido");
-        }
-    };
-
-    const handleProducto = async() =>{
+    //     const fecha = new Date();
         
-        let productoMasLargo = null;
-        let mayorTiempo = 0;
-
-        productos.forEach(producto => {
-            const tiempo = convertirTiempoANumeros(producto.fechaEnvio);
-            if (tiempo > mayorTiempo) {
-              mayorTiempo = tiempo;
-              productoMasLargo = producto;
-            }
-        });
-
-        const fechaResultado = agregarTiempo(productoMasLargo.fechaEnvio);
-        const fechaISO = fechaResultado.toISOString();
-        const formData = new FormData();
-        formData.append('FechaEntrega', fechaISO);
-        formData.append('Total', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad) - (producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
-        formData.append('TotalDescuento', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
-        formData.append('Estado', 1);
-        formData.append('CantidadProductos', conteoCarritoCompra);
-        formData.append('MetodoPago', "Nada");
-        formData.append('UsuarioID', idUsuario);
-
-        const response = await fetch(
-            `https://localhost:7240/CreatePedido`,
-            {
-              method: "POST",
-              body: formData
-            }
-        );
+    //     switch (unidad) {
+    //         case 'Días':
+    //             fecha.setDate(fecha.getDate() + cantidad - 1);
+    //             break;
+    //         case 'Meses':
+    //             fecha.setMonth(fecha.getMonth() + cantidad - 1);
+    //             break;
+    //         case 'Años':
+    //             fecha.setFullYear(fecha.getFullYear() + cantidad - 1);
+    //             break;
+    //         default:
+    //             throw new Error('Unidad de tiempo no válida');
+    //     }
     
-        if (response.ok) {
-            const idPedido = await response.json();
-            const promises = productos.map(producto => crearPedidoXProducto(producto, idPedido));
-            await Promise.all(promises);
-            toast.success('El pedido fue creado correctamente', { autoClose: 2000 });
-            setProductos([]);
-            setConteoCarritoCompra(0);
-            setMostrarMetodoPago(false);
-            setMostrarProductos(true);
-        } else if (response.status === 404) {
-            throw new Error("Pedido no encontrado");
-        } else {
-            throw new Error("Error al crear el pedido");
-        }
+    //     return fecha.toISOString();
+    // };
 
-        setMostrarMetodoPago(false);
-        setMostrarProductos(true);
-    }
+    const stripePromise = loadStripe('pk_test_51Oie68G77lj0glGvTr2uYiqcG0rIUCcZXorf26c8hcV7aKptz02DfQHY49fcB69JKjgHirxew6HXxMHpOwgiTGzp00cosFcBDA');
     
   return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
@@ -167,11 +92,20 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             </Box>
         </Box>
 
-        <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
+        <Box sx={{height:"60%"}}>
+            <Elements stripe={stripePromise}>
+            <Box>
+                <StripePaymentForm productos={productos} conteoCarritoCompra={conteoCarritoCompra} idUsuario={idUsuario} setProductos={setProductos}
+                setConteoCarritoCompra={setConteoCarritoCompra} setMostrarMetodoPago={setMostrarMetodoPago} setMostrarProductos={setMostrarProductos}/>
+            </Box>
+            </Elements>
+        </Box>
+
+        {/* <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
             onClick={handleProducto}
         >
             Agregar método de pago
-        </Button>
+        </Button> */}
     </Box>
   )
 }

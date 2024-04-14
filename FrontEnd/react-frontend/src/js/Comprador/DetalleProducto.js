@@ -8,7 +8,7 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
     setMostrarOpcionCarrito, setMostrarCarrito, ProductoSeleccionado, conteoCarritoCompra, setConteoCarritoCompra, setProductos,
     productos}) {
     
-        console.log(ProductoSeleccionado);
+        // console.log(ProductoSeleccionado);
 
     const handleChange = () =>{
         setMostrarDetalleProducto(false);
@@ -25,7 +25,9 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
             imagen: ProductoSeleccionado.imagen,
             stockMaximo: ProductoSeleccionado.stock,
             idTienda: ProductoSeleccionado.idTienda,
-            fechaEnvio: ProductoSeleccionado.fechaEnvio
+            fechaEnvio: ProductoSeleccionado.fechaEnvio,
+            costoEnvio: ProductoSeleccionado.costoEnvio,
+            opcionSeparado:0
         };
 
         setProductos([...productos, nuevoProducto]);
@@ -73,7 +75,9 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
                 stockMaximo: ProductoSeleccionado.stock,
                 idTienda: ProductoSeleccionado.idTienda,
                 fechaEnvio: ProductoSeleccionado.fechaEnvio,
-                cantidadOferta: ProductoSeleccionado.cantidadOferta
+                cantidadOferta: ProductoSeleccionado.cantidadOferta,
+                costoEnvio: ProductoSeleccionado.costoEnvio,
+                opcionSeparado:0
             };
 
             setProductos([...productos, nuevoProducto]);

@@ -115,7 +115,7 @@ CREATE TABLE HistorialCambiosProducto (
 
 CREATE TABLE Pedidos(
 	IdPedido INT AUTO_INCREMENT PRIMARY KEY,
-    FechaEntrega DateTime,
+    FechaEntrega TEXT,
     FechaCreacion Datetime,
     Total Double,
     TotalDescuento Double,
@@ -123,6 +123,7 @@ CREATE TABLE Pedidos(
     Reclamo boolean,
 	CantidadProductos int,
     MetodoPago TEXT,
+    CostoEnvio Double,
     UsuarioID INT NOT NULL,
     FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario)
 );
@@ -132,6 +133,7 @@ CREATE TABLE PedidoXProducto(
     ProductoID INT NOT NULL,
     PedidoID INT NOT NULL,
     Cantidad INT,
+    FechaEnvio Datetime,
     TieneSeguimiento boolean,
     TieneReclamo boolean,
     FechaReclamo datetime,
@@ -166,36 +168,75 @@ SELECT * FROM Vendedor;
 SELECT * FROM Comprador;
 SELECT * FROM KeyEncript;
 SELECT * FROM Tienda;
-SELECT * FROM Pedidos;
 SELECT * FROM Chat;
 SELECT * FROM PedidoXProducto;
 SELECT * FROM Mensajes;
 SELECT * FROM CorreoEmisor;
 SELECT * FROM Producto;
 SELECT * FROM Pedidos;
+SELECT * FROM Chat;
 SELECT * FROM Usuario WHERE Estado = 1;
 
 ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
-ALTER TABLE Tienda MODIFY COLUMN Foto LONGBLOB;
+ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
-ALTER TABLE Pedidos ADD TotalDescuento DOUBLE;
+ALTER TABLE PedidoXProducto ADD FechaEnvio Datetime;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
 ALTER TABLE Mensajes ADD EsTienda boolean;
-ALTER TABLE Chat DROP COLUMN FinalizarTienda;
+ALTER TABLE PedidoXProducto DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 
-SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Estado, p.Total,
-                        t.Nombre AS NombreTienda, u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente,
-                        us.Nombre AS NombreDueño, us.Apellido AS ApellidoDuenho, pp.TieneReclamo, pp.FechaReclamo,
-                        pr.Nombre AS NombreProducto, pp.Cantidad AS CantidadProducto, pr.Precio, t.IdTienda,
-                        pp.ProductoID, pp.IdPedidoXProducto, pr.CantidadOferta
-                        FROM Pedidos p
-                        INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
-                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
-                        INNER JOIN Usuario us ON us.IdUsuario = t.UsuarioID
+SELECT SUM(p.Total + p.CostoEnvio) FROM Pedidos p
+INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+WHERE pr.TiendaID = 1 AND p.Estado = 2;
+
+SELECT SUM(p.Total + p.CostoEnvio) FROM Pedidos p
+INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+WHERE pr.TiendaID = 1 AND p.Estado = 1;
+
+SELECT COUNT(distinct p.IdPedido) FROM Pedidos p
+INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+WHERE pr.TiendaID = 1 AND p.Estado = 2;
+
+SELECT COUNT(distinct p.IdPedido) FROM Pedidos p
+INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
+INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+WHERE pr.TiendaID = 1 AND p.Estado = 1;
+
+SELECT COUNT(Distinct IdProducto) FROM Producto pr 
+WHERE pr.EstadoAprobacion = 'Aprobado' AND pr.TiendaID = 1;
+
+SELECT pr.Nombre FROM Producto pr 
+WHERE pr.TiendaID = 1 AND pr.CantidadVentas =
+	(SELECT MAX(CantidadVentas) FROM Producto pro WHERE pro.Estado = 1 AND pro.TiendaID = 1);
+    
+SELECT COUNT(Distinct IdChat) FROM Chat c WHERE c.TiendaID = 1 AND c.FinalizarCliente = 0;
+
+SELECT 
+    (SELECT COUNT(pp.IdPedidoXProducto) 
+     FROM PedidoXProducto pp 
+     INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
+     WHERE pp.TieneReclamo = 0 AND pr.TiendaID = 1)
+     /
+    (SELECT COUNT(pp.IdPedidoXProducto) 
+     FROM PedidoXProducto pp 
+     INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
+     WHERE pr.TiendaID = 1) AS Resultado;
+     
+SELECT COUNT(pp.IdPedidoXProducto) 
+     FROM PedidoXProducto pp 
+     INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
+     WHERE pp.TieneReclamo = 1 AND pr.TiendaID = 1;
+     
+     SELECT SUM(p.Total + p.CostoEnvio) 
+                         FROM Pedidos p 
+                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido 
+                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
+                         WHERE pr.TiendaID = 1 AND p.Estado = 2
