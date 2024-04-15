@@ -16,7 +16,7 @@ namespace API_Tesis.Controllers
     {
         private readonly BDMysql _context;
         private readonly IConfiguration _configuration;
-        private readonly string _claveSecretaStripe = "sk_test_51Oie68G77lj0glGvYBwkFB9A0NoA8we1Gis7g46tEqt1czNNWaR5wAJBdTOD6MCfAW8jiXOa6QEU1LYICB66k28K00pAXrkJEw";
+        private readonly string _claveSecretaStripe = "*";
         public ApiControllerPost(BDMysql context, IConfiguration configuration)
         {
             _configuration = configuration;
