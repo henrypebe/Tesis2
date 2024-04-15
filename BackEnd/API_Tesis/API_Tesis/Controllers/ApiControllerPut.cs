@@ -49,8 +49,8 @@ namespace API_Tesis.Controllers
         [HttpPut]
         [Route("/EditarProducto")]
         public async Task<ActionResult<int>> EditarProducto([FromForm] int idProducto, [FromForm] string nombre, [FromForm] double precio, [FromForm] int cantidad, [FromForm] IFormFile image,
-            [FromForm] string descripcion, [FromForm] string cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] double costoEnvio,
-            [FromForm] string tiempoEnvio)
+        [FromForm] string descripcion, [FromForm] double cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] double costoEnvio,
+        [FromForm] string tiempoEnvio)
         {
             try
             {
@@ -58,37 +58,102 @@ namespace API_Tesis.Controllers
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-                    byte[] imageBytes;
-                    using (var memoryStream = new MemoryStream())
+                    byte[] imageBytes = null;
+                    if (image != null)
                     {
-                        await image.CopyToAsync(memoryStream);
-                        imageBytes = memoryStream.ToArray();
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await image.CopyToAsync(memoryStream);
+                            imageBytes = memoryStream.ToArray();
+                        }
                     }
-                    string query = "UPDATE Producto SET Nombre = @Nombre, Precio = @Precio, Descripcion = @Descripcion, CantidadOferta = @CantidadOferta," +
-                        "CantidadGarantia = @CantidadGarantia, TipoProducto = @TipoProducto, Foto = @Foto, Stock = @Stock, EstadoAprobacion = @EstadoAprobacion, " +
-                        "CostoEnvio = @CostoEnvio, TiempoEnvio = @TiempoEnvio WHERE IdProducto = @IdProducto AND Estado = 1";
-                    MySqlCommand command = new MySqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@IdProducto", idProducto);
-                    command.Parameters.AddWithValue("@Nombre", nombre);
-                    command.Parameters.AddWithValue("@Precio", precio);
-                    command.Parameters.AddWithValue("@Descripcion", descripcion);
-                    command.Parameters.AddWithValue("@CantidadOferta", cantidadOferta);
-                    command.Parameters.AddWithValue("@CantidadGarantia", cantidadGarantia);
-                    command.Parameters.AddWithValue("@TipoProducto", tipoProducto);
-                    command.Parameters.AddWithValue("@Foto", imageBytes);
-                    command.Parameters.AddWithValue("@Stock", cantidad);
-                    command.Parameters.AddWithValue("@EstadoAprobacion", "Pendiente");
-                    command.Parameters.AddWithValue("@CostoEnvio", costoEnvio);
-                    command.Parameters.AddWithValue("@TiempoEnvio", tiempoEnvio);
-                    int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                    if (rowsAffected > 0)
+                    string selectQuery = "SELECT Nombre, Precio, Descripcion, CantidadOferta, CantidadGarantia, TipoProducto, Foto, Stock, CostoEnvio, TiempoEnvio " +
+                        "FROM Producto WHERE IdProducto = @IdProducto AND Estado = 1";
+                    MySqlCommand selectCommand = new MySqlCommand(selectQuery, connection);
+                    selectCommand.Parameters.AddWithValue("@IdProducto", idProducto);
+                    MySqlDataReader reader = await selectCommand.ExecuteReaderAsync();
+                    if (reader.Read())
                     {
-                        connection.Close();
-                        return Ok();
+                        List<string> changes = new List<string>();
+
+                        if (reader.GetString("Nombre") != nombre)
+                            changes.Add($"Nombre: '{reader.GetString("Nombre")}' a '{nombre}'");
+
+                        if (reader.GetDouble("Precio") != precio)
+                            changes.Add($"Precio: '{reader.GetDouble("Precio")}' a '{precio}'");
+
+                        if (reader.GetString("Descripcion") != descripcion)
+                            changes.Add($"Descripcion: '{reader.GetString("Descripcion")}' a '{descripcion}'");
+
+                        if (reader.GetDouble("CantidadOferta") != cantidadOferta)
+                            changes.Add($"Cantidad oferta: '{reader.GetDouble("CantidadOferta")}' a '{cantidadOferta}'");
+
+                        if (reader.GetString("CantidadGarantia") != cantidadGarantia)
+                            changes.Add($"Cantidad garantía: '{reader.GetString("CantidadGarantia")}' a '{cantidadGarantia}'");
+
+                        if (reader.GetString("TipoProducto") != tipoProducto)
+                            changes.Add($"Tipo producto: '{reader.GetString("TipoProducto")}' a '{tipoProducto}'");
+
+                        if (reader.GetInt32("Stock") != cantidad)
+                            changes.Add($"Stock: '{reader.GetInt32("Stock")}' a '{cantidad}'");
+
+                        if (reader.GetDouble("CostoEnvio") != costoEnvio)
+                            changes.Add($"CostoEnvio: '{reader.GetDouble("CostoEnvio")}' a '{costoEnvio}'");
+
+                        if (reader.GetString("TiempoEnvio") != tiempoEnvio)
+                            changes.Add($"TiempoEnvio: '{reader.GetString("TiempoEnvio")}' a '{tiempoEnvio}'");
+
+                        reader.Close();
+
+                        if (changes.Any())
+                        {
+                            string changeDescription = "Se realizaron cambios en los siguientes atributos: " + string.Join(", ", changes);
+                            string updateQuery = "UPDATE Producto SET Nombre = @Nombre, Precio = @Precio, Descripcion = @Descripcion, CantidadOferta = @CantidadOferta," +
+                                "CantidadGarantia = @CantidadGarantia, TipoProducto = @TipoProducto, Foto = @Foto, Stock = @Stock, EstadoAprobacion = @EstadoAprobacion, " +
+                                "CostoEnvio = @CostoEnvio, TiempoEnvio = @TiempoEnvio WHERE IdProducto = @IdProducto AND Estado = 1";
+                            MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                            command.Parameters.AddWithValue("@IdProducto", idProducto);
+                            command.Parameters.AddWithValue("@Nombre", nombre);
+                            command.Parameters.AddWithValue("@Precio", precio);
+                            command.Parameters.AddWithValue("@Descripcion", descripcion);
+                            command.Parameters.AddWithValue("@CantidadOferta", cantidadOferta);
+                            command.Parameters.AddWithValue("@CantidadGarantia", cantidadGarantia);
+                            command.Parameters.AddWithValue("@TipoProducto", tipoProducto);
+                            command.Parameters.AddWithValue("@Foto", imageBytes);
+                            command.Parameters.AddWithValue("@Stock", cantidad);
+                            command.Parameters.AddWithValue("@EstadoAprobacion", "Pendiente");
+                            command.Parameters.AddWithValue("@CostoEnvio", costoEnvio);
+                            command.Parameters.AddWithValue("@TiempoEnvio", tiempoEnvio);
+                            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                            if (rowsAffected > 0)
+                            {
+                                await connection.CloseAsync();
+                                await connection.OpenAsync();
+                                string insertQuery = @"INSERT INTO HistorialCambiosProducto (FechaHora, Descripcion, ProductoID) VALUES (@FechaHora, @Descripcion, @idGenerado)";
+                                MySqlCommand insertCommand = new MySqlCommand(insertQuery, connection);
+                                insertCommand.Parameters.AddWithValue("@FechaHora", DateTime.Now);
+                                insertCommand.Parameters.AddWithValue("@Descripcion", changeDescription);
+                                insertCommand.Parameters.AddWithValue("@idGenerado", idProducto);
+                                await insertCommand.ExecuteScalarAsync();
+                                await connection.CloseAsync();
+                                return Ok();
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                        else
+                        {
+                            connection.Close();
+                            return Ok();
+                        }
                     }
                     else
                     {
+                        reader.Close();
                         connection.Close();
                         return NotFound();
                     }
@@ -99,6 +164,68 @@ namespace API_Tesis.Controllers
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }
         }
+
+        //[HttpPut]
+        //[Route("/EditarProducto")]
+        //public async Task<ActionResult<int>> EditarProducto([FromForm] int idProducto, [FromForm] string nombre, [FromForm] double precio, [FromForm] int cantidad, [FromForm] IFormFile image,
+        //    [FromForm] string descripcion, [FromForm] string cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] double costoEnvio,
+        //    [FromForm] string tiempoEnvio)
+        //{
+        //    try
+        //    {
+        //        string connectionString = _configuration.GetConnectionString("DefaultConnection");
+        //        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //        {
+        //            connection.Open();
+        //            byte[] imageBytes;
+        //            using (var memoryStream = new MemoryStream())
+        //            {
+        //                await image.CopyToAsync(memoryStream);
+        //                imageBytes = memoryStream.ToArray();
+        //            }
+        //            string query = "UPDATE Producto SET Nombre = @Nombre, Precio = @Precio, Descripcion = @Descripcion, CantidadOferta = @CantidadOferta," +
+        //                "CantidadGarantia = @CantidadGarantia, TipoProducto = @TipoProducto, Foto = @Foto, Stock = @Stock, EstadoAprobacion = @EstadoAprobacion, " +
+        //                "CostoEnvio = @CostoEnvio, TiempoEnvio = @TiempoEnvio WHERE IdProducto = @IdProducto AND Estado = 1";
+        //            MySqlCommand command = new MySqlCommand(query, connection);
+        //            command.Parameters.AddWithValue("@IdProducto", idProducto);
+        //            command.Parameters.AddWithValue("@Nombre", nombre);
+        //            command.Parameters.AddWithValue("@Precio", precio);
+        //            command.Parameters.AddWithValue("@Descripcion", descripcion);
+        //            command.Parameters.AddWithValue("@CantidadOferta", cantidadOferta);
+        //            command.Parameters.AddWithValue("@CantidadGarantia", cantidadGarantia);
+        //            command.Parameters.AddWithValue("@TipoProducto", tipoProducto);
+        //            command.Parameters.AddWithValue("@Foto", imageBytes);
+        //            command.Parameters.AddWithValue("@Stock", cantidad);
+        //            command.Parameters.AddWithValue("@EstadoAprobacion", "Pendiente");
+        //            command.Parameters.AddWithValue("@CostoEnvio", costoEnvio);
+        //            command.Parameters.AddWithValue("@TiempoEnvio", tiempoEnvio);
+        //            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        //            if (rowsAffected > 0)
+        //            {
+        //                await connection.CloseAsync();
+        //                await connection.OpenAsync();
+        //                query = @"INSERT INTO HistorialCambiosProducto (FechaHora, Descripcion, ProductoID) VALUES (@FechaHora, @Descripcion, @idGenerado)";
+        //                command = new MySqlCommand(query, connection);
+        //                command.Parameters.AddWithValue("@FechaHora", DateTime.Now);
+        //                command.Parameters.AddWithValue("@Descripcion", "Se realizó la creación del producto");
+        //                command.Parameters.AddWithValue("@idGenerado", idProducto);
+        //                await command.ExecuteScalarAsync();
+        //                await connection.CloseAsync();
+        //                return Ok();
+        //            }
+        //            else
+        //            {
+        //                connection.Close();
+        //                return NotFound();
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        //    }
+        //}
         [HttpPut]
         [Route("/EditarUsuario")]
         public async Task<ActionResult> EditarUsuario([FromForm] int idUsuario, [FromForm] string nombre, [FromForm] string apellido, [FromForm] string correo, [FromForm] int numero,
@@ -369,6 +496,31 @@ namespace API_Tesis.Controllers
                         "WHERE IdUsuario = @IdUsuario";
                     MySqlCommand command = new MySqlCommand(updateQuery, connection);
                     command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                    command.Parameters.AddWithValue("@Estado", 0);
+                    await command.ExecuteNonQueryAsync();
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/EliminarMetodoPago")]
+        public async Task<IActionResult> EliminarMetodoPago(int MetodoPago)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    string updateQuery = "UPDATE MetodoPago SET Estado = @Estado " +
+                        "WHERE IdMetodoPago = @MetodoPago";
+                    MySqlCommand command = new MySqlCommand(updateQuery, connection);
+                    command.Parameters.AddWithValue("@MetodoPago", MetodoPago);
                     command.Parameters.AddWithValue("@Estado", 0);
                     await command.ExecuteNonQueryAsync();
                     connection.Close();

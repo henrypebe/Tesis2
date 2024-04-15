@@ -1,18 +1,24 @@
 import { Box, Button, Typography } from '@mui/material';
-import React from 'react'
+import React from 'react';
+import StripePaymentFormVendedor from './StripePaymentFormVendedor';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
-export default function DetalleBilletera({setMostrarBilletera, setMostrarnDetalleBilletera}) {
+export default function DetalleBilletera({setMostrarBilletera, setMostrarnDetalleBilletera, idUsuario}) {
     const handleBackPedido = () =>{
         setMostrarBilletera(true);
         setMostrarnDetalleBilletera(false);
-      }
+    }
 
     const handleChangeAgregar = () =>{
         setMostrarBilletera(true);
         setMostrarnDetalleBilletera(false);
-      }
+    }
+
+    const stripePromise = loadStripe('pk_test_51Oie68G77lj0glGvTr2uYiqcG0rIUCcZXorf26c8hcV7aKptz02DfQHY49fcB69JKjgHirxew6HXxMHpOwgiTGzp00cosFcBDA');
+
     return (
-        <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
+        <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
             <Box
                 sx={{
                 display: "flex",
@@ -62,11 +68,13 @@ export default function DetalleBilletera({setMostrarBilletera, setMostrarnDetall
                 </Box>
             </Box>
 
-            <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
-                onClick={handleChangeAgregar}
-            >
-                Agregar método de pago
-            </Button>
+            <Box sx={{height:"58%"}}>
+                <Elements stripe={stripePromise}>
+                    <Box>
+                        <StripePaymentFormVendedor handleChangeAgregar={handleChangeAgregar} idUsuario={idUsuario}/>
+                    </Box>
+                </Elements>
+            </Box>
         </Box>
-  )
+    )
 }

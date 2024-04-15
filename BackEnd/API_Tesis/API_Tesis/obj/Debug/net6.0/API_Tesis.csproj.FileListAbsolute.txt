@@ -39,3 +39,16 @@ C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\Microsoft.Extensions.Primitives.dll
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\MySqlConnector.dll
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\Pomelo.EntityFrameworkCore.MySql.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\Stripe.net.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\System.Configuration.ConfigurationManager.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\System.Drawing.Common.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\System.Security.Permissions.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\System.Windows.Extensions.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll

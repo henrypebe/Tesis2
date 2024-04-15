@@ -10,6 +10,7 @@ DROP TABLE Producto;
 DROP TABLE HistorialProducto;
 DROP TABLE Pedidos;
 DROP TABLE PedidoXProducto;
+DROP TABLE MetodoPago;
 
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -155,6 +156,17 @@ CREATE TABLE Facturacion(
     FOREIGN KEY (PedidoID) REFERENCES Pedidos(IdPedido)
 );
 
+CREATE TABLE MetodoPago(
+	IdMetodoPago INT auto_increment PRIMARY KEY,
+    Last4 INT,
+    FechaExpiracion TEXT,
+    Token TEXT,
+    CVC INT,
+    UsuarioID INT NOT NULL,
+    Estado boolean,
+    FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario)
+);
+
 INSERT INTO KeyEncript (KeyVar) 
 VALUES ('tesis2');
 
@@ -164,6 +176,7 @@ INSERT INTO Usuario (Correo, contrasenha, Token, Nombre, Apellido, DNI, Telefono
 VALUES ('a20191425@pucp.edu.pe', 'henrypebe11', 'token123', 'Henry', 'Pebe', 12345678, 987654321, 'Calle 123', 1, 0, 0);
 
 SELECT * FROM Usuario;
+SELECT * FROM HistorialCambiosProducto;
 SELECT * FROM Vendedor;
 SELECT * FROM Comprador;
 SELECT * FROM KeyEncript;
@@ -175,6 +188,7 @@ SELECT * FROM CorreoEmisor;
 SELECT * FROM Producto;
 SELECT * FROM Pedidos;
 SELECT * FROM Chat;
+SELECT * FROM MetodoPago;
 SELECT * FROM Usuario WHERE Estado = 1;
 
 ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
@@ -190,53 +204,5 @@ ALTER TABLE PedidoXProducto DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 
-SELECT SUM(p.Total + p.CostoEnvio) FROM Pedidos p
-INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
-INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-WHERE pr.TiendaID = 1 AND p.Estado = 2;
-
-SELECT SUM(p.Total + p.CostoEnvio) FROM Pedidos p
-INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
-INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-WHERE pr.TiendaID = 1 AND p.Estado = 1;
-
-SELECT COUNT(distinct p.IdPedido) FROM Pedidos p
-INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
-INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-WHERE pr.TiendaID = 1 AND p.Estado = 2;
-
-SELECT COUNT(distinct p.IdPedido) FROM Pedidos p
-INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
-INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-WHERE pr.TiendaID = 1 AND p.Estado = 1;
-
-SELECT COUNT(Distinct IdProducto) FROM Producto pr 
-WHERE pr.EstadoAprobacion = 'Aprobado' AND pr.TiendaID = 1;
-
-SELECT pr.Nombre FROM Producto pr 
-WHERE pr.TiendaID = 1 AND pr.CantidadVentas =
-	(SELECT MAX(CantidadVentas) FROM Producto pro WHERE pro.Estado = 1 AND pro.TiendaID = 1);
-    
-SELECT COUNT(Distinct IdChat) FROM Chat c WHERE c.TiendaID = 1 AND c.FinalizarCliente = 0;
-
-SELECT 
-    (SELECT COUNT(pp.IdPedidoXProducto) 
-     FROM PedidoXProducto pp 
-     INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
-     WHERE pp.TieneReclamo = 0 AND pr.TiendaID = 1)
-     /
-    (SELECT COUNT(pp.IdPedidoXProducto) 
-     FROM PedidoXProducto pp 
-     INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
-     WHERE pr.TiendaID = 1) AS Resultado;
-     
-SELECT COUNT(pp.IdPedidoXProducto) 
-     FROM PedidoXProducto pp 
-     INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
-     WHERE pp.TieneReclamo = 1 AND pr.TiendaID = 1;
-     
-     SELECT SUM(p.Total + p.CostoEnvio) 
-                         FROM Pedidos p 
-                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido 
-                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID 
-                         WHERE pr.TiendaID = 1 AND p.Estado = 2
+SELECT pr.Nombre FROM Producto pr WHERE pr.CantidadVentas =
+                            (SELECT MAX(CantidadVentas) FROM Producto pro WHERE pro.Estado = 1) LIMIT 1

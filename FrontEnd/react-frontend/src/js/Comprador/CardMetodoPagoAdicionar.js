@@ -1,9 +1,13 @@
 import { Box, IconButton, Typography } from "@mui/material";
 import React from "react";
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function CardMetodoPagoAdicionar() {
+export default function CardMetodoPagoAdicionar({metodo, handleOpenModal}) {
+  let partes = metodo.fechaExpiracion.split("/");
+  let mes = partes[0];
+  let año = partes[1].slice(2);
+
+  let formatoDeseado = mes + "/" + año;
   return (
     <Box
       sx={{
@@ -26,7 +30,7 @@ export default function CardMetodoPagoAdicionar() {
             width: "90%",
           }}
         >
-          Tarjeta 1 - Henry Pebe
+          Tarjeta guardada
         </Typography>
       </Box>
 
@@ -47,7 +51,7 @@ export default function CardMetodoPagoAdicionar() {
             width: "50%",
           }}
         >
-          **** **** **** 9102
+          **** **** **** {metodo.last4}
         </Typography>
 
         <Typography
@@ -58,7 +62,7 @@ export default function CardMetodoPagoAdicionar() {
             width: "50%",
           }}
         >
-          Fecha de caducidad: 12/02
+          Fecha de caducidad: {formatoDeseado}
         </Typography>
       </Box>
 
@@ -82,11 +86,7 @@ export default function CardMetodoPagoAdicionar() {
         </Typography>
 
         <Box sx={{ width: "50%" }}>
-          <IconButton>
-            <EditIcon sx={{ fontSize: "30px" }} />
-          </IconButton>
-
-          <IconButton>
+          <IconButton onClick={() => {handleOpenModal(metodo);}}>
             <DeleteIcon sx={{ fontSize: "30px" }} />
           </IconButton>
         </Box>

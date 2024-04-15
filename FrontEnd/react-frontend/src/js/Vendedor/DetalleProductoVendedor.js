@@ -14,7 +14,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
     }
 
     return (
-    <Box sx={{padding:"20px", width:"85.65%", marginTop:"-1.9px", minHeight:"85vh", maxHeight:"85vh"}}>
+    <Box sx={{padding:"20px", width:"85.65%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Box sx={{display:"flex", flexDirection:"row"}}>
             
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Detalle del producto</Typography>
@@ -131,9 +131,9 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
         </Box>
 
         <Box sx={{display:"flex", flexDirection:"column", marginTop:"15px", padding:"10px", border:"2px solid black", borderRadius:"6px",
-        height:"34%"}}>
+            height:"31%"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"90%"}}>Descripción del producto:</Typography>
-            <Typography sx={{minHeight:"80%", marginTop:"10px", fontSize:"20px"}}>
+            <Typography sx={{height:"50%", marginTop:"10px", fontSize:"20px"}}>
                 {productoInformacion.descripcion}
             </Typography>
         </Box>

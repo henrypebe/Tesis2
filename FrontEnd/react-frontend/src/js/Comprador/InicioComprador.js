@@ -64,11 +64,11 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
         } else if (response.status === 404) {
           throw new Error("Seguimiento no encontrado");
         } else {
-          throw new Error("Error al obtener la lista de estadistica");
+          throw new Error("Error al obtener la lista de estadistica inicial");
         }
       } catch (error) {
-        console.error("Error al obtener la lista de estadistica", error);
-        throw new Error("Error al obtener la lista de estadistica");
+        console.error("Error al obtener la lista de estadistica inicial", error);
+        throw new Error("Error al obtener la lista de estadistica inicial");
       }
     };
       handleInformacionInicioComprador();
@@ -87,9 +87,9 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
           
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%", marginRight:"0px"}}>
             <HandshakeIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Pedidos realizados:</Typography>
-            <Typography sx={{color:"black", width:"60px", textAlign:"right", fontSize:"25px"}}>
-              {Estadistica?Estadistica.totalPedidosUsuario:0}
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Pedidos realizados:</Typography>
+            <Typography sx={{color:"black", width:"20%", textAlign:"right", fontSize:"25px"}}>
+              {Estadistica?Estadistica.totalPedidosUsuario.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
 
@@ -97,9 +97,9 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
           
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <ReportProblemIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Pedidos pendientes:</Typography>
-            <Typography sx={{color:"black", width:"60px", textAlign:"right", marginRight:"20px", fontSize:"25px"}}>
-              {Estadistica?Estadistica.totalPedidosUsuarioPendiente:0}
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Pedidos pendientes:</Typography>
+            <Typography sx={{color:"black", width:"20%", textAlign:"right", marginRight:"20px", fontSize:"25px"}}>
+              {Estadistica?Estadistica.totalPedidosUsuarioPendiente.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
         </Button>
@@ -112,9 +112,9 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <AssignmentTurnedInIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Productos disponibles:</Typography>
-            <Typography sx={{color:"black", textAlign:"right", width:"60px", fontSize:"25px", marginRight:"0px"}}>
-              {Estadistica?Estadistica.totalProductosPublicados:0}
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Productos disponibles:</Typography>
+            <Typography sx={{color:"black", textAlign:"right", width:"20%", fontSize:"25px", marginRight:"0px"}}>
+              {Estadistica?Estadistica.totalProductosPublicados.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
 
@@ -122,8 +122,8 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
           
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <StarsIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Producto sensación:</Typography>
-            <Typography sx={{color:"black", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Producto sensación:</Typography>
+            <Typography sx={{color:"black", textAlign:"right", fontSize:"25px", marginRight:"0px", width:"20%"}}>
               {Estadistica?Estadistica.productoMasVendido:"Sin productos"}
             </Typography>
           </Box>
@@ -137,9 +137,9 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <ChatIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Chats creados:</Typography>
-            <Typography sx={{color:"black", width:"60px", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
-              {Estadistica?Estadistica.totalChats:0}
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Chats creados:</Typography>
+            <Typography sx={{color:"black", width:"20%", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
+              {Estadistica?Estadistica.totalChats.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
 
@@ -147,9 +147,9 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
           
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <MarkChatReadIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Chats cerrados</Typography>
-            <Typography sx={{color:"black", width:"60px", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
-              {Estadistica?Estadistica.totalChatsFinalizadosCliente:0}
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Chats cerrados</Typography>
+            <Typography sx={{color:"black", width:"20%", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
+              {Estadistica?Estadistica.totalChatsFinalizadosCliente.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
         </Button>
@@ -162,9 +162,9 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <RemoveShoppingCartIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Pedidos Reclamados:</Typography>
-            <Typography sx={{color:"black", width:"60px", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
-              {Estadistica?Estadistica.totalPedidosConReclamo:0}
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Pedidos Reclamados:</Typography>
+            <Typography sx={{color:"black", width:"20%", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
+              {Estadistica?Estadistica.totalPedidosConReclamo.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
 
@@ -172,9 +172,9 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
           
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
             <MoneyOffIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>Productos Reclamados:</Typography>
-            <Typography sx={{color:"black", width:"60px", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
-              {Estadistica?Estadistica.totalProductosConReclamo:0}
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Productos Reclamados:</Typography>
+            <Typography sx={{color:"black", width:"20%", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
+              {Estadistica?Estadistica.totalProductosConReclamo.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
         </Button>
@@ -188,8 +188,8 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
             <ReceiptLongIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"248px"}}>Ahorros totales:</Typography>
-            <Typography sx={{color:"black", width:"115px", textAlign:"right", fontSize:"25px"}}>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Ahorros totales:</Typography>
+            <Typography sx={{color:"black", width:"25%", textAlign:"right", fontSize:"25px"}}>
               - S/.{Estadistica?Estadistica.totalDescuentoPedidosUsuario.toFixed(2):(0).toFixed(2)}
             </Typography>
           </Box>
@@ -201,8 +201,8 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
             <SavingsIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"250px"}}>¿Método de pago incorporado?</Typography>
-            <Typography sx={{color:"black", width:"60px", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>¿Método de pago incorporado?</Typography>
+            <Typography sx={{color:"black", width:"20%", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
               Si
             </Typography>
           </Box>

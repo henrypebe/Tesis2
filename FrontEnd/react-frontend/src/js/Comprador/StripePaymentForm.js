@@ -8,7 +8,7 @@ const { add  } = require('date-fns');
 
 const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProductos, setConteoCarritoCompra, setMostrarMetodoPago,
     setMostrarProductos}) => {
-  const stripe = useStripe();
+      const stripe = useStripe();
   const elements = useElements();
 
   const convertirTiempoANumeros = tiempo => {
@@ -127,15 +127,36 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
       return;
     }
 
-    const { error } = await stripe.createPaymentMethod({
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: 'card',
       card: elements.getElement(CardNumberElement),
     });
 
-    if (!error) {
-        handleProducto();
-    }else{
-        toast.error('Se produjo un error, verifique los datos.');
+    if (error) {
+      toast.error('Se produjo un error, verifique los datos.');
+      return;
+    }
+
+    const totalAmount = productos.reduce((total, producto) => {
+      return total + (producto.precio + (producto.costoEnvio)/1);
+    }, 0);
+
+    const formData = new FormData();
+    formData.append('token', paymentMethod.id);
+    formData.append('Monto', totalAmount);
+
+    const response = await fetch(
+      'https://localhost:7240/ProcesarPago',
+      {
+        method: 'POST',
+        body: formData
+      }
+    );
+
+    if (response.ok) {
+      handleProducto();
+    } else {
+      toast.error('Se produjo un error al procesar el pago.');
     }
   };
 

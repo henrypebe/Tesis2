@@ -40,7 +40,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
     const handleInformacionInicioVendedor = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7240/InicioVendedor?idTienda=${informacionTienda.idTienda}`,
+          `https://localhost:7240/InicioVendedor?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
           {
             method: "GET",
             headers: {
@@ -52,19 +52,19 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
         if (response.ok) {
           const Estadisticas = await response.json();
           setEstadistica(Estadisticas);
-          console.log(Estadisticas);
+          // console.log(Estadisticas);
         } else if (response.status === 404) {
-          throw new Error("Seguimiento no encontrado");
+          throw new Error("Lista de estadistica inicial no encontrado");
         } else {
-          throw new Error("Error al obtener la lista de estadistica");
+          throw new Error("Error al obtener la lista de estadistica inicial");
         }
       } catch (error) {
-        console.error("Error al obtener la lista de estadistica", error);
-        throw new Error("Error al obtener la lista de estadistica");
+        console.error("Error al obtener la lista de estadistica inicial", error);
+        throw new Error("Error al obtener la lista de estadistica inicial");
       }
     };
     handleInformacionInicioVendedor();
-  }, [informacionTienda.idTienda]);
+  }, [informacionTienda]);
 
   return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"88vh"}}>

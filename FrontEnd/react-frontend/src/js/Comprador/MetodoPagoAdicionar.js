@@ -14,12 +14,7 @@ export default function MetodoPagoAdicionar({setMostrarMetodoPagoAdicionar, setM
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
-        <Box sx={{height:"560px", display:"flex",flexDirection:"column", alignItems:"center", overflowY:"scroll"}}>
-            <CardMetodoPagoAdicionar />
-            <CardMetodoPagoAdicionar />
-        </Box>
-
-        <Box sx={{display:"flex", justifyContent:"center"}}>
+        <Box sx={{display:"flex", justifyContent:"center", marginBottom:"10px"}}>
             <Button
                 variant="contained"
                 sx={{
@@ -31,6 +26,10 @@ export default function MetodoPagoAdicionar({setMostrarMetodoPagoAdicionar, setM
             >
                 Agregar otro método de pago
             </Button>
+        </Box>
+
+        <Box sx={{height:"560px", display:"flex",flexDirection:"column", alignItems:"center"}}>
+          {/* <CardMetodoPagoAdicionar /> */}
         </Box>
     </Box>
   )

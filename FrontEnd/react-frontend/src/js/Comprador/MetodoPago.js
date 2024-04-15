@@ -14,31 +14,6 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         setMostrarMetodoPago(false);
         setMostrarProductos(true);
     }    
-
-    // const calcularFechaEnvio = (tiempo) => {
-    //     const partes = tiempo.split(' ');
-    //     const cantidad = parseInt(partes[0]);
-    //     const unidad = partes[1];
-    
-    //     const fecha = new Date();
-        
-    //     switch (unidad) {
-    //         case 'Días':
-    //             fecha.setDate(fecha.getDate() + cantidad - 1);
-    //             break;
-    //         case 'Meses':
-    //             fecha.setMonth(fecha.getMonth() + cantidad - 1);
-    //             break;
-    //         case 'Años':
-    //             fecha.setFullYear(fecha.getFullYear() + cantidad - 1);
-    //             break;
-    //         default:
-    //             throw new Error('Unidad de tiempo no válida');
-    //     }
-    
-    //     return fecha.toISOString();
-    // };
-
     const stripePromise = loadStripe('pk_test_51Oie68G77lj0glGvTr2uYiqcG0rIUCcZXorf26c8hcV7aKptz02DfQHY49fcB69JKjgHirxew6HXxMHpOwgiTGzp00cosFcBDA');
     
   return (
@@ -100,12 +75,6 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             </Box>
             </Elements>
         </Box>
-
-        {/* <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
-            onClick={handleProducto}
-        >
-            Agregar método de pago
-        </Button> */}
     </Box>
   )
 }

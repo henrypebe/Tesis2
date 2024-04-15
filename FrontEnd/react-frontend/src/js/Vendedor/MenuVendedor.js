@@ -166,9 +166,11 @@ export default function MenuVendedor() {
 
             {mostrarEstadisticaVendedor && <EstadisticaVendedor informacionTienda={informacionTienda}/>}
 
-            {mostrarBilletera && <BilleteraVendedor setMostrarBilletera={setMostrarBilletera} setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}/>}
+            {mostrarBilletera && <BilleteraVendedor setMostrarBilletera={setMostrarBilletera} setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}
+            idUsuario={idUsuario}/>}
 
-            {mostrarDetalleBilletera && <DetalleBilletera setMostrarBilletera={setMostrarBilletera} setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}/>}
+            {mostrarDetalleBilletera && <DetalleBilletera setMostrarBilletera={setMostrarBilletera} setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}
+            idUsuario={idUsuario}/>}
         </Box>
     </Box>
   )

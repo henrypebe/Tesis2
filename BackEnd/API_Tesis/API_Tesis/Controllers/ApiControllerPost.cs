@@ -7,6 +7,7 @@ using API_Tesis.BD;
 using API_Tesis.Datos;
 using MySqlConnector;
 using System.Security.Cryptography;
+using Stripe;
 
 namespace API_Tesis.Controllers
 {
@@ -15,6 +16,7 @@ namespace API_Tesis.Controllers
     {
         private readonly BDMysql _context;
         private readonly IConfiguration _configuration;
+        private readonly string _claveSecretaStripe = "sk_test_51Oie68G77lj0glGvYBwkFB9A0NoA8we1Gis7g46tEqt1czNNWaR5wAJBdTOD6MCfAW8jiXOa6QEU1LYICB66k28K00pAXrkJEw";
         public ApiControllerPost(BDMysql context, IConfiguration configuration)
         {
             _configuration = configuration;
@@ -345,6 +347,16 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@Estado", 1);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 
+                    await connection.CloseAsync();
+                    await connection.OpenAsync();
+                    query = @"INSERT INTO HistorialCambiosProducto (FechaHora, Descripcion, ProductoID) VALUES (@FechaHora, @Descripcion, @idGenerado)";
+                    command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@FechaHora", DateTime.Now);
+                    command.Parameters.AddWithValue("@Descripcion", "Se realizó la creación del producto");
+                    command.Parameters.AddWithValue("@idGenerado", idGenerado);
+                    await command.ExecuteScalarAsync();
+                    await connection.CloseAsync();
+
                     return Ok(idGenerado);
                     //return Ok();
                 }
@@ -479,6 +491,64 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@EmisorId", EmisorId);
                     command.Parameters.AddWithValue("@FechaEnvio", DateTime.Now);
                     command.Parameters.AddWithValue("@EsTienda", 1);
+                    int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+                    return Ok(idGenerado);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpPost]
+        [Route("/ProcesarPago")]
+        public async Task<IActionResult> ProcesarPago([FromForm] string token, [FromForm] double Monto)
+        {
+            try
+            {
+                StripeConfiguration.ApiKey = _claveSecretaStripe;
+
+                long montoEnCentavos = (long)(Monto * 100);
+                var options = new PaymentIntentCreateOptions
+                {
+                    Amount = montoEnCentavos,
+                    Currency = "usd",
+                    PaymentMethod = token,
+                    ConfirmationMethod = "manual",
+                    Confirm = true,
+                    ReturnUrl = "http://localhost:3000/MenuComprador/3"
+                };
+
+                var service = new PaymentIntentService();
+                PaymentIntent paymentIntent = service.Create(options);
+                return Ok(new { Mensaje = "Pago exitoso", PaymentIntentId = paymentIntent.Id });
+            }
+            catch (StripeException e)
+            {
+                return BadRequest(new { Mensaje = "Error al procesar el pago", Error = e.Message });
+            }
+        }
+        [HttpPost]
+        [Route("/GuardarMetodoPago")]
+        public async Task<IActionResult> GuardarMetodoPago([FromForm] int Last4, [FromForm] string FechaExpiracion, [FromForm] string Token, [FromForm] int CVC, [FromForm] int idUsuario)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"INSERT INTO MetodoPago (Last4, FechaExpiracion, Token, CVC, Estado, UsuarioID) VALUES 
+                    (@Last4, @FechaExpiracion, @Token, @CVC, @Estado, @UsuarioID)";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Last4", Last4);
+                    command.Parameters.AddWithValue("@FechaExpiracion", FechaExpiracion);
+                    command.Parameters.AddWithValue("@Token", Token);
+                    command.Parameters.AddWithValue("@CVC", CVC);
+                    command.Parameters.AddWithValue("@UsuarioID", idUsuario);
+                    command.Parameters.AddWithValue("@Estado", 1);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 
                     return Ok(idGenerado);

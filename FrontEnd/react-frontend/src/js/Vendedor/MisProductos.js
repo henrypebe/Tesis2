@@ -78,7 +78,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
           if (response.ok) {
             const producto = await response.json();
             setProductosList(producto);
-            console.log(producto);
+            // console.log(producto);
           } else if (response.status === 404) {
             throw new Error("Productos no encontrado");
           } else {

@@ -152,7 +152,7 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
     }
 
     return (
-    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", minHeight:"84vh", maxHeight:"auto"}}>
+    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Box sx={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
             
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px", marginRight:"200px"}}>

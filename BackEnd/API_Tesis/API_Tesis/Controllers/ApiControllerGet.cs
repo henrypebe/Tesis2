@@ -395,6 +395,47 @@ namespace API_Tesis.Controllers
             return Ok(productos);
         }
         [HttpGet]
+        [Route("/ListarHistorialCambiosProducto")]
+        public async Task<IActionResult> ListarHistorialCambiosProducto(int idProducto)
+        {
+            try
+            {
+                List<HistorialProducto> HistorialProductos = new List<HistorialProducto>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT h.FechaHora, h.Descripcion FROM HistorialCambiosProducto h
+                        WHERE h.ProductoID = @idProducto";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@idProducto", idProducto);
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                HistorialProducto HistorialProducto = new HistorialProducto
+                                {
+                                    FechaHora = reader.GetDateTime("FechaHora"),
+                                    Descripcion = reader.GetString("Descripcion"),
+                                };
+
+                                HistorialProductos.Add(HistorialProducto);
+                            }
+                            return Ok(HistorialProductos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/ListarPedidosCompletadosPorFecha")]
         public async Task<IActionResult> ListarPedidosCompletadosPorFecha(int idUsuario, DateTime FechaFiltro)
         {
@@ -1226,12 +1267,15 @@ namespace API_Tesis.Controllers
                             {
                                 InicioVendedor estadistica = new InicioVendedor
                                 {
-                                    Ingresos = reader.GetDouble("Ingresos"),
-                                    IngresosPendientes = reader.GetDouble("IngresosPendientes"),
+                                    Ingresos = reader.IsDBNull(reader.GetOrdinal("Ingresos")) ?
+                                                             0 : reader.GetDouble("Ingresos"),
+                                    IngresosPendientes = reader.IsDBNull(reader.GetOrdinal("IngresosPendientes")) ?
+                                                             0 : reader.GetDouble("IngresosPendientes"),
                                     VentasCompletadas = reader.GetInt32("VentasCompletadas"),
                                     VentasPendientes = reader.GetInt32("VentasPendientes"),
                                     ProductosPublicados = reader.GetInt32("ProductosPublicados"),
-                                    ProductoMasVendido = reader.GetString("ProductoMasVendido"),
+                                    ProductoMasVendido = reader.IsDBNull(reader.GetOrdinal("ProductoMasVendido")) ?
+                                                             "" : reader.GetString("ProductoMasVendido"),
                                     PorcentajeSatisfaccion = reader.IsDBNull(reader.GetOrdinal("PorcentajeSatisfaccion")) ?
                                                              0 : reader.GetDouble("PorcentajeSatisfaccion"),
                                     CantidadChatsPendientes = reader.GetInt32("CantidadChatsPendientes"),
@@ -1273,7 +1317,7 @@ namespace API_Tesis.Controllers
                         (SELECT COUNT(Distinct IdProducto) FROM Producto pr WHERE pr.EstadoAprobacion = 'Aprobado') 
                             AS TotalProductosPublicados,
                         (SELECT pr.Nombre FROM Producto pr WHERE pr.CantidadVentas =
-                            (SELECT MAX(CantidadVentas) FROM Producto pro WHERE pro.Estado = 1)) AS ProductoMasVendido,
+                            (SELECT MAX(CantidadVentas) FROM Producto pro WHERE pro.Estado = 1) LIMIT 1) AS ProductoMasVendido,
                         (SELECT COUNT(Distinct IdChat) FROM Chat c WHERE c.CompradorID = @IdUsuario) AS TotalChats,
                         (SELECT COUNT(Distinct IdChat) FROM Chat c WHERE c.FinalizarCliente = 1 AND c.CompradorID = @IdUsuario) 
                             AS TotalChatsFinalizadosCliente,
@@ -1299,7 +1343,8 @@ namespace API_Tesis.Controllers
                                     TotalPedidosUsuario = reader.GetInt32("TotalPedidosUsuario"),
                                     TotalPedidosUsuarioPendiente = reader.GetInt32("TotalPedidosUsuarioPendiente"),
                                     TotalProductosPublicados = reader.GetInt32("TotalProductosPublicados"),
-                                    ProductoMasVendido = reader.GetString("ProductoMasVendido"),
+                                    ProductoMasVendido = reader.IsDBNull(reader.GetOrdinal("ProductoMasVendido")) ?
+                                                             "" : reader.GetString("ProductoMasVendido"),
                                     TotalChats = reader.GetInt32("TotalChats"),
                                     TotalChatsFinalizadosCliente = reader.GetInt32("TotalChatsFinalizadosCliente"),
                                     TotalDescuentoPedidosUsuario = reader.IsDBNull(reader.GetOrdinal("TotalDescuentoPedidosUsuario")) ?
@@ -1313,6 +1358,60 @@ namespace API_Tesis.Controllers
                             {
                                 connection.Close();
                                 return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarBilleteraVendedor")]
+        public async Task<IActionResult> ListarBilleteraVendedor(int idUsuario)
+        {
+            try
+            {
+                List<MetodoPago> metodosPagos = new List<MetodoPago>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"SELECT IdMetodoPago, Last4, FechaExpiracion, Token, CVC FROM MetodoPago m WHERE m.UsuarioID = @IdUsuario AND m.Estado = 1";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                do
+                                {
+                                    int IdMetodoPago = reader.GetInt32("IdMetodoPago");
+                                    MetodoPago metodoExistente = metodosPagos.FirstOrDefault(p => p.IdMetodoPago == IdMetodoPago);
+                                    if (metodoExistente == null)
+                                    {
+                                        metodoExistente = new MetodoPago
+                                        {
+                                            IdMetodoPago = IdMetodoPago,
+                                            Last4 = reader.GetInt32("Last4"),
+                                            FechaExpiracion = reader.GetString("FechaExpiracion"),
+                                            Token = reader.GetString("Token"),
+                                            CVC = reader.GetInt32("CVC")
+                                        };
+
+                                        metodosPagos.Add(metodoExistente);
+                                    }
+                                } while (reader.Read());
+                                return Ok(metodosPagos);
+                            }
+                            else
+                            {
+                                return Ok(metodosPagos);
                             }
                         }
                     }
