@@ -129,10 +129,10 @@ export default function MenuComprador() {
         {mostrarEstadistica && <EstadisticaComprador idUsuario={idUsuario}/>}
 
         {mostrarMetodoPagoAdicionar && <MetodoPagoAdicionar setMostrarMetodoPagoAdicionar={setMostrarMetodoPagoAdicionar}
-        setMetodoPagoAumento={setMetodoPagoAumento}/>}
+        setMetodoPagoAumento={setMetodoPagoAumento} idUsuario={idUsuario}/>}
 
         {mostrarMetodoPagoAumento && <MetodoPagoAumento setMostrarMetodoPagoAdicionar={setMostrarMetodoPagoAdicionar}
-        setMetodoPagoAumento={setMetodoPagoAumento}/>}
+        setMetodoPagoAumento={setMetodoPagoAumento} idUsuario={idUsuario}/>}
 
       </Box>
     </Box>

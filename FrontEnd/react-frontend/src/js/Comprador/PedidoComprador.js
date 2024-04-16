@@ -225,7 +225,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                         {fechaFormateada}
                       </TableCell>
                       <TableCell sx={{fontSize:"16px", width:"30%"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
-                      <TableCell sx={{fontSize:"16px"}}>S/. {pedido.total.toFixed(2)}</TableCell>
+                      <TableCell sx={{fontSize:"16px"}}>S/. {(pedido.total + pedido.costoEnvio).toFixed(2)}</TableCell>
                       <TableCell>
                         <Button 
                           variant="contained" 
@@ -298,7 +298,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                         {fechaFormateada}
                       </TableCell>
                       <TableCell sx={{width:"17.4%", fontSize:"16px"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
-                      <TableCell sx={{width:"30%", fontSize:"16px"}}>S/. {pedido.total.toFixed(2)}</TableCell>
+                      <TableCell sx={{width:"30%", fontSize:"16px"}}>S/. {(pedido.total + pedido.costoEnvio).toFixed(2)}</TableCell>
                       {/* <TableCell>
                         <Button 
                           variant="contained" 

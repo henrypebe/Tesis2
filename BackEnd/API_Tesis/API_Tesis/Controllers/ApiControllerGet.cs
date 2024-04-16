@@ -1369,6 +1369,43 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
+        [Route("/ObtenerLlavePublicaStripe")]
+        public async Task<IActionResult> ObtenerLlavePublicaStripe()
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"SELECT ClaveStripePublica FROM LlavesSTRIPE";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                string llave = reader.IsDBNull(reader.GetOrdinal("ClaveStripePublica")) ?
+                                                             "" : reader.GetString("ClaveStripePublica");
+                                return Ok(llave);
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/ListarBilleteraVendedor")]
         public async Task<IActionResult> ListarBilleteraVendedor(int idUsuario)
         {
@@ -1380,7 +1417,7 @@ namespace API_Tesis.Controllers
                 {
                     await connection.OpenAsync();
 
-                    string query = @"SELECT IdMetodoPago, Last4, FechaExpiracion, Token, CVC FROM MetodoPago m WHERE m.UsuarioID = @IdUsuario AND m.Estado = 1";
+                    string query = @"SELECT IdMetodoPago, Last4, FechaExpiracion, Token FROM MetodoPago m WHERE m.UsuarioID = @IdUsuario AND m.Estado = 1";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -1400,8 +1437,7 @@ namespace API_Tesis.Controllers
                                             IdMetodoPago = IdMetodoPago,
                                             Last4 = reader.GetInt32("Last4"),
                                             FechaExpiracion = reader.GetString("FechaExpiracion"),
-                                            Token = reader.GetString("Token"),
-                                            CVC = reader.GetInt32("CVC")
+                                            Token = reader.GetString("Token")
                                         };
 
                                         metodosPagos.Add(metodoExistente);

@@ -1,16 +1,46 @@
-import { Box, Button, Typography } from '@mui/material'
-import React from 'react'
+import { Box, Button, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import StripePaymentForm from './StripePaymentForm';
 
-export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMetodoPagoAumento}) {
+export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMetodoPagoAumento, idUsuario}) {
     const handleBackPedido = () =>{
         setMostrarMetodoPagoAdicionar(true);
         setMetodoPagoAumento(false);
-      }
+    }
 
     const handleChangeAgregar = () =>{
         setMostrarMetodoPagoAdicionar(true);
         setMetodoPagoAumento(false);
-      }
+    }
+
+    const [llavePublica, setLlavePublica] = useState();
+    useEffect(() => {
+        const obtenerllave = async () => {
+            try {
+                const response = await fetch(
+                    `https://localhost:7240/ObtenerLlavePublicaStripe`,
+                    {
+                      method: "GET",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    }
+                );
+            
+                if (response.ok) {
+                    const _llavePublica = await response.text();
+                    setLlavePublica(_llavePublica);
+                }
+            } catch (error) {
+                console.error("Error al obtener la llave publica de stripe", error);
+              throw new Error("Error al obtener la llave publica de stripe");
+            }
+        };
+        obtenerllave();
+    }, []);
+    const stripePromise = loadStripe(llavePublica);
   return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
         <Box
@@ -62,11 +92,19 @@ export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMet
             </Box>
         </Box>
 
-        <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
+        <Box sx={{height:"60%"}}>
+            <Elements stripe={stripePromise}>
+            <Box>
+                <StripePaymentForm opcion={2} handleChangeAgregar={handleChangeAgregar} idUsuario={idUsuario}/>
+            </Box>
+            </Elements>
+        </Box>
+
+        {/* <Button variant="contained" sx={{width:"95%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}}
             onClick={handleChangeAgregar}
         >
             Agregar método de pago
-        </Button>
+        </Button> */}
     </Box>
   )
 }

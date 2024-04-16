@@ -51,7 +51,7 @@ export default function ReclamoComprador({idUsuario, HandleChangeReclamoSeleccio
         (
           <>
             <Box sx={{height:"88%"}}>
-              {ListaReclamos.map(reclamo => (
+              {ListaReclamos.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(reclamo => (
                 <CardReclamo reclamo={reclamo} HandleChangeReclamoSeleccionado={HandleChangeReclamoSeleccionado}
                 />
               ))}

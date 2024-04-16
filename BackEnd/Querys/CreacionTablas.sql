@@ -161,14 +161,20 @@ CREATE TABLE MetodoPago(
     Last4 INT,
     FechaExpiracion TEXT,
     Token TEXT,
-    CVC INT,
+    Cuenta TEXT,
     UsuarioID INT NOT NULL,
     Estado boolean,
     FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario)
 );
 
-INSERT INTO KeyEncript (KeyVar) 
-VALUES ('tesis2');
+CREATE TABLE LlavesSTRIPE(
+	ClaveStripePublica text,
+    ClaveStripeSecreto text
+);
+
+INSERT INTO LlavesSTRIPE (ClaveStripePublica, ClaveStripeSecreto) 
+VALUES ('pk_test_51Oie68G77lj0glGvTr2uYiqcG0rIUCcZXorf26c8hcV7aKptz02DfQHY49fcB69JKjgHirxew6HXxMHpOwgiTGzp00cosFcBDA',
+'sk_test_51Oie68G77lj0glGvYBwkFB9A0NoA8we1Gis7g46tEqt1czNNWaR5wAJBdTOD6MCfAW8jiXOa6QEU1LYICB66k28K00pAXrkJEw');
 
 INSERT INTO CorreoEmisor(Correo, Contrasenha) VALUES ('test@sbperu.net','oyzlwfgvducseiga');
 
@@ -195,12 +201,13 @@ ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
-ALTER TABLE PedidoXProducto ADD FechaEnvio Datetime;
+ALTER TABLE MetodoPago ADD Cuenta TEXT;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
 ALTER TABLE Mensajes ADD EsTienda boolean;
-ALTER TABLE PedidoXProducto DROP COLUMN FechaEnvio;
+ALTER TABLE MetodoPago DROP COLUMN CVC;
+ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 

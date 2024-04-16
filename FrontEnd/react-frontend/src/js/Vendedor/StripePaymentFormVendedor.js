@@ -1,23 +1,30 @@
 import React from 'react';
-import { CardNumberElement, CardExpiryElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { CardNumberElement, CardExpiryElement, useStripe, useElements, CardCvcElement } from '@stripe/react-stripe-js';
 import './StripePaymentFormVendedor.css';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const StripePaymentFormVendedor = ({handleChangeAgregar, idUsuario}) => {
   const stripe = useStripe();
   const elements = useElements();
-  const [cvc, setCVC] = React.useState();
-  const handleInputChange = (event) => {
-    const value = event.target.value;
-    const regex = /^[0-9\b]+$/;
-    
-    if (value === '' || regex.test(value)) {
-        setCVC(value);
-    }
-};
+  const [InformacionUsuario, setInformacionUsuario] = React.useState();
   const handleSubmit = async (event) => {
+    const response2 = await fetch(
+      `https://localhost:7240/InformacionIdUsuario?idUsuario=${idUsuario}`,
+      {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response2.ok) {
+      const informacion = await response2.json();
+      setInformacionUsuario(informacion);
+    }
+
     event.preventDefault();
 
     if (!stripe || !elements) {
@@ -42,8 +49,9 @@ const StripePaymentFormVendedor = ({handleChangeAgregar, idUsuario}) => {
     formData.append('Last4', last4);
     formData.append('FechaExpiracion', expirationDate);
     formData.append('Token', token);
-    formData.append('CVC', cvc);
     formData.append('idUsuario', idUsuario);
+    formData.append('NombreApellido',InformacionUsuario.nombre + " " + InformacionUsuario.apellido);
+    formData.append('Correo',InformacionUsuario.correo);
 
     const response = await fetch(
         `https://localhost:7240/GuardarMetodoPago`,
@@ -57,15 +65,15 @@ const StripePaymentFormVendedor = ({handleChangeAgregar, idUsuario}) => {
         toast.success("Metodo de pago incorporado", { autoClose: 2000 });
         handleChangeAgregar();
     } else if (response.status === 404) {
-        throw new Error("Pedido no encontrado");
+        throw new Error("Metodo de pago no encontrado");
     } else {
-        throw new Error("Error al crear el pedido");
+        throw new Error("Error al incorporar el Metodo de pago");
     }
 
   };
 
   return (
-    <form className="payment-form" onSubmit={handleSubmit}>
+    <form className="payment-form">
       <div className="form-row" style={{width:"95%", marginBottom:"20px"}}>
         <div>
           <Box sx={{marginBottom:"10px", display:"flex", flexDirection:"row", alignItems:"center"}}>
@@ -90,7 +98,8 @@ const StripePaymentFormVendedor = ({handleChangeAgregar, idUsuario}) => {
                 <img src='https://cdn-icons-png.flaticon.com/512/747/747305.png' alt='' style={{height:"35px"}}/>
                 <Typography sx={{fontSize:"20px", marginLeft:"10px"}}>CVC</Typography>
             </Box>
-            <TextField
+            <CardCvcElement className="card-input-element" />
+            {/* <TextField
                 variant="outlined"
                 sx={{ 
                     height: 34, 
@@ -109,10 +118,12 @@ const StripePaymentFormVendedor = ({handleChangeAgregar, idUsuario}) => {
                 label="CVC"
                 InputLabelProps={{ shrink: false }}
                 inputProps={{ maxLength: 3 }}
-            />
+            /> */}
         </div>
       </div>
-      <Button variant="contained" sx={{width:"96.4%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}} type="submit" disabled={!stripe}>
+      <Button variant="contained" sx={{width:"96.4%", marginTop:"10px", backgroundColor:"#286C23", '&:hover':{backgroundColor:"#286C23"}}} disabled={!stripe}
+        onClick={handleSubmit}
+      >
         Agregar Método de pago
       </Button>
     </form>

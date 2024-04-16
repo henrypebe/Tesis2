@@ -16,7 +16,6 @@ namespace API_Tesis.Controllers
     {
         private readonly BDMysql _context;
         private readonly IConfiguration _configuration;
-        private readonly string _claveSecretaStripe = "sk_test_51Oie68G77lj0glGvYBwkFB9A0NoA8we1Gis7g46tEqt1czNNWaR5wAJBdTOD6MCfAW8jiXOa6QEU1LYICB66k28K00pAXrkJEw";
         public ApiControllerPost(BDMysql context, IConfiguration configuration)
         {
             _configuration = configuration;
@@ -503,26 +502,109 @@ namespace API_Tesis.Controllers
         }
         [HttpPost]
         [Route("/ProcesarPago")]
-        public async Task<IActionResult> ProcesarPago([FromForm] string token, [FromForm] double Monto)
+        public async Task<IActionResult> ProcesarPago([FromForm] string token, [FromForm] double Monto, [FromForm] string NombreApellido, [FromForm] string correo, [FromForm] int opcion)
         {
             try
             {
-                StripeConfiguration.ApiKey = _claveSecretaStripe;
-
-                long montoEnCentavos = (long)(Monto * 100);
-                var options = new PaymentIntentCreateOptions
+                string _claveSecretaStripe = "";
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    Amount = montoEnCentavos,
-                    Currency = "usd",
-                    PaymentMethod = token,
-                    ConfirmationMethod = "manual",
-                    Confirm = true,
-                    ReturnUrl = "http://localhost:3000/MenuComprador/3"
-                };
+                    connection.Open();
 
-                var service = new PaymentIntentService();
-                PaymentIntent paymentIntent = service.Create(options);
-                return Ok(new { Mensaje = "Pago exitoso", PaymentIntentId = paymentIntent.Id });
+                    string query = @"SELECT ClaveStripeSecreto FROM LlavesSTRIPE";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                _claveSecretaStripe = reader.IsDBNull(reader.GetOrdinal("ClaveStripeSecreto")) ?
+                                                             "" : reader.GetString("ClaveStripeSecreto");
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+
+                }
+                StripeConfiguration.ApiKey = _claveSecretaStripe;
+                if(opcion == 1)
+                {
+                    var paymentMethodService = new PaymentMethodService();
+                    var paymentMethod = paymentMethodService.Get(token);
+                    string customerId;
+                    if (paymentMethod.CustomerId == null)
+                    {
+                        CustomerCreateOptions customerOptions = new CustomerCreateOptions
+                        {
+                            Name = NombreApellido,
+                            Email = correo
+                        };
+                        var customerService = new CustomerService();
+                        Customer customer = customerService.Create(customerOptions);
+                        PaymentMethodAttachOptions attachOptions = new PaymentMethodAttachOptions
+                        {
+                            Customer = customer.Id
+                        };
+                        paymentMethodService.Attach(token, attachOptions);
+                        long montoEnCentavos = (long)(Monto * 100);
+                        var options = new PaymentIntentCreateOptions
+                        {
+                            Amount = montoEnCentavos,
+                            Currency = "usd",
+                            PaymentMethod = token,
+                            Customer = customer.Id,
+                            ConfirmationMethod = "manual",
+                            Confirm = true,
+                            ReturnUrl = "http://localhost:3000/MenuComprador/3"
+                        };
+
+                        var service = new PaymentIntentService();
+                        PaymentIntent paymentIntent = service.Create(options);
+                        return Ok(new { Mensaje = "Pago exitoso", PaymentIntentId = paymentIntent.Id });
+                    }
+                    else
+                    {
+                        long montoEnCentavos = (long)(Monto * 100);
+                        var options = new PaymentIntentCreateOptions
+                        {
+                            Amount = montoEnCentavos,
+                            Currency = "usd",
+                            PaymentMethod = token,
+                            Customer = paymentMethod.CustomerId,
+                            ConfirmationMethod = "manual",
+                            Confirm = true,
+                            ReturnUrl = "http://localhost:3000/MenuComprador/3"
+                        };
+
+                        var service = new PaymentIntentService();
+                        PaymentIntent paymentIntent = service.Create(options);
+                        return Ok(new { Mensaje = "Pago exitoso", PaymentIntentId = paymentIntent.Id });
+                    }
+                }
+                else
+                {
+                    long montoEnCentavos = (long)(Monto * 100);
+                    var options = new PaymentIntentCreateOptions
+                    {
+                        Amount = montoEnCentavos,
+                        Currency = "usd",
+                        PaymentMethod = token,
+                        ConfirmationMethod = "manual",
+                        Confirm = true,
+                        ReturnUrl = "http://localhost:3000/MenuComprador/3"
+                    };
+
+                    var service = new PaymentIntentService();
+                    PaymentIntent paymentIntent = service.Create(options);
+
+                    return Ok(new { Mensaje = "Pago exitoso", PaymentIntentId = paymentIntent.Id });
+                }
             }
             catch (StripeException e)
             {
@@ -531,23 +613,78 @@ namespace API_Tesis.Controllers
         }
         [HttpPost]
         [Route("/GuardarMetodoPago")]
-        public async Task<IActionResult> GuardarMetodoPago([FromForm] int Last4, [FromForm] string FechaExpiracion, [FromForm] string Token, [FromForm] int CVC, [FromForm] int idUsuario)
+        public async Task<IActionResult> GuardarMetodoPago([FromForm] int Last4, [FromForm] string FechaExpiracion, [FromForm] string Token, [FromForm] int idUsuario,
+            [FromForm] string NombreApellido, [FromForm] string Correo)
         {
             try
             {
+                string _claveSecretaStripe = "";
                 string connectionString = _configuration.GetConnectionString("DefaultConnection");
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
 
-                    string query = @"INSERT INTO MetodoPago (Last4, FechaExpiracion, Token, CVC, Estado, UsuarioID) VALUES 
-                    (@Last4, @FechaExpiracion, @Token, @CVC, @Estado, @UsuarioID)";
-                    MySqlCommand command = new MySqlCommand(query, connection);
+                    string query = @"SELECT ClaveStripeSecreto FROM LlavesSTRIPE";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                _claveSecretaStripe = reader.IsDBNull(reader.GetOrdinal("ClaveStripeSecreto")) ?
+                                                             "" : reader.GetString("ClaveStripeSecreto");
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
+                        }
+                    }
+
+                }
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    StripeConfiguration.ApiKey = _claveSecretaStripe;
+                    var paymentMethodService = new PaymentMethodService();
+                    var paymentMethod = paymentMethodService.Get(Token);
+                    string customerId;
+
+                    if (paymentMethod?.CustomerId == null)
+                    {
+                        CustomerCreateOptions customerOptions = new CustomerCreateOptions
+                        {
+                            Name = NombreApellido,
+                            Email = Correo
+                        };
+
+                        var customerService = new CustomerService();
+                        Customer customer = customerService.Create(customerOptions);
+
+                        PaymentMethodAttachOptions attachOptions = new PaymentMethodAttachOptions
+                        {
+                            Customer = customer.Id
+                        };
+
+                        paymentMethodService.Attach(Token, attachOptions);
+
+                        customerId = customer.Id;
+                    }
+                    else
+                    {
+                        customerId = paymentMethod.CustomerId;
+                    }
+
+                    string queryInsert = @"INSERT INTO MetodoPago (Last4, FechaExpiracion, Token, Estado, UsuarioID) VALUES 
+                    (@Last4, @FechaExpiracion, @Token, @Estado, @UsuarioID)";
+                    MySqlCommand command = new MySqlCommand(queryInsert, connection);
                     command.Parameters.AddWithValue("@Last4", Last4);
                     command.Parameters.AddWithValue("@FechaExpiracion", FechaExpiracion);
                     command.Parameters.AddWithValue("@Token", Token);
-                    command.Parameters.AddWithValue("@CVC", CVC);
                     command.Parameters.AddWithValue("@UsuarioID", idUsuario);
+                    command.Parameters.AddWithValue("@Cuenta", customerId);
                     command.Parameters.AddWithValue("@Estado", 1);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 

@@ -130,6 +130,7 @@ export default function BarraLateralComprador({mostrarInicio, onMostrarInicioCha
         setMostrarProductos(false);
         setMostrarSeguimiento(false);
         setMostrarEstadistica(false);
+        setMostrarMetodoPago(false);
         setMostrarMetodoPagoAdicionar(true);
         setMostrarDetalleProducto(false);
         setMostrarDetallePedido(false);

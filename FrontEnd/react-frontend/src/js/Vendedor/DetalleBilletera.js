@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import StripePaymentFormVendedor from './StripePaymentFormVendedor';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -15,7 +15,34 @@ export default function DetalleBilletera({setMostrarBilletera, setMostrarnDetall
         setMostrarnDetalleBilletera(false);
     }
 
-    const stripePromise = loadStripe('pk_test_51Oie68G77lj0glGvTr2uYiqcG0rIUCcZXorf26c8hcV7aKptz02DfQHY49fcB69JKjgHirxew6HXxMHpOwgiTGzp00cosFcBDA');
+    const [llavePublica, setLlavePublica] = React.useState();
+
+    useEffect(() => {
+        const obtenerllave = async () => {
+            try {
+                const response = await fetch(
+                    `https://localhost:7240/ObtenerLlavePublicaStripe`,
+                    {
+                      method: "GET",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    }
+                );
+            
+                if (response.ok) {
+                    const _llavePublica = await response.text();
+                    setLlavePublica(_llavePublica);
+                }
+            } catch (error) {
+                console.error("Error al obtener la lista de productos", error);
+              throw new Error("Error al obtener la lista de productos");
+            }
+        };
+        obtenerllave();
+    }, []);
+
+    const stripePromise = loadStripe(llavePublica);
 
     return (
         <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>

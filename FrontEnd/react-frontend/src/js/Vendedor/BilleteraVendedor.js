@@ -69,7 +69,7 @@ export default function BilleteraVendedor({setMostrarBilletera, setMostrarnDetal
           if (response.ok) {
             const metodo = await response.json();
             setMetodosPago(metodo);
-            console.log(metodo);
+            // console.log(metodo);
           } else if (response.status === 404) {
             throw new Error("Seguimiento no encontrado");
           } else {
@@ -98,7 +98,7 @@ export default function BilleteraVendedor({setMostrarBilletera, setMostrarnDetal
             if (response.ok) {
               const metodo = await response.json();
               setMetodosPago(metodo);
-              console.log(metodo);
+              // console.log(metodo);
             } else if (response.status === 404) {
               throw new Error("Metodo de pago no encontrado");
             } else {
