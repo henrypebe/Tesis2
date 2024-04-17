@@ -68,7 +68,7 @@ def evaluar_modelo(modelo, X_test, y_test):
     print("Cross-validation scores:", cv_scores)
     print("Mean cross-validation score:", cv_scores.mean())
 
-# Función para plotear las curvas de aprendizaje
+# Función para graficar la curva de aprendizaje
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
                         n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5)):
     plt.figure()

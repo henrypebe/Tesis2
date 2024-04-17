@@ -102,33 +102,37 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         setSelectedMethodId(id);
     };
     const HandleProcesoPago = async(metodo) =>{
-        let totalAmount = productos.reduce((total, producto) => {
-            const precio = parseFloat(producto.precio - (producto.precio*producto.cantidadOferta/100));
-            return total + (precio);
-        }, 0);
-        const costoEnvio = parseFloat(productos[0].costoEnvio);
-        totalAmount = totalAmount + costoEnvio;
-        const formData = new FormData();
-        formData.append('token', metodo.token);
-        formData.append('Monto', totalAmount);
-        formData.append('NombreApellido', InformacionUsuario.nombre + " " + InformacionUsuario.apellido);
-        formData.append('correo', InformacionUsuario.correo);
-        formData.append('Opcion', 1);
-        try {
-            const response = await fetch(
-                `https://localhost:7240/ProcesarPago`,
-                {
-                  method: "POST",
-                  body: formData
+        if(InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== ""){
+            let totalAmount = productos.reduce((total, producto) => {
+                const precio = parseFloat(producto.precio - (producto.precio*producto.cantidadOferta/100));
+                return total + (precio);
+            }, 0);
+            const costoEnvio = parseFloat(productos[0].costoEnvio);
+            totalAmount = totalAmount + costoEnvio;
+            const formData = new FormData();
+            formData.append('token', metodo.token);
+            formData.append('Monto', totalAmount);
+            formData.append('NombreApellido', InformacionUsuario.nombre + " " + InformacionUsuario.apellido);
+            formData.append('correo', InformacionUsuario.correo);
+            formData.append('Opcion', 1);
+            try {
+                const response = await fetch(
+                    `https://localhost:7240/ProcesarPago`,
+                    {
+                      method: "POST",
+                      body: formData
+                    }
+                );
+            
+                if (response.ok) {
+                    handleProducto(metodo.token);
                 }
-            );
-        
-            if (response.ok) {
-                handleProducto();
+            } catch (error) {
+                console.error("Error al obtener la lista de Métodos de pago", error);
+              throw new Error("Error al obtener la lista de Métodos de pago");
             }
-        } catch (error) {
-            console.error("Error al obtener la lista de Métodos de pago", error);
-          throw new Error("Error al obtener la lista de Métodos de pago");
+        }else{
+            toast.error('Debe de tener una dirección de entrega para crear un pedido.');
         }
     }
     const convertirTiempoANumeros = tiempo => {
@@ -184,7 +188,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             throw new Error("Error al crear el pedido");
         }
     };  
-    const handleProducto = async() =>{
+    const handleProducto = async(token) =>{
         let productoMasLargo = null;
         let mayorTiempo = 0;
         productos.forEach(producto => {
@@ -202,9 +206,10 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         formData.append('TotalDescuento', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
         formData.append('Estado', 1);
         formData.append('CantidadProductos', conteoCarritoCompra);
-        formData.append('MetodoPago', "Nada");
+        formData.append('MetodoPago', token);
         formData.append('UsuarioID', idUsuario);
         formData.append('CostoEnvio', productos[0].costoEnvio/1);
+        formData.append('DireccionEntrega', InformacionUsuario.direccion);
 
         const response = await fetch(
             `https://localhost:7240/CreatePedido`,
@@ -215,6 +220,25 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         );
 
         if (response.ok) {
+            const total = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad) - (producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
+            const totalDescuento = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
+            const costoEnvio = productos[0].costoEnvio/1;
+            
+            const Web3 = require("web3");
+            const web3 = new Web3("http://127.0.0.1:7545");
+            const abi = require("../../../../Blockchain/build/contracts/Ecommerce.json").abi;
+            const address = require("../../../../Blockchain/build/contracts/Ecommerce.json").networks["5777"].address;
+            const advancedStorageContract = new web3.eth.Contract(abi, address);
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0];
+            const contractInstance = advancedStorageContract.methods;
+            try{
+                await contractInstance.createTransaction(fechaISO, total, totalDescuento, false,conteoCarritoCompra, 
+                    token, idUsuario, costoEnvio, InformacionUsuario.direccion).send({ from: account, gas: 3000000 });
+            }catch(error){
+                console.log("Error:", error.message);
+            }
+
             const idPedido = await response.json();
             const promises = productos.map(producto => crearPedidoXProducto(producto, idPedido));
             await Promise.all(promises);

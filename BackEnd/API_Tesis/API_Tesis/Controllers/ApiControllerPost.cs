@@ -368,7 +368,7 @@ namespace API_Tesis.Controllers
         [HttpPost]
         [Route("/CreatePedido")]
         public async Task<ActionResult<int>> CrearPedido([FromForm] DateTime FechaEntrega, [FromForm] double Total, [FromForm] double TotalDescuento, [FromForm] int Estado, [FromForm] int CantidadProductos,
-            [FromForm] string MetodoPago, [FromForm] int UsuarioID,  [FromForm] double CostoEnvio)
+            [FromForm] string MetodoPago, [FromForm] int UsuarioID,  [FromForm] double CostoEnvio, [FromForm] string DireccionEntrega)
         {
             try
             {
@@ -377,8 +377,8 @@ namespace API_Tesis.Controllers
                 {
                     connection.Open();
 
-                    string query = @"INSERT INTO Pedidos (FechaEntrega, Total, Estado, Reclamo, CantidadProductos, MetodoPago, FechaCreacion, UsuarioID, TotalDescuento, CostoEnvio) VALUES 
-                    (@FechaEntrega, @Total, @Estado, @Reclamo, @CantidadProductos, @MetodoPago, @FechaCreacion, @UsuarioID, @TotalDescuento, @CostoEnvio);
+                    string query = @"INSERT INTO Pedidos (FechaEntrega, Total, Estado, Reclamo, CantidadProductos, MetodoPago, FechaCreacion, UsuarioID, TotalDescuento, CostoEnvio, DireccionEntrega) VALUES 
+                    (@FechaEntrega, @Total, @Estado, @Reclamo, @CantidadProductos, @MetodoPago, @FechaCreacion, @UsuarioID, @TotalDescuento, @CostoEnvio, @DireccionEntrega);
                      SELECT LAST_INSERT_ID();";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@FechaEntrega", FechaEntrega);
@@ -391,6 +391,7 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@UsuarioID", UsuarioID);
                     command.Parameters.AddWithValue("@TotalDescuento", TotalDescuento);
                     command.Parameters.AddWithValue("@CostoEnvio", CostoEnvio);
+                    command.Parameters.AddWithValue("@DireccionEntrega", DireccionEntrega);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 
                     return Ok(idGenerado);

@@ -68,7 +68,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
     }
     };  
   
-  const handleProducto = async() =>{
+  const handleProducto = async(token) =>{
         
         let productoMasLargo = null;
         let mayorTiempo = 0;
@@ -89,9 +89,10 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
         formData.append('TotalDescuento', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
         formData.append('Estado', 1);
         formData.append('CantidadProductos', conteoCarritoCompra);
-        formData.append('MetodoPago', "Nada");
+        formData.append('MetodoPago', token);
         formData.append('UsuarioID', idUsuario);
         formData.append('CostoEnvio', productos[0].costoEnvio/1);
+        formData.append('DireccionEntrega', InformacionUsuario.direccion);
 
         const response = await fetch(
             `https://localhost:7240/CreatePedido`,
@@ -122,47 +123,67 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
   
   const handleSubmit = async (event) => {
     if(opcion === 1){
-      event.preventDefault();
-      if (!stripe || !elements) {
-        return;
-      }
-
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: elements.getElement(CardNumberElement),
-      });
-
-      if (error) {
-        toast.error('Se produjo un error, verifique los datos.');
-        return;
-      }
-
-      let totalAmount = productos.reduce((total, producto) => {
-        const precio = parseFloat(producto.precio - (producto.precio*producto.cantidadOferta/100));
-        return total + (precio);
-      }, 0);
-      const costoEnvio = parseFloat(productos[0].costoEnvio);
-      totalAmount = totalAmount + costoEnvio;
-
-      const formData = new FormData();
-      formData.append('token', paymentMethod.id);
-      formData.append('Monto', totalAmount);
-      formData.append('NombreApellido', "a");
-      formData.append('correo', "a");
-      formData.append('Opcion', 0);
-
-      const response = await fetch(
-        'https://localhost:7240/ProcesarPago',
+      const response2 = await fetch(
+        `https://localhost:7240/InformacionIdUsuario?idUsuario=${idUsuario}`,
         {
-          method: 'POST',
-          body: formData
+          method: 'GET',
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
+  
+      if (response2.ok) {
+        const informacion = await response2.json();
+        setInformacionUsuario(informacion);
+        // console.log(informacion);
+      }
+      
+      if(InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== ""){
+        event.preventDefault();
+        if (!stripe || !elements) {
+          return;
+        }
 
-      if (response.ok) {
-        handleProducto();
-      } else {
-        toast.error('Se produjo un error al procesar el pago.');
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+          type: 'card',
+          card: elements.getElement(CardNumberElement),
+        });
+
+        if (error) {
+          toast.error('Se produjo un error, verifique los datos.');
+          return;
+        }
+
+        let totalAmount = productos.reduce((total, producto) => {
+          const precio = parseFloat(producto.precio - (producto.precio*producto.cantidadOferta/100));
+          return total + (precio);
+        }, 0);
+        const costoEnvio = parseFloat(productos[0].costoEnvio);
+        totalAmount = totalAmount + costoEnvio;
+
+        const formData = new FormData();
+        formData.append('token', paymentMethod.id);
+        formData.append('Monto', totalAmount);
+        formData.append('NombreApellido', "a");
+        formData.append('correo', "a");
+        formData.append('Opcion', 0);
+
+        const response = await fetch(
+          'https://localhost:7240/ProcesarPago',
+          {
+            method: 'POST',
+            body: formData
+          }
+        );
+
+        if (response.ok) {
+          handleProducto(paymentMethod.id);
+        } else {
+          toast.error('Se produjo un error al procesar el pago.');
+        }
+      }else{
+        toast.error('Debe ingresar una dirección de entrega para crear un pedido.');
       }
     }else{
       const response2 = await fetch(

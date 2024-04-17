@@ -125,6 +125,7 @@ CREATE TABLE Pedidos(
 	CantidadProductos int,
     MetodoPago TEXT,
     CostoEnvio Double,
+    DireccionEntrega TEXT,
     UsuarioID INT NOT NULL,
     FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario)
 );
@@ -172,6 +173,23 @@ CREATE TABLE LlavesSTRIPE(
     ClaveStripeSecreto text
 );
 
+/*************************************************/
+DROP TABLE PRUEBA;
+CREATE TABLE PRUEBA (
+    IDPRUEBA INT auto_increment PRIMARY KEY,
+    Contrasenha BLOB
+);
+SELECT * FROM PRUEBA;
+INSERT INTO PRUEBA (Contrasenha) values (aes_encrypt('12345','tesis2'));
+SELECT cast(aes_decrypt(Contrasenha,'tesis2') as CHAR) FROM PRUEBA;
+/*************************************************/
+
+ALTER INSTANCE ROTATE INNODB MASTER KEY;
+
+ALTER TABLE PRUEBA ENCRYPTION='Y';
+
+SELECT VERSION();
+
 INSERT INTO LlavesSTRIPE (ClaveStripePublica, ClaveStripeSecreto) 
 VALUES ('pk_test_51Oie68G77lj0glGvTr2uYiqcG0rIUCcZXorf26c8hcV7aKptz02DfQHY49fcB69JKjgHirxew6HXxMHpOwgiTGzp00cosFcBDA',
 'sk_test_51Oie68G77lj0glGvYBwkFB9A0NoA8we1Gis7g46tEqt1czNNWaR5wAJBdTOD6MCfAW8jiXOa6QEU1LYICB66k28K00pAXrkJEw');
@@ -201,7 +219,7 @@ ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
-ALTER TABLE MetodoPago ADD Cuenta TEXT;
+ALTER TABLE Pedidos ADD DireccionEntrega TEXT;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
