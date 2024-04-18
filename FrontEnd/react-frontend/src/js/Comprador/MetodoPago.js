@@ -5,6 +5,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import StripePaymentForm from './StripePaymentForm';
 import CardMetodoPagoComprador from './CardMetodoPagoComprador';
 import { toast } from "react-toastify";
+import Web3 from 'web3';
 import "react-toastify/dist/ReactToastify.css";
 const { add  } = require('date-fns');
 
@@ -224,10 +225,9 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             const totalDescuento = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
             const costoEnvio = productos[0].costoEnvio/1;
             
-            const Web3 = require("web3");
             const web3 = new Web3("http://127.0.0.1:7545");
-            const abi = require("../../../../Blockchain/build/contracts/Ecommerce.json").abi;
-            const address = require("../../../../Blockchain/build/contracts/Ecommerce.json").networks["5777"].address;
+            const abi = require("../../Blockchain/build/contracts/Ecommerce.json").abi;
+            const address = require("../../Blockchain/build/contracts/Ecommerce.json").networks["5777"].address;
             const advancedStorageContract = new web3.eth.Contract(abi, address);
             const accounts = await web3.eth.getAccounts();
             const account = accounts[0];
