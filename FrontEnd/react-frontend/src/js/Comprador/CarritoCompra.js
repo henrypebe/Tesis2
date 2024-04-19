@@ -150,7 +150,7 @@ export default function CarritoCompra({setMostrarCarrito, setMostrarProductos, m
                   </>
                 )
                 } */}
-                S/. {productos.length>0 && productoMasLargo?`${productoMasLargo.fechaEnvio}`:(0).toFixed(2)}
+                {productos.length>0 && productoMasLargo?`${productoMasLargo.fechaEnvio}`:(0).toFixed(2)}
               </Typography>
             </Box>
             <Box sx={{display:"flex", flexDirection:"row", width:"100%"}}>

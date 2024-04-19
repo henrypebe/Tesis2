@@ -44,16 +44,19 @@ export default function MenuComprador() {
   const [productos, setProductos] = useState([]);
   const [ReclamoSeleccionado, setReclamoSeleccionado] = useState();
 
+  const [opcionPedidoDetalle, setOpcionPedidoDetalle] = useState();
+
   const HandleChangeProductoSeleccionado = (producto) =>{
     setProductoSeleccionado(producto);
     setMostrarDetalleProducto(true);
     setMostrarProductos(false);
   }
 
-  const HandleChangePedidoSeleccionado = (pedido) =>{
+  const HandleChangePedidoSeleccionado = (pedido, opcion) =>{
     setPedidoSeleccionado(pedido);
     setMostrarDetallePedido(true);
     setMostrarPedidos(false);
+    setOpcionPedidoDetalle(opcion);
   }
 
   const HandleChangeSeguimientoSeleccionado = (seguimiento) =>{
@@ -93,7 +96,7 @@ export default function MenuComprador() {
         />}
 
         {mostrarDetallePedido && <DetallePedido setMostrarDetallePedido={setMostrarDetallePedido} setMostrarPedidos={setMostrarPedidos}
-        setMostrarSeguimiento={setMostrarSeguimiento} PedidoSeleccionado={PedidoSeleccionado} idUsuario={idUsuario}/>}
+        setMostrarSeguimiento={setMostrarSeguimiento} PedidoSeleccionado={PedidoSeleccionado} idUsuario={idUsuario} opcionPedidoDetalle={opcionPedidoDetalle}/>}
 
         {mostrarProductos && <ProductoComprador setMostrarDetalleProducto={setMostrarDetalleProducto} setMostrarProductos={setMostrarProductos}
         setMostrarCarrito={setMostrarCarrito} setMostrarOpcionCarrito={setMostrarOpcionCarrito} HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado}

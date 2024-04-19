@@ -82,7 +82,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
             <img src='https://cdn-icons-png.freepik.com/512/950/950984.png' alt=''
               style={{marginRight:"10px", color:"black", height:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Ingresos:</Typography>
-            <Typography sx={{color:"black", width:"25%", textAlign:"right", fontSize:"25px"}}>
+            <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
               S/. {Estadistica?Estadistica.ingresos.toFixed(2).padStart(2, '0'):0}
             </Typography>
           </Box>
@@ -109,7 +109,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%", marginRight:"0px"}}>
             <HandshakeIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Ventas completadas:</Typography>
-            <Typography sx={{color:"black", width:"25%", textAlign:"right", fontSize:"25px"}}>
+            <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
               {Estadistica?Estadistica.ventasCompletadas.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
@@ -137,7 +137,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
             <img src='https://cdn-icons-png.flaticon.com/512/7589/7589522.png' alt=''
               style={{marginRight:"10px", color:"black", height:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Productos en despacho:</Typography>
-            <Typography sx={{color:"black", width:"25%", textAlign:"right", fontSize:"25px"}}>
+            <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
               {Estadistica?Estadistica.productosPublicados.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
@@ -165,7 +165,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
             <img src='https://cdn-icons-png.flaticon.com/512/702/702821.png' alt=''
               style={{marginRight:"10px", color:"black", height:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Chats pendientes:</Typography>
-            <Typography sx={{color:"black", width:"25%", textAlign:"right", fontSize:"25px"}}>
+            <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
               {Estadistica?Estadistica.cantidadChatsPendientes.toFixed(0).padStart(2, '0'):0}
             </Typography>
           </Box>
@@ -194,7 +194,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
             <img src='https://cdn-icons-png.flaticon.com/512/118/118111.png' alt=''
               style={{marginRight:"10px", color:"black", height:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>¿Billetera incorporada?</Typography>
-            <Typography sx={{color:"black", width:"25%", textAlign:"right", fontSize:"25px"}}>
+            <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
               Si
             </Typography>
           </Box>

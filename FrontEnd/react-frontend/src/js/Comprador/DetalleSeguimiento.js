@@ -269,7 +269,7 @@ export default function DetalleSeguimiento({
               key={mensaje.idMensaje}
               sx={{border:"2px solid black", width:"40%", padding:"10px", borderRadius:"6px", marginBottom:"10px"}}
             >
-              <b>{mensaje.nombreEmisor} {mensaje.apellidoEmisor} (yo):</b> {mensaje.contenido}
+              <b>{mensaje.nombreEmisor} {mensaje.apellidoEmisor} {mensaje.esTienda?"":"(yo)"}:</b> {mensaje.contenido}
             </Typography>
           </Box>
         ))}

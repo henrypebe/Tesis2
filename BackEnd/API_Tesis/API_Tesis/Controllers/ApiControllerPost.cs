@@ -183,6 +183,7 @@ namespace API_Tesis.Controllers
                         {
                             command.CommandText = "SELECT LAST_INSERT_ID()";
                             int idUsuario = Convert.ToInt32(command.ExecuteScalar());
+                            idUsuarioExistente = idUsuario;
 
                             return Ok(new { idUsuarioExistente, existente = false });
                         }

@@ -23,7 +23,7 @@ export default function RolDeterminar({onLoginComprador}) {
             
             if (response.ok) {
                 if(esVendedor){
-                    if(Existente) window.location.href = `/SeleccionTienda/${idUsuario}`;
+                    if(Existente === 1) window.location.href = `/SeleccionTienda/${idUsuario}`;
                     else window.location.href = `/RolVendedor/${idUsuario}`;
                 }else{
                     // window.location.href = `/MenuVendedor/${idUsuario}`;

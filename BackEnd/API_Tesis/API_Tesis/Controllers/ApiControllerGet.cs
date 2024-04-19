@@ -1648,7 +1648,7 @@ namespace API_Tesis.Controllers
                                         Cantidad = reader.GetInt32("CantidadProducto"),
                                         Precio = reader.GetDouble("Precio"),
                                         TieneReclamo = reader.GetBoolean("TieneReclamo"),
-                                        FechaReclamo = reader.GetDateTime("FechaReclamo"),
+                                        FechaReclamo = reader.IsDBNull(reader.GetOrdinal("FechaReclamo")) ? DateTime.MinValue : reader.GetDateTime("FechaReclamo"),
                                         CantidadOferta = reader.GetDouble("CantidadOferta"),
                                     });
                                 } while (reader.Read());
@@ -1657,7 +1657,7 @@ namespace API_Tesis.Controllers
                             else
                             {
                                 connection.Close();
-                                return NotFound();
+                                return Ok(pedidos);
                             }
                         }
                     }
@@ -1741,7 +1741,7 @@ namespace API_Tesis.Controllers
                             else
                             {
                                 connection.Close();
-                                return NotFound();
+                                return Ok(pedidos);
                             }
                         }
                     }

@@ -8,7 +8,6 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.pipeline import make_pipeline
 
-# Función para cargar los datos desde un archivo CSV
 def cargar_datos(nombre_archivo):
     with open(nombre_archivo, 'r', encoding='latin1') as archivo:
         datos_procesados = []
@@ -28,7 +27,6 @@ def cargar_datos(nombre_archivo):
 
 # Función para preprocesar los datos
 def preprocesar_datos(df):
-    # Codificación de variables categóricas
     label_encoders = {}
     for column in ['Direccion', 'Tipo_Producto', 'Fraude']:
         label_encoders[column] = LabelEncoder()
@@ -39,7 +37,6 @@ def preprocesar_datos(df):
     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
     df = df.dropna(subset=['Fecha_Hora'])
     
-    # Extracción de características temporales
     df['Anho'] = df['Fecha_Hora'].dt.year
     df['Mes'] = df['Fecha_Hora'].dt.month
     df['Dia'] = df['Fecha_Hora'].dt.day

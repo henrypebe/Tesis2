@@ -6,13 +6,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/L
 
 const columnsPendiente = [
   { id: 'fechaEntregado', label: 'Fecha entregado', minWidth: 80, maxWidth: 100},
-  { id: 'producto', label: 'Nombre de tienda', minWidth: 200, maxWidth: 200 },
+  { id: 'tienda', label: 'Nombre de tienda', minWidth: 100, maxWidth: 100 },
+  { id: 'nombreProducto', label: 'Nombre Producto', minWidth: 200, maxWidth: 200 },
   { id: 'costoTotal', label: 'Costo total', minWidth: 200, maxWidth: 200 },
-  // { id: 'boton', label: '', minWidth: 100, maxWidth: 100},
+  { id: 'boton', label: '', minWidth: 100, maxWidth: 100},
 ];
 const columnsComplete = [
   { id: 'fechaEntregado', label: 'Fecha entregado', minWidth: 80, maxWidth: 100},
-  { id: 'producto', label: 'Nombre de tienda', minWidth: 200, maxWidth: 200 },
+  { id: 'tienda', label: 'Nombre de tienda', minWidth: 100, maxWidth: 100 },
+  { id: 'nombreProducto', label: 'Nombre Producto', minWidth: 200, maxWidth: 200 },
   { id: 'costoTotal', label: 'Costo total', minWidth: 200, maxWidth: 200 },
   { id: 'boton', label: '', minWidth: 100, maxWidth: 100},
 ];
@@ -21,7 +23,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
   const [fechaHabilitada, setFechaHabitada] = React.useState(true);
   const [pageCompleto, setPageCompleto] = React.useState(0);
   const [pagePendiente, setPagePendiente] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(3);
+  const [rowsPerPage, setRowsPerPage] = React.useState(2);
 
   const [pedidosCompleteList, setPedidosCompleteList] = useState(null);
   const [pedidosPendienteList, setPedidosPendienteList] = useState(null);
@@ -224,13 +226,14 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                       <TableCell sx={{fontSize:"16px", width:"17%"}}>
                         {fechaFormateada}
                       </TableCell>
-                      <TableCell sx={{fontSize:"16px", width:"30%"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
+                      <TableCell sx={{fontSize:"16px", width:"17.4%"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
+                      <TableCell sx={{fontSize:"16px"}}>{pedido.productosLista[0].nombreProducto}</TableCell>
                       <TableCell sx={{fontSize:"16px"}}>S/. {(pedido.total + pedido.costoEnvio).toFixed(2)}</TableCell>
                       <TableCell>
                         <Button 
                           variant="contained" 
                           sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
-                          onClick={() => HandleChangePedidoSeleccionado(pedido)}
+                          onClick={() => HandleChangePedidoSeleccionado(pedido, 1)}
                           disabled={pedido.tieneReclamo || pedido.finalizarReclamo}
                           >Ver Detalles
                         </Button>
@@ -294,18 +297,21 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                   const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
                   return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
-                      <TableCell sx={{fontSize:"16px", width:"9.7%"}}>
+                      <TableCell sx={{fontSize:"16px", width:"17%"}}>
                         {fechaFormateada}
                       </TableCell>
                       <TableCell sx={{width:"17.4%", fontSize:"16px"}}>{concatenarNombresTiendasConRecorte(pedido)}</TableCell>
-                      <TableCell sx={{width:"30%", fontSize:"16px"}}>S/. {(pedido.total + pedido.costoEnvio).toFixed(2)}</TableCell>
-                      {/* <TableCell>
+                      <TableCell sx={{fontSize:"16px"}}>{pedido.productosLista[0].nombreProducto}</TableCell>
+                      <TableCell sx={{fontSize:"16px"}}>S/. {(pedido.total + pedido.costoEnvio).toFixed(2)}</TableCell>
+                      <TableCell>
                         <Button 
                           variant="contained" 
                           sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
-                          onClick={() => HandleChangePedidoSeleccionado(pedido)}>Ver Detalles
+                          onClick={() => HandleChangePedidoSeleccionado(pedido, 0)}
+                          disabled={pedido.tieneReclamo || pedido.finalizarReclamo}
+                          >Ver Detalles
                         </Button>
-                      </TableCell> */}
+                      </TableCell>
                     </TableRow>
                   );
                 })}

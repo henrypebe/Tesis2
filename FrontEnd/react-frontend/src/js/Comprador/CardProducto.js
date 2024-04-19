@@ -6,7 +6,7 @@ export default function CardProducto({HandleChangeProductoSeleccionado, producto
     <Button sx={{color:"black", padding:"0px", marginRight:"15px", marginBottom:"10px", '&:hover': {backgroundColor:"white"}}}
     onClick={() => {HandleChangeProductoSeleccionado(producto);}}
     >
-        <Box sx={{border:"2px solid black", borderRadius:"5px", width:"200px", padding:"10px"}}>
+        <Box sx={{border:"2px solid black", borderRadius:"5px", width:"240px", padding:"10px"}}>
             <Box sx={{display:"flex", justifyContent:"center"}}>
                 <img src={producto.imagen} alt="Descripción de la imagen" 
                 style={{height:"110px", minWidth:"180px", maxWidth:"180px"}}

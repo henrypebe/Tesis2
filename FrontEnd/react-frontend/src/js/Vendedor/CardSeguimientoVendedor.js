@@ -142,18 +142,26 @@ export default function CardSeguimientoVendedor({HandleChangeSeguimientoSeleccio
         <Button
             sx={{
             width: "15%",
-            backgroundColor: "#286C23",
+            backgroundColor: seguimiento.finalizarCliente? "#286C23" : "#86882D",
             height: "80%",
             borderRadius: "8px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginLeft: "40px",
-            "&:hover": { backgroundColor: "#286C23" },
+            "&:hover": { backgroundColor: seguimiento.finalizarCliente?"#286C23" : "#86882D"},
             }}
-            onClick={()=>{HandleChangeSeguimientoSeleccionado(seguimiento);}}
+            onClick={() => {HandleChangeSeguimientoSeleccionado(seguimiento);}}
         >
             <ChatIcon sx={{ fontSize: "60px", color: "black" }} />
+            {seguimiento.finalizarCliente?
+            (
+            <Typography sx={{color:"black", fontWeight:"bold"}}>Finalizado</Typography>
+            )
+            :
+            (
+            <></>
+            )}
         </Button>
 
     </Box>

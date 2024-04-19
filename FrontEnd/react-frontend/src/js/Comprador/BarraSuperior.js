@@ -60,7 +60,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
       if (response.ok) {
         const usuario = await response.json();
-        console.log(usuario);
+        // console.log(usuario);
         setInformacionUsuario(usuario);
       } else if (response.status === 404) {
         throw new Error("Usuario no encontrado");

@@ -1,7 +1,7 @@
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 
-export default function DetallePedido({setMostrarDetallePedido, setMostrarPedidos, setMostrarSeguimiento, PedidoSeleccionado, idUsuario}) {
+export default function DetallePedido({setMostrarDetallePedido, setMostrarPedidos, setMostrarSeguimiento, PedidoSeleccionado, idUsuario, opcionPedidoDetalle}) {
     // console.log(PedidoSeleccionado);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -201,13 +201,14 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                                 S/. {(producto.precio * producto.cantidad - (producto.precio * producto.cantidad*producto.cantidadOferta/100)).toFixed(2)}
                             </TableCell>
                             <TableCell sx={{textAlign:"center", width:"20%"}}>
-                                {FinalizarCliente && !FinalizarCliente.finalizarCliente?
+                                {(FinalizarCliente && !FinalizarCliente.finalizarCliente) && (producto.tieneSeguimiento)?
                                 (
                                     <>Se finalizó el seguimiento</>
                                 )
                                 :
                                 (
-                                    <Button variant="contained" sx={{width:"100%", backgroundColor:"#1C2536", '&:hover':{backgroundColor:"#1C2536"}}}
+                                    <Button variant="contained" disabled={opcionPedidoDetalle === 0}
+                                    sx={{width:"100%", backgroundColor:"#1C2536", '&:hover':{backgroundColor:"#1C2536"}}}
                                     onClick={() => {handleSeguimiento(producto)}}
                                     >
                                         {producto.tieneSeguimiento? "Seguir Seguimiento": "Iniciar Seguimiento"}

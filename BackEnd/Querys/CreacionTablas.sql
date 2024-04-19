@@ -1,16 +1,17 @@
 USE tesis2;
 
-DROP TABLE Comprador;
-DROP TABLE Vendedor;
-DROP TABLE Usuario;
+DROP TABLE HistorialCambiosProducto;
 DROP TABLE mensajes;
 DROP TABLE chat;
-DROP TABLE Tienda;
-DROP TABLE Producto;
-DROP TABLE HistorialProducto;
-DROP TABLE Pedidos;
+DROP TABLE Comprador;
+DROP TABLE Vendedor;
 DROP TABLE PedidoXProducto;
+DROP TABLE Pedidos;
+DROP TABLE Producto;
+DROP TABLE Tienda;
 DROP TABLE MetodoPago;
+DROP TABLE Usuario;
+DROP TABLE blockchain;
 
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -47,34 +48,6 @@ CREATE TABLE Vendedor(
     Estado boolean
 );
 
-CREATE TABLE Chat (
-    IdChat INT AUTO_INCREMENT PRIMARY KEY,
-    Estado TEXT,
-    FechaCreacion datetime,
-    FinalizarCliente bool,
-    CompradorID INT NOT NULL,
-    TiendaID INT NOT NULL,
-    PedidoXProductoID INT NOT NULL,
-    FOREIGN KEY (PedidoXProductoID) REFERENCES PedidoXProducto(IdPedidoXProducto),
-    FOREIGN KEY (CompradorID) REFERENCES Usuario(IdUsuario)
-);
-
-CREATE TABLE Mensajes (
-    IdMensaje INT AUTO_INCREMENT PRIMARY KEY,
-    ChatId INT NOT NULL,
-    Contenido TEXT,
-    EsTienda boolean,
-    EmisorId INT NOT NULL,
-    FOREIGN KEY (ChatId) REFERENCES Chat(IdChat),
-    FOREIGN KEY (EmisorId) REFERENCES Usuario(IdUsuario),
-    FechaEnvio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE KeyEncript (
-    IdKey INT AUTO_INCREMENT PRIMARY KEY,
-    KeyVar Text
-);
-
 CREATE TABLE Tienda (
     IdTienda INT AUTO_INCREMENT PRIMARY KEY,
     Nombre TEXT,
@@ -108,14 +81,6 @@ CREATE TABLE Producto (
     Estado boolean
 );
 
-CREATE TABLE HistorialCambiosProducto (
-    IdHistorialProducto INT AUTO_INCREMENT PRIMARY KEY,
-    FechaHora Datetime,
-    Descripcion TEXT,
-    ProductoID INT NOT NULL,
-    FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto)
-);
-
 CREATE TABLE Pedidos(
 	IdPedido INT AUTO_INCREMENT PRIMARY KEY,
     FechaEntrega TEXT,
@@ -145,6 +110,58 @@ CREATE TABLE PedidoXProducto(
     FOREIGN KEY (PedidoID) REFERENCES Pedidos(IdPedido)
 );
 
+CREATE TABLE HistorialCambiosProducto (
+    IdHistorialProducto INT AUTO_INCREMENT PRIMARY KEY,
+    FechaHora Datetime,
+    Descripcion TEXT,
+    ProductoID INT NOT NULL,
+    FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto)
+);
+
+CREATE TABLE Chat (
+    IdChat INT AUTO_INCREMENT PRIMARY KEY,
+    Estado TEXT,
+    FechaCreacion datetime,
+    FinalizarCliente bool,
+    CompradorID INT NOT NULL,
+    TiendaID INT NOT NULL,
+    PedidoXProductoID INT NOT NULL,
+    FOREIGN KEY (PedidoXProductoID) REFERENCES PedidoXProducto(IdPedidoXProducto),
+    FOREIGN KEY (CompradorID) REFERENCES Usuario(IdUsuario)
+);
+
+CREATE TABLE Mensajes (
+    IdMensaje INT AUTO_INCREMENT PRIMARY KEY,
+    ChatId INT NOT NULL,
+    Contenido TEXT,
+    EsTienda boolean,
+    EmisorId INT NOT NULL,
+    FOREIGN KEY (ChatId) REFERENCES Chat(IdChat),
+    FOREIGN KEY (EmisorId) REFERENCES Usuario(IdUsuario),
+    FechaEnvio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE MetodoPago(
+	IdMetodoPago INT auto_increment PRIMARY KEY,
+    Last4 INT,
+    FechaExpiracion TEXT,
+    Token TEXT,
+    Cuenta TEXT,
+    UsuarioID INT NOT NULL,
+    Estado boolean,
+    FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario)
+);
+
+CREATE TABLE Blockchain(
+	IdBlockchain INT auto_increment PRIMARY KEY,
+    HashBlockchain TEXT
+);
+
+CREATE TABLE KeyEncript (
+    IdKey INT AUTO_INCREMENT PRIMARY KEY,
+    KeyVar Text
+);
+
 CREATE TABLE CorreoEmisor(
 	IdCorreoEmisor INT auto_increment PRIMARY KEY,
     Correo TEXT,
@@ -159,25 +176,9 @@ CREATE TABLE Facturacion(
     FOREIGN KEY (PedidoID) REFERENCES Pedidos(IdPedido)
 );
 
-CREATE TABLE MetodoPago(
-	IdMetodoPago INT auto_increment PRIMARY KEY,
-    Last4 INT,
-    FechaExpiracion TEXT,
-    Token TEXT,
-    Cuenta TEXT,
-    UsuarioID INT NOT NULL,
-    Estado boolean,
-    FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario)
-);
-
 CREATE TABLE LlavesSTRIPE(
 	ClaveStripePublica text,
     ClaveStripeSecreto text
-);
-
-CREATE TABLE Blockchain(
-	IdBlockchain INT auto_increment PRIMARY KEY,
-    HashBlockchain TEXT
 );
 
 /*************************************************/

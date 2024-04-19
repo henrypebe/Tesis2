@@ -7,7 +7,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda}) {
     const [pageCompleto, setPageCompleto] = React.useState(0);
     const [pagePendiente, setPagePendiente] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(3);
+    const [rowsPerPage, setRowsPerPage] = React.useState(2);
     const [fechaHabilitada, setFechaHabitada] = React.useState(true);
 
     const [VentasCompleteList, setVentasCompleteList] = React.useState(null);
@@ -76,15 +76,13 @@ export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda
       
             if (response.ok) {
               const pedido = await response.json();
-              // console.log(pedido);
-              const fechaActual = new Date();
               const pedidosFuturos = pedido.filter(_pedido => {
-                const fechaEntrega = new Date(_pedido.fechaEntrega);
-                return fechaEntrega > fechaActual;
+                const EstadoPedido = _pedido.estado
+                return EstadoPedido===1;
               });
               const pedidosPasados = pedido.filter(_pedido => {
-                const fechaEntrega = new Date(_pedido.fechaEntrega);
-                return fechaEntrega <= fechaActual;
+                const EstadoPedido = _pedido.estado
+                return EstadoPedido===2;
               });
               setVentasCompleteList(pedidosPasados);
               setVentasPendienteList(pedidosFuturos);

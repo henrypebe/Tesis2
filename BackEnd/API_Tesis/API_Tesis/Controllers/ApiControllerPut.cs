@@ -29,7 +29,11 @@ namespace API_Tesis.Controllers
             {
                 connection.Open();
 
-                string query = "UPDATE Pedidos SET Estado = 2 WHERE DATE(FechaEntrega) <= DATE(NOW())";
+                string query = @"
+                    UPDATE Pedidos 
+                    SET Estado = CASE WHEN DATE(FechaEntrega) <= DATE(NOW()) THEN 2 
+                        ELSE 1 
+                    END";
 
                 MySqlCommand command = new MySqlCommand(query, connection);
                 int rowsAffected = await command.ExecuteNonQueryAsync();
