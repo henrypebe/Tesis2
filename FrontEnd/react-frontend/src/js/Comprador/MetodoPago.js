@@ -6,12 +6,13 @@ import StripePaymentForm from './StripePaymentForm';
 import CardMetodoPagoComprador from './CardMetodoPagoComprador';
 import { toast } from "react-toastify";
 import Web3 from 'web3';
+import EcommerceContract from '../../Blockchain/build/contracts/Ecommerce.json';
 import "react-toastify/dist/ReactToastify.css";
 const { add  } = require('date-fns');
 
 export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, productos, conteoCarritoCompra,
     setProductos, setConteoCarritoCompra, idUsuario}) {
-    console.log(productos);
+    // console.log(productos);
     const [ListaMetodoPago, setListaMetodoPago] = useState([]);
     const [llavePublica, setLlavePublica] = useState();
     const [InformacionUsuario, setInformacionUsuario] = useState();
@@ -102,7 +103,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     const handleCheckboxChange = (id) => {
         setSelectedMethodId(id);
     };
-    const HandleProcesoPago = async(metodo) =>{
+    const HandleProcesoPago = async(metodo, fechaResultado, total, totalDescuento, costoEnvio) =>{
         if(InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== ""){
             let totalAmount = productos.reduce((total, producto) => {
                 const precio = parseFloat(producto.precio - (producto.precio*producto.cantidadOferta/100));
@@ -110,6 +111,11 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             }, 0);
             const costoEnvio = parseFloat(productos[0].costoEnvio);
             totalAmount = totalAmount + costoEnvio;
+            
+            createAndVerifyTransaction(fechaResultado, total, totalDescuento, metodo.token, costoEnvio);
+        
+            //ALGORITMO
+
             const formData = new FormData();
             formData.append('token', metodo.token);
             formData.append('Monto', totalAmount);
@@ -126,7 +132,11 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 );
             
                 if (response.ok) {
-                    handleProducto(metodo.token);
+                    toast.success('El pedido fue creado correctamente', { autoClose: 2000 });
+                    setProductos([]);
+                    setConteoCarritoCompra(0);
+                    setMostrarMetodoPago(false);
+                    setMostrarProductos(true);
                 }
             } catch (error) {
                 console.error("Error al obtener la lista de Métodos de pago", error);
@@ -166,6 +176,56 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     
         return fechaResultado;
     };
+
+    async function createAndVerifyTransaction(fechaResultado, total, totalDescuento, token, costoEnvio) {
+        try {
+            // Conexión a Ganache
+            const web3 = new Web3('http://localhost:7545');
+        
+            // Obtener la instancia del contrato
+            const networkId = await web3.eth.net.getId();
+            const deployedNetwork = EcommerceContract.networks[networkId];
+            const contractInstance = new web3.eth.Contract(
+                EcommerceContract.abi,
+                deployedNetwork && deployedNetwork.address
+            );
+    
+            const totalEntero = parseInt(Math.round(total * 100));
+            const totalDescuentoEntero = parseInt(Math.round(totalDescuento * 100));
+            const costoEnvioEntero = Math.round(costoEnvio * 100);
+            
+            // Crear la transacción en el contrato
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0];
+            const txReceipt = await contractInstance.methods
+                .createTransaction(
+                InformacionUsuario.nombre + " " + InformacionUsuario.apellido,
+                Math.floor(fechaResultado),
+                Math.floor(Date.now()),
+                totalEntero,
+                totalDescuentoEntero,
+                false,
+                conteoCarritoCompra,
+                token,
+                costoEnvioEntero,
+                InformacionUsuario.direccion
+                )
+                .send({ from: account, gas: 5000000 });
+            const transactionId = txReceipt.transactionHash.toString();
+            await fetch(
+                `https://localhost:7240/IngresarHashBlockchain?hash=${transactionId}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+        } catch (error) {
+          console.error('Error al crear la transacción:', error);
+        }
+    }
+
     const crearPedidoXProducto = async (producto, idPedido) => {
         const formData = new FormData();
         // const fechaISO = calcularFechaEnvio(producto.fechaEnvio);
@@ -189,7 +249,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             throw new Error("Error al crear el pedido");
         }
     };  
-    const handleProducto = async(token) =>{
+    const handleProducto = async(metodo) =>{
         let productoMasLargo = null;
         let mayorTiempo = 0;
         productos.forEach(producto => {
@@ -207,7 +267,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         formData.append('TotalDescuento', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
         formData.append('Estado', 1);
         formData.append('CantidadProductos', conteoCarritoCompra);
-        formData.append('MetodoPago', token);
+        formData.append('MetodoPago', metodo.token);
         formData.append('UsuarioID', idUsuario);
         formData.append('CostoEnvio', productos[0].costoEnvio/1);
         formData.append('DireccionEntrega', InformacionUsuario.direccion);
@@ -225,36 +285,16 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             const totalDescuento = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
             const costoEnvio = productos[0].costoEnvio/1;
             
-            const web3 = new Web3("http://127.0.0.1:7545");
-            const abi = require("../../Blockchain/build/contracts/Ecommerce.json").abi;
-            const address = require("../../Blockchain/build/contracts/Ecommerce.json").networks["5777"].address;
-            const advancedStorageContract = new web3.eth.Contract(abi, address);
-            const accounts = await web3.eth.getAccounts();
-            const account = accounts[0];
-            const contractInstance = advancedStorageContract.methods;
-            try{
-                await contractInstance.createTransaction(fechaISO, total, totalDescuento, false,conteoCarritoCompra, 
-                    token, idUsuario, costoEnvio, InformacionUsuario.direccion).send({ from: account, gas: 3000000 });
-            }catch(error){
-                console.log("Error:", error.message);
-            }
-
             const idPedido = await response.json();
             const promises = productos.map(producto => crearPedidoXProducto(producto, idPedido));
             await Promise.all(promises);
-            toast.success('El pedido fue creado correctamente', { autoClose: 2000 });
-            setProductos([]);
-            setConteoCarritoCompra(0);
-            setMostrarMetodoPago(false);
-            setMostrarProductos(true);
+
+            HandleProcesoPago(metodo, fechaResultado, total, totalDescuento, costoEnvio);
         } else if (response.status === 404) {
             throw new Error("Pedido no encontrado");
         } else {
             throw new Error("Error al crear el pedido");
         }
-
-        setMostrarMetodoPago(false);
-        setMostrarProductos(true);
     }
   return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
@@ -305,7 +345,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                             metodo={metodo}
                             handleCheckboxChange={handleCheckboxChange}
                             selectedMethodId={selectedMethodId}
-                            HandleProcesoPago={HandleProcesoPago}
+                            handleProducto={handleProducto}
                         />
                     ))
                 )}

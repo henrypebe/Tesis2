@@ -47,4 +47,39 @@ contract Ecommerce {
         emit TransactionCreated(transactionCount);
         transactionCount++;
     }
+
+    function getTransaction(uint _transactionId) public view returns (
+        string memory customerName,
+        uint deliveryDate,
+        uint creationDate,
+        uint total,
+        uint totalDiscount,
+        bool claim,
+        uint productCount,
+        string memory paymentMethod,
+        uint shippingCost,
+        string memory deliveryAddress
+    ) {
+        Transaction storage transaction = transactions[_transactionId];
+        return (
+            transaction.customerName,
+            transaction.deliveryDate,
+            transaction.creationDate,
+            transaction.total,
+            transaction.totalDiscount,
+            transaction.claim,
+            transaction.productCount,
+            transaction.paymentMethod,
+            transaction.shippingCost,
+            transaction.deliveryAddress
+        );
+    }
+
+    function getAllTransactions() public view returns (Transaction[] memory) {
+        Transaction[] memory allTransactions = new Transaction[](transactionCount);
+        for (uint i = 0; i < transactionCount; i++) {
+            allTransactions[i] = transactions[i];
+        }
+        return allTransactions;
+    }
 }

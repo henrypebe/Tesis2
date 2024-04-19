@@ -5,7 +5,7 @@ export default function CardMetodoPagoComprador({
   metodo,
   handleCheckboxChange,
   selectedMethodId,
-  HandleProcesoPago
+  handleProducto
 }) {
 
   return (
@@ -24,7 +24,7 @@ export default function CardMetodoPagoComprador({
         </Typography>
         {selectedMethodId === metodo.id && (
           <Button variant="contained" sx={{width:"18%", marginTop:"0px", backgroundColor:"#286C23", marginRight:"10px", '&:hover':{backgroundColor:"#286C23"}}} 
-            onClick={()=>{HandleProcesoPago(metodo);}}>
+            onClick={()=>{handleProducto(metodo);}}>
             Pagar
           </Button>
         )}

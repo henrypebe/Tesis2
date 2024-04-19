@@ -231,43 +231,79 @@ namespace API_Tesis.Controllers
         public async Task<ActionResult> EditarUsuario([FromForm] int idUsuario, [FromForm] string nombre, [FromForm] string apellido, [FromForm] string correo, [FromForm] int numero,
             [FromForm] string direccion)
         {
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
-            try
-            {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+          
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                try
                 {
-                    connection.Open();
-                    string query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
-                        "Direccion = @Direccion WHERE idUsuario = @IdUsuario AND Estado = 1";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
-                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
-                        command.Parameters.AddWithValue("@Apellido", apellido);
-                        command.Parameters.AddWithValue("@Nombre", nombre);
-                        command.Parameters.AddWithValue("@Correo", correo);
-                        command.Parameters.AddWithValue("@Telefono", numero);
-                        command.Parameters.AddWithValue("@Direccion", direccion);
-
-                        int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                        if (rowsAffected > 0)
+                        connection.Open();
+                        string queryGetDireccion = "SELECT Direccion FROM Usuario WHERE IdUsuario = @IdUsuario";
+                        using (MySqlCommand commandGetDireccion = new MySqlCommand(queryGetDireccion, connection))
                         {
-                            connection.Close();
-                            return Ok();
+                            commandGetDireccion.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                            string direccionActual = await commandGetDireccion.ExecuteScalarAsync() as string;
+
+                            if (direccionActual == direccion)
+                            {
+                                string querySinCambioDireccion = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
+                                    "Direccion = @Direccion WHERE idUsuario = @IdUsuario AND Estado = 1";
+                                using (MySqlCommand command = new MySqlCommand(querySinCambioDireccion, connection))
+                                {
+                                    command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                                    command.Parameters.AddWithValue("@Apellido", apellido);
+                                    command.Parameters.AddWithValue("@Nombre", nombre);
+                                    command.Parameters.AddWithValue("@Correo", correo);
+                                    command.Parameters.AddWithValue("@Telefono", numero);
+                                    command.Parameters.AddWithValue("@Direccion", direccion);
+
+                                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                                    if (rowsAffected > 0)
+                                    {
+                                        connection.Close();
+                                        return Ok();
+                                    }
+                                    else
+                                    {
+                                        connection.Close();
+                                        return NotFound();
+                                    }
+                                }
+                            }
                         }
-                        else
+
+                        string query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
+                            "Direccion = @Direccion, CantCambiosDireccion = CantCambiosDireccion + 1 WHERE idUsuario = @IdUsuario AND Estado = 1";
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
-                            connection.Close();
-                            return NotFound();
+                            command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                            command.Parameters.AddWithValue("@Apellido", apellido);
+                            command.Parameters.AddWithValue("@Nombre", nombre);
+                            command.Parameters.AddWithValue("@Correo", correo);
+                            command.Parameters.AddWithValue("@Telefono", numero);
+                            command.Parameters.AddWithValue("@Direccion", direccion);
+
+                            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                            if (rowsAffected > 0)
+                            {
+                                connection.Close();
+                                return Ok();
+                            }
+                            else
+                            {
+                                connection.Close();
+                                return NotFound();
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.Write(ex.Message);
-                return NotFound();
-            }
+                catch (Exception ex)
+                {
+                    Console.Write(ex.Message);
+                    return NotFound();
+                }
         }
         [HttpPut]
         [Route("/EditarTienda")]
@@ -299,6 +335,39 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@IdTienda", idTienda);
                     command.Parameters.AddWithValue("@Estado", 1);
                     command.Parameters.AddWithValue("@Foto", imageBytes);
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    if (rowsAffected > 0)
+                    {
+                        connection.Close();
+                        return Ok();
+                    }
+                    else
+                    {
+                        connection.Close();
+                        return NotFound();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/EditarMetodoPago")]
+        public async Task<ActionResult> EditarMetodoPago( int idPedido, string token)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = @"UPDATE Pedidos SET MetodoPago = @MetodoPago WHERE IdPedido = @IdPedido AND Estado = 1";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@MetodoPago", token);
+                    command.Parameters.AddWithValue("@IdPedido", idPedido);
                     int rowsAffected = await command.ExecuteNonQueryAsync();
 
                     if (rowsAffected > 0)

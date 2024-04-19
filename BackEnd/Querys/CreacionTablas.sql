@@ -22,6 +22,8 @@ CREATE TABLE Usuario (
     Apellido Text,
     DNI int,
     Telefono int,
+    CantCambiosDireccion int,
+    CantMetodoPago int,
     Direccion text,
     EsAdministrador boolean,
     EsComprador boolean,
@@ -173,6 +175,11 @@ CREATE TABLE LlavesSTRIPE(
     ClaveStripeSecreto text
 );
 
+CREATE TABLE Blockchain(
+	IdBlockchain INT auto_increment PRIMARY KEY,
+    HashBlockchain TEXT
+);
+
 /*************************************************/
 DROP TABLE PRUEBA;
 CREATE TABLE PRUEBA (
@@ -200,6 +207,7 @@ INSERT INTO Usuario (Correo, contrasenha, Token, Nombre, Apellido, DNI, Telefono
 VALUES ('a20191425@pucp.edu.pe', 'henrypebe11', 'token123', 'Henry', 'Pebe', 12345678, 987654321, 'Calle 123', 1, 0, 0);
 
 SELECT * FROM Usuario;
+SELECT * FROM Blockchain;
 SELECT * FROM HistorialCambiosProducto;
 SELECT * FROM Vendedor;
 SELECT * FROM Comprador;
@@ -219,12 +227,12 @@ ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
-ALTER TABLE Pedidos ADD DireccionEntrega TEXT;
+ALTER TABLE Usuario ADD CantMetodoPago int;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
 ALTER TABLE Mensajes ADD EsTienda boolean;
-ALTER TABLE MetodoPago DROP COLUMN CVC;
+ALTER TABLE Usuario DROP COLUMN CantCambiosMetodoPago;
 ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;

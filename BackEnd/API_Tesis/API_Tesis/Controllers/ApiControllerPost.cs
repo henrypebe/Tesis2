@@ -472,6 +472,32 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpPost]
+        [Route("/IngresarHashBlockchain")]
+        public async Task<IActionResult> IngresarHashBlockchain(string hash)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"INSERT INTO Blockchain (HashBlockchain) VALUES 
+                    (@HashBlockchain);
+                     SELECT LAST_INSERT_ID();";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@HashBlockchain", hash);
+                    int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+                    return Ok(idGenerado);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpPost]
         [Route("/CreateMensajeTienda")]
         public async Task<ActionResult<int>> CreateMensajeTienda(int ChatId, int EmisorId, string Contenido)
         {
@@ -503,7 +529,8 @@ namespace API_Tesis.Controllers
         }
         [HttpPost]
         [Route("/ProcesarPago")]
-        public async Task<IActionResult> ProcesarPago([FromForm] string token, [FromForm] double Monto, [FromForm] string NombreApellido, [FromForm] string correo, [FromForm] int opcion)
+        public async Task<IActionResult> ProcesarPago([FromForm] string token, [FromForm] double Monto, [FromForm] string NombreApellido, [FromForm] string correo, [FromForm] int opcion,
+            [FromForm] int IdUsuario)
         {
             try
             {
@@ -604,6 +631,15 @@ namespace API_Tesis.Controllers
                     var service = new PaymentIntentService();
                     PaymentIntent paymentIntent = service.Create(options);
 
+                    using (MySqlConnection connection = new MySqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string queryUpdate = @"UPDATE Usuario SET CantMetodoPago = CantMetodoPago + 1 WHERE IdUsuario = @IdUsuario";
+                        MySqlCommand commandUpdate = new MySqlCommand(queryUpdate, connection);
+                        commandUpdate.Parameters.AddWithValue("@IdUsuario", IdUsuario);
+                        await commandUpdate.ExecuteNonQueryAsync();
+                    }
+
                     return Ok(new { Mensaje = "Pago exitoso", PaymentIntentId = paymentIntent.Id });
                 }
             }
@@ -615,7 +651,7 @@ namespace API_Tesis.Controllers
         [HttpPost]
         [Route("/GuardarMetodoPago")]
         public async Task<IActionResult> GuardarMetodoPago([FromForm] int Last4, [FromForm] string FechaExpiracion, [FromForm] string Token, [FromForm] int idUsuario,
-            [FromForm] string NombreApellido, [FromForm] string Correo)
+    [FromForm] string NombreApellido, [FromForm] string Correo)
         {
             try
             {
@@ -634,7 +670,7 @@ namespace API_Tesis.Controllers
                             if (await reader.ReadAsync())
                             {
                                 _claveSecretaStripe = reader.IsDBNull(reader.GetOrdinal("ClaveStripeSecreto")) ?
-                                                             "" : reader.GetString("ClaveStripeSecreto");
+                                                                "" : reader.GetString("ClaveStripeSecreto");
                             }
                             else
                             {
@@ -645,6 +681,7 @@ namespace API_Tesis.Controllers
                     }
 
                 }
+
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
@@ -679,7 +716,7 @@ namespace API_Tesis.Controllers
                     }
 
                     string queryInsert = @"INSERT INTO MetodoPago (Last4, FechaExpiracion, Token, Estado, UsuarioID) VALUES 
-                    (@Last4, @FechaExpiracion, @Token, @Estado, @UsuarioID)";
+                        (@Last4, @FechaExpiracion, @Token, @Estado, @UsuarioID)";
                     MySqlCommand command = new MySqlCommand(queryInsert, connection);
                     command.Parameters.AddWithValue("@Last4", Last4);
                     command.Parameters.AddWithValue("@FechaExpiracion", FechaExpiracion);
@@ -688,6 +725,12 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@Cuenta", customerId);
                     command.Parameters.AddWithValue("@Estado", 1);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+                    // Realizar el update para aumentar CantCambiosMetodoPago
+                    string queryUpdate = @"UPDATE Usuario SET CantMetodoPago = CantMetodoPago + 1 WHERE IdUsuario = @IdUsuario";
+                    MySqlCommand commandUpdate = new MySqlCommand(queryUpdate, connection);
+                    commandUpdate.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                    await commandUpdate.ExecuteNonQueryAsync();
 
                     return Ok(idGenerado);
                 }
