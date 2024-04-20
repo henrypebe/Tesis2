@@ -189,7 +189,7 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
             <ReceiptLongIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>Ahorros totales:</Typography>
-            <Typography sx={{color:"black", width:"25%", textAlign:"right", fontSize:"25px"}}>
+            <Typography sx={{color:"black", width:"28%", textAlign:"right", fontSize:"25px"}}>
               - S/.{Estadistica?Estadistica.totalDescuentoPedidosUsuario.toFixed(2):(0).toFixed(2)}
             </Typography>
           </Box>
