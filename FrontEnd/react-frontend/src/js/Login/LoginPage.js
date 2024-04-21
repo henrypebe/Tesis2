@@ -9,6 +9,32 @@ export default function LoginPage() {
   const [emailType, setEmailType] = useState("");
   const [contrasenha, setContrasenha] = useState("");
 
+  const datosDirectosString = `ID: 84276456158716628018388007973476589694297596544125460074642747809140486938024\n` +
+    `Nombre y Apellido del Comprador: Rachel Stanley\n` +
+    `Fecha de Creación del Pedido: 2024-04-01 03:14:00\n` +
+    `Lugar de Entrega: 686 Emma Station Apt. 781, Port Christianfort, MT 06211\n` +
+    `Cantidad de cambios de lugar de entrega durante el ultimo mes: 3\n` +
+    `Costo total del Pedido: 10\n` +
+    `Método de Pago (Número de Cuenta Encriptado): 6567978263124321176199124994021629054013394850766151770053130685444148306190\n` +
+    `Numeros de cambios del método de pago: 2\n` +
+    `Cantidad de Productos en el Pedido: 10\n` +
+    `Tipo de Producto (con mayor valor): Tecnología`;
+
+  fetch('http://localhost:5000/predecir', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      datos_directos: datosDirectosString
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+  })
+  .catch(error => console.error('Error:', error));  
+
   const handleLoginSistema = async () => {
     try {
       if(emailType !== '' || contrasenha !== ''){

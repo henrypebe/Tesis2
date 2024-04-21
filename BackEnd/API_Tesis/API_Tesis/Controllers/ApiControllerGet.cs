@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
+using Python.Runtime;
 
 namespace API_Tesis.Controllers
 {
@@ -1851,6 +1852,28 @@ namespace API_Tesis.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ObtenerPrediccion")]
+        public async Task<IActionResult> ObtenerPrediccion(int idUsuario)
+        {
+            try
+            {
+                using(Py.GIL())
+                {
+                    // Importar el módulo y obtener la referencia a la función
+                    dynamic module = Py.Import("script");
+                    dynamic my_function = module.my_function;
+
+                    // Llamar a la función
+                    my_function();
+                }
+                return Ok(1);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al ejecutar el archivo Python: {ex.Message}");
             }
         }
         [HttpGet]
