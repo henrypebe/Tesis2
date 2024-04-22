@@ -221,6 +221,7 @@ SELECT * FROM Mensajes;
 SELECT * FROM CorreoEmisor;
 SELECT * FROM Producto;
 SELECT * FROM Pedidos;
+SELECT * FROM PedidoXProducto;
 SELECT * FROM Chat;
 SELECT * FROM MetodoPago;
 SELECT * FROM Usuario WHERE Estado = 1;

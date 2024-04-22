@@ -51,6 +51,37 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpPut]
+        [Route("/ActualizarEstadoPedido")]
+        public async Task<IActionResult> ActualizarEstadoPedido(int idPedido, int valor)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    UPDATE Pedidos 
+                    SET Estado = @Estado
+                    WHERE IdPedido = @IdPedido";
+
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@IdPedido", idPedido);
+                command.Parameters.AddWithValue("@Estado", valor);
+                int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                if (rowsAffected > 0)
+                {
+                    connection.Close();
+                    return Ok();
+                }
+                else
+                {
+                    connection.Close();
+                    return NotFound();
+                }
+            }
+        }
+        [HttpPut]
         [Route("/EditarProducto")]
         public async Task<ActionResult<int>> EditarProducto([FromForm] int idProducto, [FromForm] string nombre, [FromForm] double precio, [FromForm] int cantidad, [FromForm] IFormFile image,
         [FromForm] string descripcion, [FromForm] double cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] double costoEnvio,

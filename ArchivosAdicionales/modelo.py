@@ -1,5 +1,6 @@
 # modelo.py
 import os
+import numpy as np
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
@@ -90,18 +91,35 @@ def preprocesar_datos_2(df):
 
 def cargar_pipeline_y_predecir(datos_directos):
     # Cargar los datos directos y preprocesarlos
+    pipeline_file = "pipeline.pkl"
     datos_directos_string = convertir_datos_directos(datos_directos)
     df_nuevos_datos = cargar_datos_2(datos_directos_string)
     df_nuevos_datos = preprocesar_datos_2(df_nuevos_datos)
     df_nuevos_datos.drop(['Nombre', 'Fecha_Hora'], axis=1, inplace=True)
     
-    predicciones = Entrenamiento(df_nuevos_datos)
+    # predicciones = Entrenamiento(df_nuevos_datos)
+    with open(pipeline_file, 'rb') as file:
+        pipeline = pickle.load(file)
     
-    for indice, prediccion in enumerate(predicciones):
-        if(prediccion):
-            return "Fraude"
-        else:
-            return "No Fraude"
+    predicciones = pipeline.predict(df_nuevos_datos)
+    
+    valor_prediccion = 0 if predicciones[0] else 1
+    
+    reentrenar_y_guardar_pipeline(df_nuevos_datos, pipeline_file, pipeline, valor_prediccion)
+    
+    if(predicciones[0]):
+        return "Fraude"
+    else:
+        return "No Fraude"
+
+def reentrenar_y_guardar_pipeline(nuevos_datos, pipeline_file, pipeline, valor_prediccion):
+    X_nuevos = nuevos_datos
+    y_nuevos = np.array([valor_prediccion])
+    
+    pipeline.fit(X_nuevos, y_nuevos)
+    
+    with open(pipeline_file, 'wb') as file:
+        pickle.dump(pipeline, file)
         
 def Entrenamiento(df_nuevos_datos):
     # # Cargar y preprocesar los datos

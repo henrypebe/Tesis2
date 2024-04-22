@@ -80,8 +80,8 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
       <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px"}}>Información</Typography>
       
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px", marginTop:"20px"}}>
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"930px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50E7FF", border:"1px solid #7B7B7B", width:"1450px",
+        '&:hover': {backgroundColor:"#50E7FF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickPedido}
         >
           
@@ -106,7 +106,7 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
       </Box>
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"930px",
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"1450px",
         '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickProducto}
         >
@@ -131,8 +131,8 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
       </Box>
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"930px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50E7FF", border:"1px solid #7B7B7B", width:"1450px",
+        '&:hover': {backgroundColor:"#50E7FF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickChat}
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%"}}>
@@ -156,7 +156,7 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
       </Box>
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"930px",
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"1450px",
         '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickReclamo}
         >
@@ -182,8 +182,8 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
         
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"455px", marginRight:"20px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50BAFF", border:"1px solid #7B7B7B", width:"715px", marginRight:"20px",
+        '&:hover': {backgroundColor:"#50BAFF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickEstadistica}
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
@@ -195,8 +195,8 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
           </Box>
         </Button>
 
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"455px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50BAFF", border:"1px solid #7B7B7B", width:"715px",
+        '&:hover': {backgroundColor:"#50BAFF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickMetodoPago}
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>

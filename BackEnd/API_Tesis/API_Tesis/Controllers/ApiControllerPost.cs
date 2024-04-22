@@ -74,21 +74,118 @@ namespace API_Tesis.Controllers
                                             string correoOrigen = reader2.GetString("Correo");
                                             string contraseñaCorreo = reader2.GetString("Contrasenha");
 
-                                            string asunto = $"Token de acceso para el login";
+                                            DateTime now = DateTime.Now;
+
+                                            string formattedDate = now.ToString("dd/MM/yyyy HH:mm");
+                                            string asunto = $"Token de acceso para el login - {formattedDate}";
                                             StringBuilder htmlBody = new StringBuilder();
                                             htmlBody.Append("<h3>Se hace entrega del token para acceso al sistema:</h3>");
-                                            htmlBody.Append($"<p>{tokenString}</p>");
+                                            htmlBody.Append($"<b><p>{tokenString}</p></b>");
                                             htmlBody.Append($"<p>Es importante mencionar que no debe de divulgar su token de acceso por seguridad.</p>");
 
                                             MailMessage message = new MailMessage
                                             {
-                                                From = new MailAddress(correoOrigen, "Prueba Tesis 2"),
+                                                From = new MailAddress(correoOrigen, "Notificaciones E-Commerce"),
                                                 Subject = asunto,
                                                 Body = htmlBody.ToString(),
                                                 IsBodyHtml = true
                                             };
 
                                             message.To.Add(_correo);
+
+                                            SmtpClient clienteSmtp = new SmtpClient("smtp.gmail.com")
+                                            {
+                                                Port = 587,
+                                                Credentials = new NetworkCredential(correoOrigen, contraseñaCorreo),
+                                                EnableSsl = true
+                                            };
+
+                                            await clienteSmtp.SendMailAsync(message);
+                                            Console.WriteLine("Correo enviado con la información de los tickets sin tareas.");
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                return BadRequest("El usuario no existe en el sistema");
+                            }
+                        }
+                        if (idUsuario == 0) idUsuario = -1;
+                    }
+                    connection.Close();
+                }
+
+                return Ok(idUsuario);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al enviar el correo: {ex.Message}");
+                return BadRequest();
+            }
+        }
+        [HttpPost]
+        [Route("/EnviarCorreo")]
+        public async Task<IActionResult> EnviarCorreo(int idUsuario)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query1 = "SELECT CorreoAlternativo FROM Usuario WHERE IdUsuario = @IdUsuario AND Estado = 1";
+
+                    using (MySqlCommand command1 = new MySqlCommand(query1, connection))
+                    {
+                        command1.Parameters.AddWithValue("@IdUsuario", idUsuario);
+
+                        using (MySqlDataReader reader1 = command1.ExecuteReader())
+                        {
+                            if (reader1.Read())
+                            {
+                                string correoAlternativo = reader1.GetString("CorreoAlternativo");
+                                reader1.Close();
+                                Guid token = Guid.NewGuid();
+                                string tokenString = token.ToString();
+
+                                string updateQuery = "UPDATE Usuario SET Token = @Token WHERE IdUsuario = @IdUsuario";
+                                using (MySqlCommand updateCommand = new MySqlCommand(updateQuery, connection))
+                                {
+                                    updateCommand.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                                    updateCommand.Parameters.AddWithValue("@Token", tokenString);
+                                    updateCommand.ExecuteNonQuery();
+                                }
+
+                                string query2 = "SELECT Correo, Contrasenha FROM CorreoEmisor WHERE IdCorreoEmisor=1;";
+                                using (MySqlCommand command2 = new MySqlCommand(query2, connection))
+                                {
+                                    using (MySqlDataReader reader2 = command2.ExecuteReader())
+                                    {
+                                        while (reader2.Read())
+                                        {
+                                            string correoOrigen = reader2.GetString("Correo");
+                                            string contraseñaCorreo = reader2.GetString("Contrasenha");
+
+                                            DateTime now = DateTime.Now;
+
+                                            string formattedDate = now.ToString("dd/MM/yyyy HH:mm");
+                                            string asunto = $"Token para la verificación de la transacción - {formattedDate}";
+
+                                            StringBuilder htmlBody = new StringBuilder();
+                                            htmlBody.Append("<h3>Ingrese este token para la verificación de la transacción sospechosa:</h3>");
+                                            htmlBody.Append($"<b><p>{tokenString}</p></b>");
+                                            htmlBody.Append($"<p>Es importante mencionar que no debe de divulgar su token de acceso por seguridad.</p>");
+
+                                            MailMessage message = new MailMessage
+                                            {
+                                                From = new MailAddress(correoOrigen, "Notificaciones E-Commerce"),
+                                                Subject = asunto,
+                                                Body = htmlBody.ToString(),
+                                                IsBodyHtml = true
+                                            };
+
+                                            message.To.Add(correoAlternativo);
 
                                             SmtpClient clienteSmtp = new SmtpClient("smtp.gmail.com")
                                             {

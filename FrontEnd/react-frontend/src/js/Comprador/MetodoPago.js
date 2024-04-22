@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Pagination, Typography } from '@mui/material';
+import { Box, Button, Checkbox, IconButton, Modal, Pagination, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -6,6 +6,8 @@ import StripePaymentForm from './StripePaymentForm';
 import CardMetodoPagoComprador from './CardMetodoPagoComprador';
 import { toast } from "react-toastify";
 import Web3 from 'web3';
+import CancelIcon from "@mui/icons-material/Cancel";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EcommerceContract from '../../Blockchain/build/contracts/Ecommerce.json';
 import "react-toastify/dist/ReactToastify.css";
 const { add  } = require('date-fns');
@@ -16,6 +18,62 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     const [ListaMetodoPago, setListaMetodoPago] = useState([]);
     const [llavePublica, setLlavePublica] = useState();
     const [InformacionUsuario, setInformacionUsuario] = useState();
+    
+    const [openModal, setOpenModal] = React.useState(false);
+    const [TokenVerificar, setTokenVerificar] = useState('');
+    const [PedidoSeleccionado, setPedidoSeleccionado] = useState();
+    const [FechaSeleccionado, setFechaSeleccionado] = useState();
+    const [TotalSeleccionado, setTotalSeleccionado] = useState();
+    const [TotalDescuentoSeleccionado, setTotalDescuentoSeleccionado] = useState();
+    const [TokenSeleccionado, setTokenSeleccionado] = useState();
+    const [CostoEnvioSeleccionado, setCostoEnvioSeleccionado] = useState();
+
+    const [openModalSegundo, setOpenModalSegundo] = React.useState(false);
+    
+    const handleOpen = (idPedido, fechaResultado, totalAmount, totalDescuento, token, costoEnvio) => {
+        setOpenModal(true); 
+        setPedidoSeleccionado(idPedido);
+        setFechaSeleccionado(fechaResultado);
+        setTotalSeleccionado(totalAmount);
+        setTotalDescuentoSeleccionado(totalDescuento);
+        setTokenSeleccionado(token);
+        setCostoEnvioSeleccionado(costoEnvio);
+    };
+    const handleClose = () => {setOpenModal(false);};
+    const handleBack = () =>{setOpenModal(true); setOpenModalSegundo(false);};
+
+    const handleOpenSegundo = () => {setOpenModalSegundo(true); handleClose();};
+    const handleCloseSegundo = () => {setOpenModalSegundo(false); setMostrarMetodoPago(false); setMostrarProductos(true); setConteoCarritoCompra(0);
+        setProductos([])};
+
+    const style = {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 1000,
+        bgcolor: "background.paper",
+        border: "2px solid #000",
+        boxShadow: 24,
+        padding: "20px",
+        borderRadius: "8px",
+        height: "35%",
+    };
+
+    const style2 = {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 1000,
+        bgcolor: "background.paper",
+        border: "2px solid #000",
+        boxShadow: 24,
+        padding: "20px",
+        borderRadius: "8px",
+        height: "25%",
+    };
+
     useEffect(() => {
         const obtenerllave = async () => {
             try {
@@ -123,6 +181,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         `Método de Pago (Número de Cuenta Encriptado): ${token}\n` +
         `Numeros de cambios del método de pago: ${InformacionUsuario.cantMetodoPago}\n` +
         `Cantidad de Productos en el Pedido: ${conteoCarritoCompra}\n` +
+        // `Cantidad de Productos en el Pedido: 100000\n` +
         `Tipo de Producto (con mayor valor): ${tipoProducto}`;
 
         try {
@@ -145,7 +204,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         }
     }
 
-    const HandleProcesoPago = async(metodo, fechaResultado, total, totalDescuento, costoEnvio) =>{
+    const HandleProcesoPago = async(metodo, fechaResultado, totalDescuento, idPedido) =>{
         if((InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== "") && 
             (InformacionUsuario.correoAleatorio !== null || InformacionUsuario.correoAleatorio !== "")){
             let totalAmount = productos.reduce((total, producto) => {
@@ -166,12 +225,22 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
 
             const costoEnvio = parseFloat(productos[0].costoEnvio);
             totalAmount = totalAmount + costoEnvio;
-            
-            createAndVerifyTransaction(fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio);
 
             const esFraude = await AlgoritmoObtener(fechaResultado, totalAmount, metodo.token, productoConMayorValor.tipoProducto);
 
             if(esFraude !== "" && esFraude === "No Fraude"){
+                await fetch(
+                    `https://localhost:7240/ActualizarEstadoPedido?idPedido=${idPedido}&valor=${1}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                const promises = productos.map(producto => crearPedidoXProducto(producto, idPedido));
+                await Promise.all(promises);
+                createAndVerifyTransaction(fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio);
                 const formData = new FormData();
                 formData.append('token', metodo.token);
                 formData.append('Monto', totalAmount);
@@ -195,10 +264,21 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                         setMostrarProductos(true);
                     }
                 } catch (error) {
-                    console.error("Error al obtener la lista de Métodos de pago", error);
-                throw new Error("Error al obtener la lista de Métodos de pago");
+                    toast.error('Se produjo un error al procesar el pago.');
+                    // console.error("Error al obtener la lista de Métodos de pago", error);
+                    // throw new Error("Error al obtener la lista de Métodos de pago");
                 }
             }else{
+                await fetch(
+                    `https://localhost:7240/EnviarCorreo?idUsuario=${idUsuario}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                handleOpen(idPedido, fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio);
                 toast.error("Se detectó un movimiento fraudulento");
             }
         }else{
@@ -309,51 +389,123 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         }
     };  
     const handleProducto = async(metodo) =>{
-        let productoMasLargo = null;
-        let mayorTiempo = 0;
-        productos.forEach(producto => {
-            const tiempo = convertirTiempoANumeros(producto.fechaEnvio);
-            if (tiempo > mayorTiempo) {
-            mayorTiempo = tiempo;
-            productoMasLargo = producto;
+        if((InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== "") && 
+        (InformacionUsuario.correoAleatorio !== null || InformacionUsuario.correoAleatorio !== "")){
+            let productoMasLargo = null;
+            let mayorTiempo = 0;
+
+            productos.forEach(producto => {
+                const tiempo = convertirTiempoANumeros(producto.fechaEnvio);
+                if (tiempo > mayorTiempo) {
+                mayorTiempo = tiempo;
+                productoMasLargo = producto;
+                }
+            });
+
+            const fechaResultado = agregarTiempo(productoMasLargo.fechaEnvio);
+            const fechaISO = fechaResultado.toISOString();
+            const formData = new FormData();
+            formData.append('FechaEntrega', fechaISO);
+            formData.append('Total', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad) - (producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
+            formData.append('TotalDescuento', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
+            formData.append('Estado', 3);
+            formData.append('CantidadProductos', conteoCarritoCompra);
+            formData.append('MetodoPago', metodo.token);
+            formData.append('UsuarioID', idUsuario);
+            formData.append('CostoEnvio', productos[0].costoEnvio/1);
+            formData.append('DireccionEntrega', InformacionUsuario.direccion);
+
+            const response = await fetch(
+                `https://localhost:7240/CreatePedido`,
+                {
+                method: "POST",
+                body: formData
+                }
+            );
+
+            if (response.ok) {
+                // const total = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad) - (producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
+                const totalDescuento = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
+                // const costoEnvio = productos[0].costoEnvio/1;
+                
+                const idPedido = await response.json();
+
+                HandleProcesoPago(metodo, fechaResultado, totalDescuento, idPedido);
+            } else if (response.status === 404) {
+                throw new Error("Pedido no encontrado");
+            } else {
+                throw new Error("Error al crear el pedido");
             }
-        });
-        const fechaResultado = agregarTiempo(productoMasLargo.fechaEnvio);
-        const fechaISO = fechaResultado.toISOString();
-        const formData = new FormData();
-        formData.append('FechaEntrega', fechaISO);
-        formData.append('Total', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad) - (producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
-        formData.append('TotalDescuento', productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3));
-        formData.append('Estado', 1);
-        formData.append('CantidadProductos', conteoCarritoCompra);
-        formData.append('MetodoPago', metodo.token);
-        formData.append('UsuarioID', idUsuario);
-        formData.append('CostoEnvio', productos[0].costoEnvio/1);
-        formData.append('DireccionEntrega', InformacionUsuario.direccion);
-
-        const response = await fetch(
-            `https://localhost:7240/CreatePedido`,
-            {
-            method: "POST",
-            body: formData
-            }
-        );
-
-        if (response.ok) {
-            const total = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad) - (producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
-            const totalDescuento = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
-            const costoEnvio = productos[0].costoEnvio/1;
-            
-            const idPedido = await response.json();
-            const promises = productos.map(producto => crearPedidoXProducto(producto, idPedido));
-            await Promise.all(promises);
-
-            HandleProcesoPago(metodo, fechaResultado, total, totalDescuento, costoEnvio);
-        } else if (response.status === 404) {
-            throw new Error("Pedido no encontrado");
-        } else {
-            throw new Error("Error al crear el pedido");
+        }else{
+            toast.error('Debe de tener una dirección de entrega y un correo aleatorio para crear un pedido.');
         }
+    }
+    const obtenerTokenPorIdUsuario = async (idUsuario) => {
+        try {
+            const response = await fetch(`https://localhost:7240/TokenIdUsuario?id=${idUsuario}`);
+    
+            if (response.ok) {
+                const token = await response.text();
+                return token;
+            } else if (response.status === 404) {
+                throw new Error('Usuario no encontrado');
+            } else {
+                throw new Error('Error al obtener el token');
+            }
+        } catch (error) {
+            console.error('Error al obtener el token:', error);
+            throw new Error('Error al obtener el token');
+        }
+    };
+    const handleConfirmarToken = async() => {
+
+        obtenerTokenPorIdUsuario(idUsuario).then(async token => {
+            if(token === TokenVerificar){
+                await fetch(
+                    `https://localhost:7240/ActualizarEstadoPedido?idPedido=${PedidoSeleccionado}&valor=${1}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                    }
+                );
+                const promises = productos.map(producto => crearPedidoXProducto(producto, PedidoSeleccionado));
+                await Promise.all(promises);
+                createAndVerifyTransaction(FechaSeleccionado, TotalSeleccionado, TotalDescuentoSeleccionado, TokenSeleccionado, CostoEnvioSeleccionado);
+                const formData = new FormData();
+                formData.append('token', TokenSeleccionado);
+                formData.append('Monto', TotalSeleccionado);
+                formData.append('NombreApellido', InformacionUsuario.nombre + " " + InformacionUsuario.apellido);
+                formData.append('correo', InformacionUsuario.correo);
+                formData.append('Opcion', 1);
+                try {
+                    const response = await fetch(
+                        `https://localhost:7240/ProcesarPago`,
+                        {
+                        method: "POST",
+                        body: formData
+                        }
+                    );
+                
+                    if (response.ok) {
+                        toast.success('El pedido fue creado correctamente', { autoClose: 2000 });
+                        setProductos([]);
+                        setConteoCarritoCompra(0);
+                        setMostrarMetodoPago(false);
+                        setMostrarProductos(true);
+                    }
+                } catch (error) {
+                    console.error("Error al obtener la lista de Métodos de pago", error);
+                    throw new Error("Error al obtener la lista de Métodos de pago");
+                }
+            }else{
+                toast.error('No es el token correcto.');
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener el token:', error.message);
+        });
     }
   return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
@@ -452,6 +604,156 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 )}
             </Box>
         </Box>
+
+        <Modal
+          open={openModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+            <Box sx={{ ...style }}>
+                <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                }}
+                >
+                    <Typography
+                        sx={{
+                        color: "black",
+                        fontWeight: "bold",
+                        fontSize: "30px",
+                        width: "100%",
+                        }}
+                    >
+                        Asegurar el pedido sospechoso
+                    </Typography>
+
+                    <IconButton
+                        sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "80px",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        "&:hover": { backgroundColor: "white" },
+                        }}
+                        onClick={handleOpenSegundo}
+                    >
+                        <CancelIcon sx={{ fontSize: "50px" }} />
+                    </IconButton>  
+                </Box>
+                <hr
+                    style={{
+                        margin: "10px 0",
+                        border: "0",
+                        borderTop: "2px solid #ccc",
+                        marginTop: "10px",
+                        marginBottom: "15px",
+                    }}
+                />
+                <Box sx={{marginBottom:"10px"}}>
+                    <Typography
+                        sx={{
+                            color: "black",
+                            fontSize: "25px",
+                            width: "100%",
+                            textAlign:"center"
+                        }}
+                    >
+                        Se envió un token a su correo electrónico alternativo, ingrese el token para asegurar la transacción
+                    </Typography>
+                </Box>
+                <Box sx={{width:"100%", marginBottom:"10px"}}>
+                    <TextField
+                        sx={{
+                            height: 60, width:"100%",
+                            fontSize: "25px",
+                            "& .MuiInputBase-root": {
+                            height: "100%",
+                            fontSize: "25px",
+                            },
+                        }}
+                        label="Token"
+                        defaultValue={TokenVerificar}
+                        onChange={(e) => setTokenVerificar(e.target.value)}
+                    />
+                </Box>
+                <Button variant="contained" sx={{backgroundColor:"#1C2536", width:"100%",'&:hover': {backgroundColor:"#1C2536"}}}
+                    onClick={handleConfirmarToken}
+                >
+                    Continuar
+                </Button>
+            </Box>
+        </Modal>
+
+        <Modal
+          open={openModalSegundo}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+            <Box sx={{ ...style2 }}>
+                <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                }}
+                >
+                    <IconButton
+                        sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "80px",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        "&:hover": { backgroundColor: "white" },
+                        }}
+                        onClick={handleBack}
+                    >
+                        <ArrowBackIcon sx={{ fontSize: "50px" }} />
+                    </IconButton>
+                   <Typography
+                        sx={{
+                        color: "black",
+                        fontWeight: "bold",
+                        fontSize: "30px",
+                        width: "100%",
+                        }}
+                    >
+                        Confirmación de cancelar compra
+                    </Typography>
+                </Box>
+                <hr
+                    style={{
+                        margin: "10px 0",
+                        border: "0",
+                        borderTop: "2px solid #ccc",
+                        marginTop: "10px",
+                        marginBottom: "15px",
+                    }}
+                />
+                <Box sx={{marginBottom:"40px"}}>
+                    <Typography
+                        sx={{
+                            color: "black",
+                            fontSize: "30px",
+                            width: "100%",
+                            textAlign:"center"
+                        }}
+                    >
+                        ¿Desea cancelar la compra? No se podrá recuperar después.
+                    </Typography>
+                </Box>
+                <Button variant="contained" sx={{backgroundColor:"#1C2536", width:"100%",'&:hover': {backgroundColor:"#1C2536"}}}
+                    onClick={handleCloseSegundo}
+                >
+                    Continuar
+                </Button>
+            </Box>
+        </Modal>
     </Box>
   )
 }
