@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
@@ -22,6 +23,7 @@ def cargar_pipeline_y_predecir(datos_directos, pipeline_file):
     # Cargar los datos directos y preprocesarlos
     df_nuevos_datos = cargar_datos_2(datos_directos)
     df_nuevos_datos = preprocesar_datos_2(df_nuevos_datos)
+    # df_nuevos_datos.drop(['Nombre'], axis=1, inplace=True)
     df_nuevos_datos.drop(['Nombre', 'Fecha_Hora'], axis=1, inplace=True)
     
     # Cargar el pipeline desde el archivo
@@ -55,7 +57,7 @@ def cargar_datos(nombre_archivo):
 # Función para preprocesar los datos
 def preprocesar_datos(df):
     label_encoders = {}
-    for column in ['Direccion', 'Tipo_Producto']:
+    for column in ['Direccion', 'Tipo_Producto', 'Cuenta']:
         label_encoders[column] = LabelEncoder()
         df[column] = label_encoders[column].fit_transform(df[column])
     
@@ -76,13 +78,63 @@ def preprocesar_datos(df):
     
     return df
 
-# # Cargar y preprocesar los datos
-ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude.txt")
+def evaluar_modelo(modelo, X_test, y_test):
+    y_pred = modelo.predict(X_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, average='micro')
+    recall = recall_score(y_test, y_pred, average='micro')
+    f1 = f1_score(y_test, y_pred, average='micro')
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    cv_scores = cross_val_score(pipeline, X, y, cv=5, scoring='accuracy')
+
+    print("Accuracy:", accuracy)
+    print("Precision:", precision)
+    print("Recall:", recall)
+    print("F1-score:", f1)
+    print("Matriz de Confusión:\n", conf_matrix)
+    print("Cross-validation scores:", cv_scores)
+    print("Mean cross-validation score:", cv_scores.mean())
+
+# Función para graficar la curva de aprendizaje
+def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
+                        n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5)):
+    plt.figure()
+    plt.title(title)
+    if ylim is not None:
+        plt.ylim(*ylim)
+    plt.xlabel("Training examples")
+    plt.ylabel("Score")
+    train_sizes, train_scores, test_scores = learning_curve(
+        estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+    plt.grid()
+
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+
+    plt.legend(loc="best")
+    return plt
+
 pipeline_file = "pipeline.pkl"
+
+# Cargar y preprocesar los datos
+ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude.txt")
 df = cargar_datos(ruta_archivo)
 df = preprocesar_datos(df)
 
 # Separar datos en características (X) y etiquetas (y)
+# features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto']
 features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Anho', 'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
 X = df[features]
 y = df['Fraude']
@@ -94,7 +146,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
 pipeline.fit(X_train, y_train)
 
-entrenar_y_guardar_pipeline(X_train, y_train, pipeline_file)
+# entrenar_y_guardar_pipeline(X_train, y_train, pipeline_file)
+
+evaluar_modelo(pipeline, X_test, y_test)
+title = "Learning Curves (Random Forest)"
+plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
+plt.show()
 
 # def cargar_datos_2(datos):
 #     datos_procesados = []
@@ -110,12 +167,12 @@ entrenar_y_guardar_pipeline(X_train, y_train, pipeline_file)
 #     if fragmentos:
 #         datos_procesados.append(tuple(fragmentos))
 
-#     return pd.DataFrame(datos_procesados, columns=['ID','Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto'])
+#     return pd.DataFrame(datos_procesados, columns=['ID', 'Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto'])
 
 # def preprocesar_datos_2(df):
-#     df = df.copy()  # Crear una copia del DataFrame para evitar SettingWithCopyWarning
+#     df = df.copy()
 #     label_encoders = {}
-#     for column in ['Direccion', 'Tipo_Producto']:
+#     for column in ['Direccion', 'Tipo_Producto', 'Cuenta']:
 #         label_encoders[column] = LabelEncoder()
 #         df[column] = label_encoders[column].fit_transform(df[column])
     
@@ -124,25 +181,25 @@ entrenar_y_guardar_pipeline(X_train, y_train, pipeline_file)
 #     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
 #     df = df.dropna(subset=['Fecha_Hora'])
     
-#     df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
-#     df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
-#     df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
-#     df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
-#     df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
-#     df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
+#     # df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
+#     # df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
+#     # df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
+#     # df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
+#     # df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
+#     # df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
     
 #     return df
 
 # datos_directos = [
-#     "ID: 84276456158716628018388007973476589694297596544125460074642747809140486938024",
-#     "Nombre y Apellido del Comprador: Rachel Stanley",
-#     "Fecha de Creación del Pedido: 2024-04-01 03:14:00",
-#     "Lugar de Entrega: 686 Emma Station Apt. 781, Port Christianfort, MT 06211",
-#     "Cantidad de cambios de lugar de entrega durante el ultimo mes: 3",
-#     "Costo total del Pedido: 10",
-#     "Método de Pago (Número de Cuenta Encriptado): 6567978263124321176199124994021629054013394850766151770053130685444148306190",
-#     "Numeros de cambios del método de pago: 9",
-#     "Cantidad de Productos en el Pedido: 10",
+#     "ID: 39253345584886556276037453910170024946321832050249426600270361083356733025744",
+#     "Nombre y Apellido del Comprador: Michael Smith",
+#     "Fecha de Creación del Pedido: 2024-04-15 12:32:00",
+#     "Lugar de Entrega: 7657 Obrien Forest, West Holly, OH 24807",
+#     "Cantidad de cambios de lugar de entrega durante el ultimo mes: 1",
+#     "Costo total del Pedido: 38",
+#     "Método de Pago (Número de Cuenta Encriptado): pm_1P7KAtG77lj0glGvxvqiL2c6",
+#     "Numeros de cambios del método de pago: 0",
+#     "Cantidad de Productos en el Pedido: 20",
 #     "Tipo de Producto (con mayor valor): Tecnología"
 # ]
 

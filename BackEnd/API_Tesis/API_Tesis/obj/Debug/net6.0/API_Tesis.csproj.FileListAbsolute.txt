@@ -52,4 +52,3 @@ C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\API_Tesis.pdb
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\API_Tesis.genruntimeconfig.cache
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\ref\API_Tesis.dll
-C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Debug\net6.0\Python.Runtime.dll

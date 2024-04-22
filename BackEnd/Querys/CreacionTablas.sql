@@ -16,6 +16,7 @@ DROP TABLE blockchain;
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
     Correo TEXT,
+    CorreoAlternativo TEXT,
     contrasenha TEXT,
     ContrasenhaVariado Text,
     Token TEXT,
@@ -228,7 +229,7 @@ ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
-ALTER TABLE Usuario ADD CantMetodoPago int;
+ALTER TABLE Usuario ADD CorreoAlternativo TEXT;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;

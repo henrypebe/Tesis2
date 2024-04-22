@@ -103,47 +103,106 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     const handleCheckboxChange = (id) => {
         setSelectedMethodId(id);
     };
+
+    const AlgoritmoObtener = async(fechaResultado, totalAmount, token, tipoProducto) =>{
+        const _fechaResultado = new Date(fechaResultado);
+        const año = _fechaResultado.getFullYear();
+        const mes = ('0' + (_fechaResultado.getMonth() + 1)).slice(-2); // Agregar 1 porque los meses van de 0 a 11
+        const dia = ('0' + _fechaResultado.getDate()).slice(-2);
+        const hora = ('0' + _fechaResultado.getHours()).slice(-2);
+        const minutos = ('0' + _fechaResultado.getMinutes()).slice(-2);
+        const segundos = ('0' + _fechaResultado.getSeconds()).slice(-2);
+        const fechaFormateada = `${año}-${mes}-${dia} ${hora}:${minutos}:${segundos}`;
+
+        const datosDirectosString = `ID: ${idUsuario}\n` +
+        `Nombre y Apellido del Comprador: ${InformacionUsuario.nombre + " " + InformacionUsuario.apellido}\n` +
+        `Fecha de Creación del Pedido: ${fechaFormateada}\n` +
+        `Lugar de Entrega: ${InformacionUsuario.direccion}\n` +
+        `Cantidad de cambios de lugar de entrega durante el ultimo mes: ${InformacionUsuario.cantCambiosDireccion}\n` +
+        `Costo total del Pedido: ${totalAmount}\n` +
+        `Método de Pago (Número de Cuenta Encriptado): ${token}\n` +
+        `Numeros de cambios del método de pago: ${InformacionUsuario.cantMetodoPago}\n` +
+        `Cantidad de Productos en el Pedido: ${conteoCarritoCompra}\n` +
+        `Tipo de Producto (con mayor valor): ${tipoProducto}`;
+
+        try {
+            const response = await fetch('http://localhost:5000/predecir', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    datos_directos: datosDirectosString
+                })
+            });
+    
+            const data = await response.json();
+            // console.log(data);
+            return data;
+        } catch (error) {
+            console.error('Error:', error);
+            throw error;
+        }
+    }
+
     const HandleProcesoPago = async(metodo, fechaResultado, total, totalDescuento, costoEnvio) =>{
-        if(InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== ""){
+        if((InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== "") && 
+            (InformacionUsuario.correoAleatorio !== null || InformacionUsuario.correoAleatorio !== "")){
             let totalAmount = productos.reduce((total, producto) => {
                 const precio = parseFloat(producto.precio - (producto.precio*producto.cantidadOferta/100));
                 return total + (precio);
             }, 0);
+
+            let mayorValor = -Infinity;
+            let productoConMayorValor = null;
+
+            productos.forEach(producto => {
+                const valor = producto.precio * producto.cantidad - (producto.precio * producto.cantidad * producto.cantidadOferta / 100);
+                if (valor > mayorValor) {
+                mayorValor = valor;
+                productoConMayorValor = producto;
+                }
+            });
+
             const costoEnvio = parseFloat(productos[0].costoEnvio);
             totalAmount = totalAmount + costoEnvio;
             
-            createAndVerifyTransaction(fechaResultado, total, totalDescuento, metodo.token, costoEnvio);
-        
-            //ALGORITMO
+            createAndVerifyTransaction(fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio);
 
-            const formData = new FormData();
-            formData.append('token', metodo.token);
-            formData.append('Monto', totalAmount);
-            formData.append('NombreApellido', InformacionUsuario.nombre + " " + InformacionUsuario.apellido);
-            formData.append('correo', InformacionUsuario.correo);
-            formData.append('Opcion', 1);
-            try {
-                const response = await fetch(
-                    `https://localhost:7240/ProcesarPago`,
-                    {
-                      method: "POST",
-                      body: formData
+            const esFraude = await AlgoritmoObtener(fechaResultado, totalAmount, metodo.token, productoConMayorValor.tipoProducto);
+
+            if(esFraude !== "" && esFraude === "No Fraude"){
+                const formData = new FormData();
+                formData.append('token', metodo.token);
+                formData.append('Monto', totalAmount);
+                formData.append('NombreApellido', InformacionUsuario.nombre + " " + InformacionUsuario.apellido);
+                formData.append('correo', InformacionUsuario.correo);
+                formData.append('Opcion', 1);
+                try {
+                    const response = await fetch(
+                        `https://localhost:7240/ProcesarPago`,
+                        {
+                        method: "POST",
+                        body: formData
+                        }
+                    );
+                
+                    if (response.ok) {
+                        toast.success('El pedido fue creado correctamente', { autoClose: 2000 });
+                        setProductos([]);
+                        setConteoCarritoCompra(0);
+                        setMostrarMetodoPago(false);
+                        setMostrarProductos(true);
                     }
-                );
-            
-                if (response.ok) {
-                    toast.success('El pedido fue creado correctamente', { autoClose: 2000 });
-                    setProductos([]);
-                    setConteoCarritoCompra(0);
-                    setMostrarMetodoPago(false);
-                    setMostrarProductos(true);
+                } catch (error) {
+                    console.error("Error al obtener la lista de Métodos de pago", error);
+                throw new Error("Error al obtener la lista de Métodos de pago");
                 }
-            } catch (error) {
-                console.error("Error al obtener la lista de Métodos de pago", error);
-              throw new Error("Error al obtener la lista de Métodos de pago");
+            }else{
+                toast.error("Se detectó un movimiento fraudulento");
             }
         }else{
-            toast.error('Debe de tener una dirección de entrega para crear un pedido.');
+            toast.error('Debe de tener una dirección de entrega y un correo aleatorio para crear un pedido.');
         }
     }
     const convertirTiempoANumeros = tiempo => {

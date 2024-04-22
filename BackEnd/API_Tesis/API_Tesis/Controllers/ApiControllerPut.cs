@@ -233,7 +233,7 @@ namespace API_Tesis.Controllers
         [HttpPut]
         [Route("/EditarUsuario")]
         public async Task<ActionResult> EditarUsuario([FromForm] int idUsuario, [FromForm] string nombre, [FromForm] string apellido, [FromForm] string correo, [FromForm] int numero,
-            [FromForm] string direccion)
+            [FromForm] string direccion, [FromForm] string correoAlternativo)
         {
           
                 string connectionString = _configuration.GetConnectionString("DefaultConnection");
@@ -250,8 +250,17 @@ namespace API_Tesis.Controllers
 
                             if (direccionActual == direccion)
                             {
-                                string querySinCambioDireccion = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
+                                string querySinCambioDireccion = "";
+                                if (correoAlternativo != "a")
+                                {
+                                    querySinCambioDireccion = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
+                                        "Direccion = @Direccion, CorreoAlternativo = @CorreoAlternativo WHERE idUsuario = @IdUsuario AND Estado = 1";
+                                }
+                                else
+                                {
+                                    querySinCambioDireccion = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
                                     "Direccion = @Direccion WHERE idUsuario = @IdUsuario AND Estado = 1";
+                                }
                                 using (MySqlCommand command = new MySqlCommand(querySinCambioDireccion, connection))
                                 {
                                     command.Parameters.AddWithValue("@IdUsuario", idUsuario);
@@ -260,6 +269,7 @@ namespace API_Tesis.Controllers
                                     command.Parameters.AddWithValue("@Correo", correo);
                                     command.Parameters.AddWithValue("@Telefono", numero);
                                     command.Parameters.AddWithValue("@Direccion", direccion);
+                                    if (correoAlternativo != "a") command.Parameters.AddWithValue("@CorreoAlternativo", correoAlternativo);
 
                                     int rowsAffected = await command.ExecuteNonQueryAsync();
 
@@ -277,9 +287,18 @@ namespace API_Tesis.Controllers
                             }
                         }
 
-                        string query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
+                        string query = "";
+                    if (correoAlternativo != "a")
+                    {
+                        query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
+                            "Direccion = @Direccion,CorreoAlternativo = @CorreoAlternativo, CantCambiosDireccion = CantCambiosDireccion + 1 WHERE idUsuario = @IdUsuario AND Estado = 1";
+                    }
+                    else
+                    {
+                        query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
                             "Direccion = @Direccion, CantCambiosDireccion = CantCambiosDireccion + 1 WHERE idUsuario = @IdUsuario AND Estado = 1";
-                        using (MySqlCommand command = new MySqlCommand(query, connection))
+                    }
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
                             command.Parameters.AddWithValue("@IdUsuario", idUsuario);
                             command.Parameters.AddWithValue("@Apellido", apellido);
@@ -287,6 +306,7 @@ namespace API_Tesis.Controllers
                             command.Parameters.AddWithValue("@Correo", correo);
                             command.Parameters.AddWithValue("@Telefono", numero);
                             command.Parameters.AddWithValue("@Direccion", direccion);
+                            if (correoAlternativo != "a") command.Parameters.AddWithValue("@CorreoAlternativo", correoAlternativo);
 
                             int rowsAffected = await command.ExecuteNonQueryAsync();
 

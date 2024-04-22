@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
-using Python.Runtime;
 
 namespace API_Tesis.Controllers
 {
@@ -1855,28 +1854,6 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
-        [Route("/ObtenerPrediccion")]
-        public async Task<IActionResult> ObtenerPrediccion(int idUsuario)
-        {
-            try
-            {
-                using(Py.GIL())
-                {
-                    // Importar el módulo y obtener la referencia a la función
-                    dynamic module = Py.Import("script");
-                    dynamic my_function = module.my_function;
-
-                    // Llamar a la función
-                    my_function();
-                }
-                return Ok(1);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Error al ejecutar el archivo Python: {ex.Message}");
-            }
-        }
-        [HttpGet]
         [Route("/InformacionIdUsuario")]
         public IActionResult GetUsuarios(int idUsuario)
         {
@@ -1888,7 +1865,7 @@ namespace API_Tesis.Controllers
                 {
                     connection.Open();
 
-                    string query = "SELECT IdUsuario, Correo, Nombre, Apellido, DNI, Telefono, Direccion, EsComprador, EsVendedor " +
+                    string query = "SELECT IdUsuario, Correo, Nombre, Apellido, DNI, Telefono, Direccion, EsComprador, EsVendedor, CorreoAlternativo, CantCambiosDireccion, CantMetodoPago " +
                         "FROM Usuario WHERE IdUsuario = @IdUsuario AND Estado = 1";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -1920,8 +1897,11 @@ namespace API_Tesis.Controllers
                                                     DNI = !reader.IsDBNull(reader.GetOrdinal("DNI")) ? reader.GetInt32("DNI") : (int?)null,
                                                     Telefono = !reader.IsDBNull(reader.GetOrdinal("Telefono")) ? reader.GetInt32("Telefono") : (int?)null,
                                                     Direccion = reader.IsDBNull(reader.GetOrdinal("Direccion")) ? null : reader.GetString("Direccion"),
+                                                    CantCambiosDireccion = !reader.IsDBNull(reader.GetOrdinal("CantCambiosDireccion")) ? reader.GetInt32("CantCambiosDireccion") : (int?)null,
+                                                    CantMetodoPago = !reader.IsDBNull(reader.GetOrdinal("CantMetodoPago")) ? reader.GetInt32("CantMetodoPago") : (int?)null,
                                                     EsComprador = !reader.IsDBNull(reader.GetOrdinal("EsComprador")) && reader.GetBoolean("EsComprador"),
                                                     EsVendedor = !reader.IsDBNull(reader.GetOrdinal("EsVendedor")) && reader.GetBoolean("EsVendedor"),
+                                                    CorreoAlternativo = reader.IsDBNull(reader.GetOrdinal("CorreoAlternativo")) ? null : reader.GetString("CorreoAlternativo"),
                                                     EsVendedorAdministrador = !reader2.IsDBNull(reader2.GetOrdinal("EsAdministrador")) && reader2.GetBoolean("EsAdministrador")
                                                 };
                                                 connection.Close();
@@ -1938,8 +1918,11 @@ namespace API_Tesis.Controllers
                                                     DNI = !reader.IsDBNull(reader.GetOrdinal("DNI")) ? reader.GetInt32("DNI") : (int?)null,
                                                     Telefono = !reader.IsDBNull(reader.GetOrdinal("Telefono")) ? reader.GetInt32("Telefono") : (int?)null,
                                                     Direccion = reader.IsDBNull(reader.GetOrdinal("Direccion")) ? null : reader.GetString("Direccion"),
+                                                    CantCambiosDireccion = !reader.IsDBNull(reader.GetOrdinal("CantCambiosDireccion")) ? reader.GetInt32("CantCambiosDireccion") : (int?)null,
+                                                    CantMetodoPago = !reader.IsDBNull(reader.GetOrdinal("CantMetodoPago")) ? reader.GetInt32("CantMetodoPago") : (int?)null,
                                                     EsComprador = !reader.IsDBNull(reader.GetOrdinal("EsComprador")) && reader.GetBoolean("EsComprador"),
                                                     EsVendedor = !reader.IsDBNull(reader.GetOrdinal("EsVendedor")) && reader.GetBoolean("EsVendedor"),
+                                                    CorreoAlternativo = reader.IsDBNull(reader.GetOrdinal("CorreoAlternativo")) ? null : reader.GetString("CorreoAlternativo"),
                                                     EsVendedorAdministrador = false
                                                 };
                                                 connection.Close();

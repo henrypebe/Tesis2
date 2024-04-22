@@ -60,7 +60,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
       if (response.ok) {
         const usuario = await response.json();
-        // console.log(usuario);
+        console.log(usuario);
         setInformacionUsuario(usuario);
       } else if (response.status === 404) {
         throw new Error("Usuario no encontrado");
@@ -125,6 +125,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       setNombreCambiado(informacionUsuario.nombre ?? "");
       setApellidoCambiado(informacionUsuario.apellido ?? "");
       setCorreoCambiado(informacionUsuario.correo ?? "");
+      setCorreoAlternativoCambiado(informacionUsuario.correoAlternativo ?? "");
       setTelefonoCambiado(informacionUsuario.telefono ?? "");
       setDireccionCambiado(informacionUsuario.direccion ?? "");
     }
@@ -142,6 +143,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const [nombreCambiado, setNombreCambiado] = useState("");
   const [apellidoCambiado, setApellidoCambiado] = useState("");
   const [correoCambiado, setCorreoCambiado] = useState("");
+  const [correoAlternativoCambiado, setCorreoAlternativoCambiado] = useState("");
   const [TelefonoCambiado, setTelefonoCambiado] = useState("");
   const [DireccionCambiado, setDireccionCambiado] = useState("");
 
@@ -320,6 +322,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       formData.append('correo', correoCambiado);
       formData.append('numero', TelefonoCambiado);
       formData.append('direccion', DireccionCambiado);
+      formData.append('correoAlternativo', correoAlternativoCambiado===""? "a": correoAlternativoCambiado);
 
       const response = await fetch(
         `https://localhost:7240/EditarUsuario`,
@@ -735,7 +738,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      width: "100%",
+                      width: "50%",
+                      marginRight:"10px"
                     }}
                   >
                     <Typography
@@ -761,6 +765,49 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                       disabled={true}
                     />
                   </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: "50%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: "black",
+                        fontSize: "24px",
+                        width: "90%",
+                      }}
+                    >
+                      Correo electrónico alternativo:
+                    </Typography>
+                    <TextField
+                      sx={{
+                        height: 40,
+                        fontSize: "25px",
+                        "& .MuiInputBase-root": {
+                          height: "100%",
+                          fontSize: "25px",
+                        },
+                      }}
+                      defaultValue={correoAlternativoCambiado}
+                      onChange={(e) => setCorreoAlternativoCambiado(e.target.value)}
+                      disabled={informacionUsuario.correoAlternativo && informacionUsuario.correoAlternativo !== ""}
+                    />
+                    {!(informacionUsuario.correoAlternativo) && 
+                    (
+                      <Typography
+                        sx={{
+                          color: "#A4A4A4",
+                          fontSize: "14px",
+                          width: "100%",
+                        }}
+                      >
+                        (*) No se podrá cambiar posteriormente el correo electrónico alternativo
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
 
                 <Box
@@ -768,7 +815,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    marginTop:"20px",
+                    marginTop:!(informacionUsuario.correoAlternativo)? "0px": "20px",
                     width:"100%",
                   }}
                 >

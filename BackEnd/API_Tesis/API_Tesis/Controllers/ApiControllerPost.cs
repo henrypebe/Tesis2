@@ -164,8 +164,8 @@ namespace API_Tesis.Controllers
                     string[] nombreApellidoArray = nombreApellido.Split(' ');
                     string nombre = nombreApellidoArray[0];
                     string apellido = nombreApellidoArray.Length > 1 ? nombreApellidoArray[1] : string.Empty;
-                    string query = "INSERT INTO Usuario (DNI, Nombre, Apellido, Correo, contrasenha, ContrasenhaVariado, Estado, EsAdministrador) " +
-                        "VALUES (@DNI, @Nombre, @Apellido, @Correo, @Contrasenha, @ContrasenhaVariado, @Estado, @EsAdministrador)";
+                    string query = "INSERT INTO Usuario (DNI, Nombre, Apellido, Correo, contrasenha, ContrasenhaVariado, Estado, EsAdministrador, CantCambiosDireccion, CantMetodoPago) " +
+                        "VALUES (@DNI, @Nombre, @Apellido, @Correo, @Contrasenha, @ContrasenhaVariado, @Estado, @EsAdministrador, @CantCambiosDireccion, @CantMetodoPago)";
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@DNI", DNI);
@@ -176,6 +176,8 @@ namespace API_Tesis.Controllers
                         command.Parameters.AddWithValue("@ContrasenhaVariado", encryptedText);
                         command.Parameters.AddWithValue("@Estado", 1);
                         command.Parameters.AddWithValue("@EsAdministrador", false);
+                        command.Parameters.AddWithValue("@CantCambiosDireccion", 0);
+                        command.Parameters.AddWithValue("@CantMetodoPago", 0);
 
                         int rowsAffected = await command.ExecuteNonQueryAsync();
 

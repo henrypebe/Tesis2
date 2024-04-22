@@ -36,19 +36,19 @@ def preprocesar_datos(df):
     
     # Convertir la columna 'Fraude' a valores binarios (0 y 1)
     df['Fraude'] = df['Fraude'].apply(lambda x: 0 if x == 'No_Fraude' else 1)
-        
+    
     # Conversión de la columna 'Fecha_Hora' a tipo datetime
     df['Fecha_Hora'] = pd.to_datetime(df['Fecha_Hora'], errors='coerce', format='%Y-%m-%d %H:%M:%S')
     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
     df = df.dropna(subset=['Fecha_Hora'])
-        
-    df['Anho'] = df['Fecha_Hora'].dt.year
-    df['Mes'] = df['Fecha_Hora'].dt.month
-    df['Dia'] = df['Fecha_Hora'].dt.day
-    df['Hora'] = df['Fecha_Hora'].dt.hour
-    df['Minuto'] = df['Fecha_Hora'].dt.minute
-    df['Segundo'] = df['Fecha_Hora'].dt.second
-        
+    
+    # df['Anho'] = df['Fecha_Hora'].dt.year
+    # df['Mes'] = df['Fecha_Hora'].dt.month
+    # df['Dia'] = df['Fecha_Hora'].dt.day
+    # df['Hora'] = df['Fecha_Hora'].dt.hour
+    # df['Minuto'] = df['Fecha_Hora'].dt.minute
+    # df['Segundo'] = df['Fecha_Hora'].dt.second
+    
     return df
 
 def cargar_datos_2(datos):
@@ -70,7 +70,7 @@ def cargar_datos_2(datos):
 def preprocesar_datos_2(df):
     df = df.copy()  # Crear una copia del DataFrame para evitar SettingWithCopyWarning
     label_encoders = {}
-    for column in ['Direccion', 'Tipo_Producto']:
+    for column in ['Direccion', 'Tipo_Producto', 'Cuenta']:
         label_encoders[column] = LabelEncoder()
         df[column] = label_encoders[column].fit_transform(df[column])
     
@@ -79,12 +79,12 @@ def preprocesar_datos_2(df):
     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
     df = df.dropna(subset=['Fecha_Hora'])
     
-    df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
-    df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
-    df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
-    df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
-    df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
-    df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
+    # df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
+    # df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
+    # df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
+    # df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
+    # df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
+    # df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
     
     return df
 
