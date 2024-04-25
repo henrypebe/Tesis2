@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProductoMayorDem from './ProductoMayorDem';
 
 export default function MisProductos({setMostrarMisProductos, setMostrarDetalleProducto, setOpcionEditarProducto, setProductoInformacion, setMostrarEditarProducto,
-    informacionTienda}) {
+    informacionTienda, setOpcionSeleccionado}) {
     
     const idTienda = informacionTienda.idTienda;
     const [productosList, setProductosList] = useState(null);
@@ -106,6 +106,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
               if (response.ok) {
                 const producto = await response.json();
                 setProductosList(producto);
+                // console.log(producto);
               } else if (response.status === 404) {
                 throw new Error("Productos no encontrado");
               } else {
@@ -174,6 +175,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                             <ProductoMayorDem productoPrimero={producto}
                             handleChangeEditarProducto={handleChangeEditarProducto} handleOpenModal={handleOpenModal}
                             setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
+                            setOpcionSeleccionado={setOpcionSeleccionado}
                             />
                         )
                         : (
@@ -186,6 +188,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                                 setOpcionEditarProducto={setOpcionEditarProducto}
                                 setMostrarEditarProducto={setMostrarEditarProducto}
                                 handleOpenModal={handleOpenModal}
+                                setOpcionSeleccionado={setOpcionSeleccionado}
                             />
                         );
                     })}

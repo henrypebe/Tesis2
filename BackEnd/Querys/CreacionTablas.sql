@@ -77,6 +77,7 @@ CREATE TABLE Producto (
     EstadoAprobacion TEXT,
     TipoProducto TEXT,
     CantidadVentas INT,
+    MotivoRechazo TEXT,
     TiendaID INT NOT NULL,
     FOREIGN KEY (TiendaID) REFERENCES Tienda(IdTienda),
     Estado boolean
@@ -230,7 +231,7 @@ ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
-ALTER TABLE Usuario ADD CorreoAlternativo TEXT;
+ALTER TABLE Producto ADD MotivoRechazo TEXT;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
@@ -240,5 +241,6 @@ ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 
-SELECT pr.Nombre FROM Producto pr WHERE pr.CantidadVentas =
-                            (SELECT MAX(CantidadVentas) FROM Producto pro WHERE pro.Estado = 1) LIMIT 1
+SELECT COUNT(DISTINCT m.IdMetodoPago) FROM MetodoPago m
+INNER JOIN Tienda t ON t.UsuarioID = m.UsuarioID
+WHERE t.UsuarioID = 1;

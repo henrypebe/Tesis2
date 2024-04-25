@@ -199,7 +199,7 @@ def generar_id_para_nombre(nombre, id_generados):
         id_generados[nombre] = nuevo_id
         return nuevo_id
 
-# Generar 5000 pedidos aleatorios con posibles movimientos fraudulentos
+# Generar 100000 pedidos aleatorios con posibles movimientos fraudulentos
 nombres_compradores = [fake.name() for _ in range(5000)]
 id_generados = {}
 numeros_cuenta = {nombre: encriptar_numero_cuenta(random.randint(1000000000, 9999999999)) for nombre in nombres_compradores}

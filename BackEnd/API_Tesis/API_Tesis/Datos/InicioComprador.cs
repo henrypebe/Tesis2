@@ -11,5 +11,6 @@
         public double TotalDescuentoPedidosUsuario { get; set; }
         public int TotalPedidosConReclamo { get; set; }
         public int TotalProductosConReclamo { get; set; }
+        public int CantidadMetodoPago { get; set; }
     }
 }

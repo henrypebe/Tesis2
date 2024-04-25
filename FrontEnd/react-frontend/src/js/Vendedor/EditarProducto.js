@@ -62,8 +62,6 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
     const handleSubirProducto = async () =>{
         const cantidadGarantiaTotal = TiempoGarantiaNum.toString() + " " + TiempoGarantia.toString();
         const cantidadEnvioTotal = TiempoEnvioNum.toString() + " " + TiempoEnvio.toString();
-        // const nombreParam = NombreProducto.replace(/ /g, '_');
-        // const descripcionParam = Descripcion.replace(/ /g, '_');
         if(opcionEditarProducto !== 1){
             try {
                 const formData = new FormData();
@@ -99,7 +97,12 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                 } else if (response.status === 404) {
                   throw new Error("Producto no encontrado");
                 } else {
-                  throw new Error("Error al Editar el producto");
+                    if (response.status === 400) {
+                        const errorMessage = await response.text();
+                        toast.warning(errorMessage);
+                    } else {
+                        toast.error('Error al ingresar los datos, verifique nuevamente.');
+                    }
                 }
               } catch (error) {
                 console.error("Error al Editar el producto", error);

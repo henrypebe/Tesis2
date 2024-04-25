@@ -13,6 +13,7 @@
         public string FechaEnvio { get; set; }
         public string CantidadGarantia { get; set; }
         public string EstadoAprobacion { get; set; }
+        public string MotivoRechazo { get; set; }
         public string TipoProducto { get; set; }
         public int TiendaId { get; set; }
         public string TiendaNombre { get; set; }

@@ -8,7 +8,6 @@ contract Ecommerce {
         uint creationDate;
         uint total;
         uint totalDiscount;
-        bool claim;
         uint productCount;
         string paymentMethod;
         uint shippingCost;
@@ -26,7 +25,6 @@ contract Ecommerce {
         uint _creationDate,
         uint _total,
         uint _totalDiscount,
-        bool _claim,
         uint _productCount,
         string memory _paymentMethod,
         uint _shippingCost,
@@ -38,7 +36,6 @@ contract Ecommerce {
             creationDate: _creationDate,
             total: _total,
             totalDiscount: _totalDiscount,
-            claim: _claim,
             productCount: _productCount,
             paymentMethod: _paymentMethod,
             shippingCost: _shippingCost,
@@ -54,7 +51,6 @@ contract Ecommerce {
         uint creationDate,
         uint total,
         uint totalDiscount,
-        bool claim,
         uint productCount,
         string memory paymentMethod,
         uint shippingCost,
@@ -67,7 +63,6 @@ contract Ecommerce {
             transaction.creationDate,
             transaction.total,
             transaction.totalDiscount,
-            transaction.claim,
             transaction.productCount,
             transaction.paymentMethod,
             transaction.shippingCost,

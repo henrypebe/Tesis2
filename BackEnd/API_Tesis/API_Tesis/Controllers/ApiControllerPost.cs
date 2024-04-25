@@ -32,17 +32,21 @@ namespace API_Tesis.Controllers
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-                    string query1 = "SELECT IdUsuario, Estado, EsAdministrador, EsComprador, EsVendedor FROM Usuario WHERE Correo = @Correo AND contrasenha = @Contrasenha";
+                    string query1 = "SELECT IdUsuario, Estado, EsAdministrador, EsComprador, EsVendedor, Contrasenha FROM Usuario WHERE Correo = @Correo";
 
                     using (MySqlCommand command1 = new MySqlCommand(query1, connection))
                     {
                         command1.Parameters.AddWithValue("@Correo", _correo);
-                        command1.Parameters.AddWithValue("@Contrasenha", _contrasenha);
-
                         using (MySqlDataReader reader1 = command1.ExecuteReader())
                         {
                             if (reader1.Read())
                             {
+                                string contrasenhaUsuario = reader1.GetString("Contrasenha");
+                                if (contrasenhaUsuario != _contrasenha)
+                                {
+                                    return BadRequest("La contraseña no es correcta.");
+                                }
+
                                 int estadoUsuario = reader1.GetInt32("Estado");
                                 if (estadoUsuario == 0)
                                 {
@@ -59,7 +63,6 @@ namespace API_Tesis.Controllers
                                 using (MySqlCommand updateCommand = new MySqlCommand(updateQuery, connection))
                                 {
                                     updateCommand.Parameters.AddWithValue("@Token", tokenString);
-                                    updateCommand.Parameters.AddWithValue("@Contrasenha", _contrasenha);
                                     updateCommand.Parameters.AddWithValue("@Correo", _correo);
                                     updateCommand.ExecuteNonQuery();
                                 }
@@ -105,12 +108,17 @@ namespace API_Tesis.Controllers
                                         }
                                     }
                                 }
+
+                                Console.WriteLine("Correo enviado con la información de los tickets sin tareas.");
                             }
                             else
                             {
-                                return BadRequest("El usuario no existe en el sistema");
+                                return BadRequest("El usuario no existe en el sistema.");
                             }
                         }
+                        //command1.Parameters.AddWithValue("@Contrasenha", _contrasenha);
+
+                        
                         if (idUsuario == 0) idUsuario = -1;
                     }
                     connection.Close();

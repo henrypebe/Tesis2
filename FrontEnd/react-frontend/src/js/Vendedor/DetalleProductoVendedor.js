@@ -1,9 +1,12 @@
-import { Box, Button, Divider, IconButton, Typography } from '@mui/material'
-import React from 'react';
+import { Box, Button, Divider, IconButton, Modal, Typography } from '@mui/material'
+import React, { useEffect } from 'react';
 import HistoryIcon from '@mui/icons-material/History';
+import CancelIcon from "@mui/icons-material/Cancel";
 
-export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto, productoInformacion, handleChangeHistoria}) {
+export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto, productoInformacion, handleChangeHistoria,
+    OpcionSeleccionado}) {
 
+    const [Open, setOpen] = React.useState(false);
     const partes = productoInformacion.cantidadGarantia.split("_");
     const numero = partes[0];
     const texto = partes[1];
@@ -12,6 +15,26 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
         setMostrarMisProductos(true);
         setMostrarDetalleProducto(false);
     }
+
+    const handleClose = () => {setOpen(false);};
+
+    useEffect(() => {
+        if(productoInformacion.estadoAprobacion === "Rechazado" && OpcionSeleccionado !== 1) setOpen(true);
+    }, [productoInformacion.estadoAprobacion, OpcionSeleccionado]);
+
+    const style = {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 1000,
+        bgcolor: "background.paper",
+        border: "2px solid #000",
+        boxShadow: 24,
+        padding: "20px",
+        borderRadius: "8px",
+        height: "49%",
+    };
 
     return (
     <Box sx={{padding:"20px", width:"85.65%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
@@ -137,6 +160,86 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                 {productoInformacion.descripcion}
             </Typography>
         </Box>
+
+        <Modal
+          open={Open}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+            <Box sx={{ ...style }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Typography
+                        sx={{
+                        color: "black",
+                        fontWeight: "bold",
+                        fontSize: "30px",
+                        width: "100%",
+                        }}
+                    >
+                        Informe del rechazo
+                    </Typography>
+
+                    <IconButton
+                        sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "80px",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        "&:hover": { backgroundColor: "white" },
+                        }}
+                        onClick={handleClose}
+                    >
+                        <CancelIcon sx={{ fontSize: "50px" }} />
+                    </IconButton>
+                </Box>
+                <hr
+                    style={{
+                        margin: "10px 0",
+                        border: "0",
+                        borderTop: "2px solid #ccc",
+                        marginTop: "10px",
+                        marginBottom: "15px",
+                    }}
+                />
+                <Typography
+                    sx={{
+                        color: "black",
+                        fontSize: "24px",
+                        width: "100%",
+                        marginBottom:"20px",
+                        marginTop:"10px",
+                        marginLeft:"10px"
+                    }}
+                >
+                    El motivo del rechazo es el siguiente:
+                </Typography>
+                <Box sx={{width:"100%", display: "flex", justifyContent:"center", height:"66%"}}>
+                    <Typography
+                        sx={{
+                            color: "black",
+                            fontWeight: "bold",
+                            fontSize: "24px",
+                            width: "96%",
+                            marginBottom:"20px",
+                            marginTop:"10px",
+                            border:"2px solid black",
+                            padding:"10px",
+                            borderRadius:"6px"
+                        }}
+                    >
+                        {productoInformacion.motivoRechazo}
+                    </Typography>
+                </Box>
+            </Box>
+        </Modal>
 
     </Box>
   )

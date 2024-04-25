@@ -31,9 +31,12 @@ namespace API_Tesis.Controllers
 
                 string query = @"
                     UPDATE Pedidos 
-                    SET Estado = CASE WHEN DATE(FechaEntrega) <= DATE(NOW()) THEN 2 
-                        ELSE 1 
-                    END";
+                        SET Estado = 
+                        CASE 
+                            WHEN Estado = 3 THEN Estado   -- No se hace ningún cambio si el estado actual es 3
+                            WHEN DATE(FechaEntrega) <= DATE(NOW()) THEN 2 
+                            ELSE 1 
+                        END";
 
                 MySqlCommand command = new MySqlCommand(query, connection);
                 int rowsAffected = await command.ExecuteNonQueryAsync();
@@ -183,7 +186,7 @@ namespace API_Tesis.Controllers
                         else
                         {
                             connection.Close();
-                            return Ok();
+                            return BadRequest("No se hizo ningún cambio");
                         }
                     }
                     else
@@ -883,7 +886,7 @@ namespace API_Tesis.Controllers
         }
         [HttpPut]
         [Route("/CambioEstadoAprobaciónProducto")]
-        public async Task<IActionResult> CambioEstadoAprobaciónProducto(int idProducto, string EstadoPuesto)
+        public async Task<IActionResult> CambioEstadoAprobaciónProducto(int idProducto, string EstadoPuesto, string MotivoRechazo)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
             try
@@ -892,11 +895,13 @@ namespace API_Tesis.Controllers
                 {
                     await connection.OpenAsync();
 
-                    string updateQuery = "UPDATE Producto SET EstadoAprobacion = @EstadoAprobacion WHERE IdProducto = @IdProducto AND Estado = 1";
+                    string updateQuery = "UPDATE Producto SET EstadoAprobacion = @EstadoAprobacion, MotivoRechazo = @MotivoRechazo WHERE IdProducto = @IdProducto AND Estado = 1";
                     using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
                     {
                         command.Parameters.AddWithValue("@EstadoAprobacion", EstadoPuesto);
                         command.Parameters.AddWithValue("@IdProducto", idProducto);
+                        if(MotivoRechazo == "?") command.Parameters.AddWithValue("@MotivoRechazo", "");
+                        else command.Parameters.AddWithValue("@MotivoRechazo", MotivoRechazo);
 
                         await command.ExecuteNonQueryAsync();
                     }

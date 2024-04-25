@@ -11,5 +11,6 @@
         public int CantidadChatsPendientes { get; set; }
         public double PorcentajeSatisfaccion { get; set; }
         public int CantidadReclamo { get; set; }
+        public int CantidadMetodoPago { get; set; }
     }
 }

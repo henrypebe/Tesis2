@@ -343,7 +343,6 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 Math.floor(Date.now()),
                 totalEntero,
                 totalDescuentoEntero,
-                false,
                 conteoCarritoCompra,
                 token,
                 costoEnvioEntero,

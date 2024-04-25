@@ -74,8 +74,8 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
       <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px", marginTop:"20px"}}>
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"1000px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50E7FF", border:"1px solid #7B7B7B", width:"1450px",
+        '&:hover': {backgroundColor:"#50E7FF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickEstadistica}
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%", marginRight:"0px"}}>
@@ -102,7 +102,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
       </Box>
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px", marginTop:"20px"}}>
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"1000px",
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"1450px",
         '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickPedido}
         >
@@ -129,8 +129,8 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
       </Box>
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px", marginTop:"20px"}}>
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"1000px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50E7FF", border:"1px solid #7B7B7B", width:"1450px",
+        '&:hover': {backgroundColor:"#50E7FF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickProducto}
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"50%", marginRight:"0px"}}>
@@ -157,7 +157,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
       </Box>
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px", marginTop:"20px"}}>
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"1000px",
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"1450px",
         '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickSeguimiento}
         >
@@ -186,8 +186,8 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
         
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"490px", marginRight:"20px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50BAFF", border:"1px solid #7B7B7B", width:"715px", marginRight:"20px",
+        '&:hover': {backgroundColor:"#50BAFF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickBilletera}
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
@@ -195,13 +195,13 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
               style={{marginRight:"10px", color:"black", height:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>¿Billetera incorporada?</Typography>
             <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
-              Si
+              {Estadistica && Estadistica.cantidadMetodoPago>0? "Si":"No"}
             </Typography>
           </Box>
         </Button>
 
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#FFFF", border:"1px solid #7B7B7B", width:"490px",
-        '&:hover': {backgroundColor:"#FFFF", border:"1px solid #7B7B7B"}}}
+        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50BAFF", border:"1px solid #7B7B7B", width:"715px",
+        '&:hover': {backgroundColor:"#50BAFF", border:"1px solid #7B7B7B"}}}
         onClick={handleClickReclamo}
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>

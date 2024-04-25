@@ -4,10 +4,12 @@ import { Box, Divider, IconButton, Typography} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-export default function ProductoMayorDem({productoPrimero, handleChangeEditarProducto, handleOpenModal, setMostrarMisProductos, setMostrarDetalleProducto}) {
+export default function ProductoMayorDem({productoPrimero, handleChangeEditarProducto, handleOpenModal, setMostrarMisProductos, setMostrarDetalleProducto,
+  setOpcionSeleccionado}) {
     const handleChangeDetalleProductoVendedor = () =>{
         setMostrarMisProductos(false);
         setMostrarDetalleProducto(true);
+        setOpcionSeleccionado(0);
     }
     return (
     <Box

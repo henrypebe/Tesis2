@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { Box, Button, Pagination, Typography } from '@mui/material'
 import LineaDetalleProductoVisualizar from './LineaDetalleProductoVisualizar';
 
-export default function HistorialProducto({setHistoriaProducto, setMostrarDetalleProducto, productoInformacion}) {
+export default function HistorialProducto({setHistoriaProducto, setMostrarDetalleProducto, productoInformacion, setOpcionSeleccionado}) {
 
     const handleChange = () =>{
         setMostrarDetalleProducto(true);
         setHistoriaProducto(false);
+        setOpcionSeleccionado(1);
     }
 
     const [HistorialProductos, setHistorialProductos] = React.useState();
@@ -26,7 +27,7 @@ export default function HistorialProducto({setHistoriaProducto, setMostrarDetall
             if (response.ok) {
               const historial = await response.json();
               setHistorialProductos(historial);
-              console.log(historial);
+              // console.log(historial);
             } else if (response.status === 404) {
               throw new Error("Seguimiento no encontrado");
             } else {

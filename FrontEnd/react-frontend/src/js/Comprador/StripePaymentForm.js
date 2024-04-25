@@ -202,7 +202,6 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
             Math.floor(Date.now()),
             totalEntero,
             totalDescuentoEntero,
-            false,
             conteoCarritoCompra,
             token,
             costoEnvioEntero,

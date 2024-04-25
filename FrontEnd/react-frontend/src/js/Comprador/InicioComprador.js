@@ -203,7 +203,7 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
             <SavingsIcon sx={{marginRight:"10px", color:"black", fontSize:"50px"}}/>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>¿Método de pago incorporado?</Typography>
             <Typography sx={{color:"black", width:"20%", textAlign:"right", fontSize:"25px", marginRight:"0px"}}>
-              Si
+              {Estadistica && Estadistica.cantidadMetodoPago>0? "Si" : "No"}
             </Typography>
           </Box>
         </Button>

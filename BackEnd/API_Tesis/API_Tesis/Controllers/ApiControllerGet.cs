@@ -47,6 +47,7 @@ namespace API_Tesis.Controllers
                                 FechaCreacion = reader.GetDateTime("FechaCreacion"),
                                 Descripcion = reader.GetString("Descripcion"),
                                 CantidadOferta = reader.GetDouble("CantidadOferta"),
+                                CostoEnvio = reader.GetDouble("CostoEnvio"),
                                 CantidadGarantia = reader.GetString("CantidadGarantia"),
                                 EstadoAprobacion = reader.GetString("EstadoAprobacion"),
                                 TipoProducto = reader.GetString("TipoProducto"),
@@ -280,7 +281,7 @@ namespace API_Tesis.Controllers
                 string query = @"SELECT p.*, t.Nombre AS NombreTienda, t.Foto AS FotoTienda 
                         FROM Producto p 
                         INNER JOIN Tienda t ON p.TiendaID = t.IdTienda 
-                        WHERE p.Estado = 1 AND p.EstadoAprobacion <> 'Pendiente' AND Stock >= 1";
+                        WHERE p.Estado = 1 AND p.EstadoAprobacion <> 'Pendiente' AND p.EstadoAprobacion <> 'Rechazado' AND Stock >= 1";
 
                 if (busqueda != "nada")
                 {
@@ -315,6 +316,7 @@ namespace API_Tesis.Controllers
                                 FechaEnvio = FechaEnvio,
                                 CantidadGarantia = reader.GetString("CantidadGarantia"),
                                 EstadoAprobacion = reader.GetString("EstadoAprobacion"),
+                                MotivoRechazo = reader.GetString("MotivoRechazo"),
                                 TipoProducto = reader.GetString("TipoProducto"),
                                 TiendaId = reader.GetInt32("TiendaId"),
                                 TiendaNombre = reader.GetString("NombreTienda"),
@@ -379,6 +381,7 @@ namespace API_Tesis.Controllers
                                 FechaEnvio = FechaEnvio,
                                 CantidadGarantia = reader.GetString("CantidadGarantia"),
                                 EstadoAprobacion = reader.GetString("EstadoAprobacion"),
+                                MotivoRechazo = reader.IsDBNull(reader.GetOrdinal("MotivoRechazo")) ? "" : reader.GetString("MotivoRechazo"),
                                 TipoProducto = reader.GetString("TipoProducto"),
                                 TiendaId = reader.GetInt32("TiendaId"),
                                 Imagen = ConvertirBytesAImagen(reader["Foto"] as byte[]),
@@ -1256,7 +1259,10 @@ namespace API_Tesis.Controllers
                         (SELECT COUNT(pp.IdPedidoXProducto) 
                          FROM PedidoXProducto pp 
                          INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto 
-                         WHERE pp.TieneReclamo = 1 AND pr.TiendaID = @idTienda) AS CantidadReclamo";
+                         WHERE pp.TieneReclamo = 1 AND pr.TiendaID = @idTienda) AS CantidadReclamo,
+                        (SELECT COUNT(DISTINCT m.IdMetodoPago) FROM MetodoPago m
+                        INNER JOIN Tienda t ON t.UsuarioID = m.UsuarioID
+                        WHERE t.UsuarioID = @idTienda) AS CantidadMetodoPago";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -1280,6 +1286,7 @@ namespace API_Tesis.Controllers
                                                              0 : reader.GetDouble("PorcentajeSatisfaccion"),
                                     CantidadChatsPendientes = reader.GetInt32("CantidadChatsPendientes"),
                                     CantidadReclamo = reader.GetInt32("CantidadReclamo"),
+                                    CantidadMetodoPago = reader.GetInt32("CantidadMetodoPago"),
                                 };
                                 return Ok(estadistica);
                             }
@@ -1329,7 +1336,8 @@ namespace API_Tesis.Controllers
                             AS TotalPedidosConReclamo,
                         (SELECT COUNT(pp.IdPedidoXProducto) FROM PedidoXProducto pp INNER JOIN Pedidos p ON p.IdPedido = pp.PedidoID
                         WHERE pp.TieneReclamo = 1 AND p.UsuarioID = @IdUsuario) 
-                            AS TotalProductosConReclamo";
+                            AS TotalProductosConReclamo,
+                        (SELECT COUNT(DISTINCT IdMetodoPago) FROM MetodoPago WHERE UsuarioID = @IdUsuario) AS CantidadMetodoPago";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -1351,6 +1359,7 @@ namespace API_Tesis.Controllers
                                                              0 : reader.GetDouble("TotalDescuentoPedidosUsuario"),
                                     TotalPedidosConReclamo = reader.GetInt32("TotalChats"),
                                     TotalProductosConReclamo = reader.GetInt32("TotalProductosConReclamo"),
+                                    CantidadMetodoPago = reader.GetInt32("CantidadMetodoPago"),
                                 };
                                 return Ok(estadistica);
                             }
@@ -1550,12 +1559,18 @@ namespace API_Tesis.Controllers
                             {
                                 EstadisticaComprador estadistica = new EstadisticaComprador
                                 {
-                                    CantidadPedidos = reader.GetInt32("CantidadPedidos"),
-                                    CantidadPedidosEstadoPendiente = reader.GetInt32("CantidadPedidosEstadoPendiente"),
-                                    CantidadPedidosEstadoCompletado = reader.GetInt32("CantidadPedidosEstadoCompletado"),
-                                    CantidadChatsFinalizados = reader.GetInt32("CantidadChatsFinalizados"),
-                                    CantidadChatsPendientes = reader.GetInt32("CantidadChatsPendientes"),
-                                    CantidadPedidosConReclamo = reader.GetInt32("CantidadPedidosConReclamo"),
+                                    CantidadPedidos = reader.IsDBNull(reader.GetOrdinal("CantidadPedidos")) ?
+                                                             0 : reader.GetInt32("CantidadPedidos"),
+                                    CantidadPedidosEstadoPendiente = reader.IsDBNull(reader.GetOrdinal("CantidadPedidosEstadoPendiente")) ?
+                                                             0 : reader.GetInt32("CantidadPedidosEstadoPendiente"),
+                                    CantidadPedidosEstadoCompletado = reader.IsDBNull(reader.GetOrdinal("CantidadPedidosEstadoCompletado")) ?
+                                                             0 : reader.GetInt32("CantidadPedidosEstadoCompletado"),
+                                    CantidadChatsFinalizados = reader.IsDBNull(reader.GetOrdinal("CantidadChatsFinalizados")) ?
+                                                             0 : reader.GetInt32("CantidadChatsFinalizados"),
+                                    CantidadChatsPendientes = reader.IsDBNull(reader.GetOrdinal("CantidadChatsPendientes")) ?
+                                                             0 : reader.GetInt32("CantidadChatsPendientes"),
+                                    CantidadPedidosConReclamo = reader.IsDBNull(reader.GetOrdinal("CantidadPedidosConReclamo")) ?
+                                                             0 : reader.GetInt32("CantidadPedidosConReclamo"),
                                     TotalDescuento = reader.IsDBNull(reader.GetOrdinal("TotalDescuento")) ?
                                                              0 : reader.GetDouble("TotalDescuento"),
                                     TotalDescuentoMesActual = reader.IsDBNull(reader.GetOrdinal("TotalDescuentoMesActual")) ? 0 :
@@ -1609,6 +1624,7 @@ namespace API_Tesis.Controllers
 
                     if (completados && !pendientes) query += " WHERE p.Estado = 2";
                     else if (!completados && pendientes) query += " WHERE p.Estado = 1";
+                    else query += "WHERE p.Estado = 2 OR p.Estado = 1";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {

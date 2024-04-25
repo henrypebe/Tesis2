@@ -5,11 +5,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function CardMisProductos({producto, setMostrarMisProductos, setMostrarDetalleProducto, setProductoInformacion, 
-  setOpcionEditarProducto, setMostrarEditarProducto, handleOpenModal}) {
+  setOpcionEditarProducto, setMostrarEditarProducto, handleOpenModal, setOpcionSeleccionado}) {
     const handleChangeDetalleProductoVendedor = () =>{
         setMostrarMisProductos(false);
         setMostrarDetalleProducto(true);
         setProductoInformacion(producto);
+        setOpcionSeleccionado(0);
     }
 
     const handleChangeEditarProducto = () =>{

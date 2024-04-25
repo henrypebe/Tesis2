@@ -42,6 +42,7 @@ export default function MenuVendedor() {
     const [historialProducto, setHistoriaProducto] = useState();
     const [VentaSeleccionada, setVentaSeleccionada] = useState();
     const [SeguimientoSeleccionado, setSeguimientoSeleccionado] = useState();
+    const [OpcionSeleccionado, setOpcionSeleccionado] = useState(0);
 
     useEffect(() => {
       const obtenerInformacionTienda = async () => {
@@ -146,16 +147,17 @@ export default function MenuVendedor() {
 
             {mostrarMisProductos && <MisProductos setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
             setOpcionEditarProducto={setOpcionEditarProducto} setProductoInformacion={setProductoInformacion} setMostrarEditarProducto={setMostrarEditarProducto}
-            informacionTienda={informacionTienda}/>}
+            informacionTienda={informacionTienda} setOpcionSeleccionado={setOpcionSeleccionado}/>}
 
             {mostrarDetalleProducto && <DetalleProductoVendedor setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
-            productoInformacion={productoInformacion} handleChangeHistoria={handleChangeHistoria}/>}
+            productoInformacion={productoInformacion} handleChangeHistoria={handleChangeHistoria} OpcionSeleccionado={OpcionSeleccionado}
+            setOpcionSeleccionado={setOpcionSeleccionado}/>}
 
             {mostrarEditarProducto && <EditarProducto setMostrarMisProductos={setMostrarMisProductos} setMostrarEditarProducto={setMostrarEditarProducto}
             opcionEditarProducto={opcionEditarProducto} informacionTienda={informacionTienda} productoInformacion={productoInformacion}/>}
 
             {historialProducto && <HistorialProducto setHistoriaProducto={setHistoriaProducto} setMostrarDetalleProducto={setMostrarDetalleProducto}
-            productoInformacion={productoInformacion}/>}
+            productoInformacion={productoInformacion} setOpcionSeleccionado={setOpcionSeleccionado}/>}
 
             {mostrarSeguimientoVendedor && <SeguimientoVendedor informacionTienda={informacionTienda} HandleChangeSeguimientoSeleccionado={HandleChangeSeguimientoSeleccionado}/>}
 

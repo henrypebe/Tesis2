@@ -43,13 +43,6 @@ def preprocesar_datos(df):
     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
     df = df.dropna(subset=['Fecha_Hora'])
     
-    # df['Anho'] = df['Fecha_Hora'].dt.year
-    # df['Mes'] = df['Fecha_Hora'].dt.month
-    # df['Dia'] = df['Fecha_Hora'].dt.day
-    # df['Hora'] = df['Fecha_Hora'].dt.hour
-    # df['Minuto'] = df['Fecha_Hora'].dt.minute
-    # df['Segundo'] = df['Fecha_Hora'].dt.second
-    
     return df
 
 def cargar_datos_2(datos):
@@ -79,13 +72,6 @@ def preprocesar_datos_2(df):
     df['Fecha_Hora'] = pd.to_datetime(df['Fecha_Hora'], errors='coerce', format='%Y-%m-%d %H:%M:%S')
     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
     df = df.dropna(subset=['Fecha_Hora'])
-    
-    # df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
-    # df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
-    # df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
-    # df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
-    # df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
-    # df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
     
     return df
 
@@ -122,23 +108,7 @@ def reentrenar_y_guardar_pipeline(nuevos_datos, pipeline_file, pipeline, valor_p
         pickle.dump(pipeline, file)
         
 def Entrenamiento(df_nuevos_datos):
-    # # Cargar y preprocesar los datos
-    # ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude.txt")
     pipeline_file = "pipeline.pkl"
-    # df = cargar_datos(ruta_archivo)
-    # df = preprocesar_datos(df)
-
-    # # Separar datos en características (X) y etiquetas (y)
-    # features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Anho', 'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
-    # X = df[features]
-    # y = df['Fraude']
-
-    # # Dividir datos en conjunto de entrenamiento y prueba
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    # # Crear y entrenar el modelo
-    # pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
-    # pipeline.fit(X_train, y_train)
     
     with open(pipeline_file, 'rb') as file:
         pipeline = pickle.load(file)
