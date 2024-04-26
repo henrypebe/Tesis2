@@ -110,7 +110,7 @@ export default function MetodoPagoAdicionar({setMostrarMetodoPagoAdicionar, setM
   };
 
   const [currentPage, setCurrentPage] = React.useState(0);
-  const rowsPerPage = 5;
+  const rowsPerPage = 4;
   const handleChangePage = (event, newPage) => {
       setCurrentPage(newPage - 1);
   };
@@ -136,7 +136,7 @@ export default function MetodoPagoAdicionar({setMostrarMetodoPagoAdicionar, setM
         </Box>
 
         <Box sx={{height:"85%", display:"flex",flexDirection:"column", alignItems:"center"}}>
-          <Box sx={{height:"96%", width:"100%", display:"flex", justifyContent:"center"}}>
+          <Box sx={{height:"96%", width:"100%", display:"flex", alignItems:"center", flexDirection:"column"}}>
             {MetodosPago && MetodosPago.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((metodo) => {
               return(
                 <CardMetodoPagoAdicionar metodo={metodo} handleOpenModal={handleOpenModal}/>

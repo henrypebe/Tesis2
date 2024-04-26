@@ -159,6 +159,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         setCurrentPage(newPage - 1);
     };
     const handleCheckboxChange = (id) => {
+        console.log(id);
         setSelectedMethodId(id);
     };
 
@@ -549,9 +550,8 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Tus métodos de pago:</Typography>
             <Box sx={{ height: selectedMethodId === null ? "68px" : "494px", marginTop: "10px", marginBottom: "6px" }}>
                 {ListaMetodoPago && (
-                    ListaMetodoPago.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(metodo => (
+                    ListaMetodoPago.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((metodo) => (
                         <CardMetodoPagoComprador
-                            key={metodo.id}
                             metodo={metodo}
                             handleCheckboxChange={handleCheckboxChange}
                             selectedMethodId={selectedMethodId}

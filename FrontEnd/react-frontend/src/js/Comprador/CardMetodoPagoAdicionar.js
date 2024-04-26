@@ -82,7 +82,7 @@ export default function CardMetodoPagoAdicionar({metodo, handleOpenModal}) {
             width: "50%",
           }}
         >
-          CVV: ***
+          CVC: ***
         </Typography>
 
         <Box sx={{ width: "50%" }}>

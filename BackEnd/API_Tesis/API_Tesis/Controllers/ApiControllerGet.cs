@@ -314,12 +314,12 @@ namespace API_Tesis.Controllers
                                 CantidadOferta = reader.GetDouble("CantidadOferta"),
                                 CostoEnvio = reader.GetDouble("CostoEnvio"),
                                 FechaEnvio = FechaEnvio,
-                                CantidadGarantia = reader.GetString("CantidadGarantia"),
-                                EstadoAprobacion = reader.GetString("EstadoAprobacion"),
-                                MotivoRechazo = reader.GetString("MotivoRechazo"),
-                                TipoProducto = reader.GetString("TipoProducto"),
+                                CantidadGarantia = reader.IsDBNull(reader.GetOrdinal("CantidadGarantia")) ? "" : reader.GetString("CantidadGarantia"),
+                                EstadoAprobacion = reader.IsDBNull(reader.GetOrdinal("EstadoAprobacion")) ? "" : reader.GetString("EstadoAprobacion"),
+                                MotivoRechazo = reader.IsDBNull(reader.GetOrdinal("MotivoRechazo")) ? "" : reader.GetString("MotivoRechazo"),
+                                TipoProducto = reader.IsDBNull(reader.GetOrdinal("TipoProducto")) ? "" : reader.GetString("TipoProducto"),
                                 TiendaId = reader.GetInt32("TiendaId"),
-                                TiendaNombre = reader.GetString("NombreTienda"),
+                                TiendaNombre = reader.IsDBNull(reader.GetOrdinal("NombreTienda")) ? "" : reader.GetString("NombreTienda"),
                                 TiendaFoto = ConvertirBytesAImagen(reader["FotoTienda"] as byte[]),
                                 Imagen = ConvertirBytesAImagen(reader["Foto"] as byte[]),
                                 CantidadVentas = reader.GetInt32("CantidadVentas"),
@@ -641,6 +641,57 @@ namespace API_Tesis.Controllers
                                 });
                             }
                             return Ok(pedidos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarVendedoresAsistentes")]
+        public async Task<IActionResult> ListarVendedoresAsistentes(int idTienda)
+        {
+            try
+            {
+                List<VendedorAsistente> vendedoresAsistentes = new List<VendedorAsistente>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                       SELECT u.IdUsuario, u.Correo, u.Nombre, u.Apellido, u.DNI
+                        FROM Usuario u
+                        INNER JOIN Vendedor v ON v.usuarioID = u.IdUsuario
+                        WHERE v.TiendaID = @IdTienda AND v.Estado = 2";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdTienda", idTienda);
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int idUsuario = reader.GetInt32("IdUsuario");
+                                VendedorAsistente usuarioExistente = vendedoresAsistentes.FirstOrDefault(p => p.idUsuario == idUsuario);
+                                if (usuarioExistente == null)
+                                {
+                                    usuarioExistente = new VendedorAsistente
+                                    {
+                                        idUsuario = idUsuario,
+                                        Nombre = reader.GetString("Nombre"),
+                                        Apellido = reader.GetString("Apellido"),
+                                        Correo = reader.GetString("Correo"),
+                                        DNI = reader.GetInt32("DNI")
+                                    };
+
+                                    vendedoresAsistentes.Add(usuarioExistente);
+                                }
+                            }
+                            return Ok(vendedoresAsistentes);
                         }
                     }
                 }

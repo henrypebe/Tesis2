@@ -46,7 +46,7 @@ CREATE TABLE Vendedor(
     usuarioId INT NOT NULL,
     TiendaID INT,
     FOREIGN KEY (usuarioId) REFERENCES Usuario(IdUsuario),
-    Estado boolean
+    Estado INT
 );
 
 CREATE TABLE Tienda (
@@ -227,7 +227,7 @@ SELECT * FROM Chat;
 SELECT * FROM MetodoPago;
 SELECT * FROM Usuario WHERE Estado = 1;
 
-ALTER TABLE Producto MODIFY COLUMN Foto LONGBLOB;
+ALTER TABLE Vendedor MODIFY COLUMN Estado INT;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
@@ -236,7 +236,7 @@ ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
 ALTER TABLE Mensajes ADD EsTienda boolean;
-ALTER TABLE Usuario DROP COLUMN CantCambiosMetodoPago;
+ALTER TABLE MetodoPago DROP COLUMN Cuenta;
 ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;

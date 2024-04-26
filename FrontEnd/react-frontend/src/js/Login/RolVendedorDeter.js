@@ -23,7 +23,8 @@ export default function RolVendedorDeter({onLoginVendedor}) {
             if(!esVendedorAsistente){
                 window.location.href = `/TiendaInformacion/${idUsuario}`;
             }else{
-                onLoginVendedor(idUsuario);
+                // onLoginVendedor(idUsuario);
+                window.location.href = `/BusquedaTienda/${idUsuario}`;
             }
         } else {
             throw new Error('Error al crear el usuario');

@@ -345,7 +345,7 @@ export default function DetalleSeguimiento({
                   width: "100%",
                 }}
               >
-                Confirmación de eliminación
+                Confirmación de la finalización del seguimiento
               </Typography>
 
               <IconButton

@@ -296,15 +296,15 @@
     "absolutePath": "project:/contracts/MiContrato.sol",
     "exportedSymbols": {
       "MiContrato": [
-        202
+        193
       ]
     },
-    "id": 203,
+    "id": 194,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 181,
+        "id": 172,
         "literals": [
           "solidity",
           "^",
@@ -321,9 +321,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 202,
+        "id": 193,
         "linearizedBaseContracts": [
-          202
+          193
         ],
         "name": "MiContrato",
         "nameLocation": "69:10:1",
@@ -332,12 +332,12 @@
           {
             "constant": false,
             "functionSelector": "281e3daf",
-            "id": 183,
+            "id": 174,
             "mutability": "mutable",
             "name": "miVariable",
             "nameLocation": "158:10:1",
             "nodeType": "VariableDeclaration",
-            "scope": 202,
+            "scope": 193,
             "src": "143:25:1",
             "stateVariable": true,
             "storageLocation": "default",
@@ -346,7 +346,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 182,
+              "id": 173,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "143:7:1",
@@ -359,23 +359,23 @@
           },
           {
             "body": {
-              "id": 190,
+              "id": 181,
               "nodeType": "Block",
               "src": "276:98:1",
               "statements": [
                 {
                   "expression": {
-                    "id": 188,
+                    "id": 179,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 186,
+                      "id": 177,
                       "name": "miVariable",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 183,
+                      "referencedDeclaration": 174,
                       "src": "350:10:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -386,7 +386,7 @@
                     "operator": "=",
                     "rightHandSide": {
                       "hexValue": "313030",
-                      "id": 187,
+                      "id": 178,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -406,13 +406,13 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 189,
+                  "id": 180,
                   "nodeType": "ExpressionStatement",
                   "src": "350:16:1"
                 }
               ]
             },
-            "id": 191,
+            "id": 182,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
@@ -420,18 +420,18 @@
             "nameLocation": "-1:-1:-1",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 184,
+              "id": 175,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "273:2:1"
             },
             "returnParameters": {
-              "id": 185,
+              "id": 176,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "276:0:1"
             },
-            "scope": 202,
+            "scope": 193,
             "src": "262:112:1",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -439,23 +439,23 @@
           },
           {
             "body": {
-              "id": 200,
+              "id": 191,
               "nodeType": "Block",
               "src": "482:38:1",
               "statements": [
                 {
                   "expression": {
-                    "id": 198,
+                    "id": 189,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 196,
+                      "id": 187,
                       "name": "miVariable",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 183,
+                      "referencedDeclaration": 174,
                       "src": "493:10:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -465,11 +465,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 197,
+                      "id": 188,
                       "name": "_valor",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 193,
+                      "referencedDeclaration": 184,
                       "src": "506:6:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -482,14 +482,14 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 199,
+                  "id": 190,
                   "nodeType": "ExpressionStatement",
                   "src": "493:19:1"
                 }
               ]
             },
             "functionSelector": "86be3f80",
-            "id": 201,
+            "id": 192,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -497,17 +497,17 @@
             "nameLocation": "447:11:1",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 194,
+              "id": 185,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 193,
+                  "id": 184,
                   "mutability": "mutable",
                   "name": "_valor",
                   "nameLocation": "467:6:1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 201,
+                  "scope": 192,
                   "src": "459:14:1",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -516,7 +516,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 192,
+                    "id": 183,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "459:7:1",
@@ -531,19 +531,19 @@
               "src": "458:16:1"
             },
             "returnParameters": {
-              "id": 195,
+              "id": 186,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "482:0:1"
             },
-            "scope": 202,
+            "scope": 193,
             "src": "438:82:1",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 203,
+        "scope": 194,
         "src": "60:463:1",
         "usedErrors": []
       }
@@ -558,12 +558,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xb0427Cfc8837C10E35872735Cf50570c750821FB",
-      "transactionHash": "0xeaa1213daaa0192aacd6d0953128d50df4591d795ed4ca9416027c74e8d943fb"
+      "address": "0x33Fc78cd14EDa1306F41C87524B3dd2c66732329",
+      "transactionHash": "0xf5612ea0ed49ecc4f112c2a757ea2eb3ec0c076534bd482ee43fd6879af2da2f"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-04-22T21:10:00.021Z",
+  "updatedAt": "2024-04-25T20:37:07.848Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

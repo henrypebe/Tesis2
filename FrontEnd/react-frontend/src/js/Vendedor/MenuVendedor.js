@@ -12,10 +12,11 @@ import EditarProducto from './EditarProducto';
 import DetalleSeguimientoVendedor from './DetalleSeguimientoVendedor';
 import ReclamoVendedor from './ReclamoVendedor';
 import EstadisticaVendedor from './EstadisticaVendedor';
-import BilleteraVendedor from './BilleteraVendedor';
-import DetalleBilletera from './DetalleBilletera';
+// import BilleteraVendedor from './BilleteraVendedor';
+// import DetalleBilletera from './DetalleBilletera';
 import { useParams } from 'react-router-dom';
 import HistorialProducto from './HistorialProducto';
+import GestionVendedor from './GestionVendedor';
 
 export default function MenuVendedor() {
     const [mostrarInicio, setMostrarInicio] = useState(true);
@@ -32,6 +33,7 @@ export default function MenuVendedor() {
     const [opcionEditarProducto, setOpcionEditarProducto] = useState(0);
     const [mostrarDetalleSeguimiento, setMostrarnDetalleSeguimiento] = useState(false);
     const [mostrarDetalleBilletera, setMostrarnDetalleBilletera] = useState(false);
+    const [mostrarGestionVendedor, setMostrarGestionVendedor] = useState(false);
 
     const { idUsuario } = useParams();
 
@@ -133,12 +135,13 @@ export default function MenuVendedor() {
             setMostrarEditarProducto={setMostrarEditarProducto} mostrarDetalleSeguimiento={mostrarDetalleSeguimiento}
             setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento} mostrarDetalleBilletera={mostrarDetalleBilletera}
             setMostrarnDetalleBilletera={setMostrarnDetalleBilletera} historialProducto={historialProducto} setHistoriaProducto={setHistoriaProducto}
+            mostrarGestionVendedor={mostrarGestionVendedor} setMostrarGestionVendedor={setMostrarGestionVendedor}
             />
 
             {mostrarInicio && <InicioVendedor setMostrarInicio={setMostrarInicio} setMostrarEstadisticaVendedor={setMostrarEstadisticaVendedor}
             setMostrarVentas={setMostrarVentas} setMostrarMisProductos={setMostrarMisProductos}
             setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor} setMostrarBilletera={setMostrarBilletera} setMostrarReclamo={setMostrarReclamo}
-            informacionTienda={informacionTienda}/>}
+            informacionTienda={informacionTienda} setMostrarGestionVendedor={setMostrarGestionVendedor}/>}
 
             {mostrarVentas && <Ventas HandleChangeVentaSeleccionado={HandleChangeVentaSeleccionado} informacionTienda={informacionTienda}/>}
 
@@ -168,11 +171,13 @@ export default function MenuVendedor() {
 
             {mostrarEstadisticaVendedor && <EstadisticaVendedor informacionTienda={informacionTienda}/>}
 
-            {mostrarBilletera && <BilleteraVendedor setMostrarBilletera={setMostrarBilletera} setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}
+            {/* {mostrarBilletera && <BilleteraVendedor setMostrarBilletera={setMostrarBilletera} setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}
             idUsuario={idUsuario}/>}
 
             {mostrarDetalleBilletera && <DetalleBilletera setMostrarBilletera={setMostrarBilletera} setMostrarnDetalleBilletera={setMostrarnDetalleBilletera}
-            idUsuario={idUsuario}/>}
+            idUsuario={idUsuario}/>} */}
+
+            {mostrarGestionVendedor && <GestionVendedor informacionTienda={informacionTienda}/>}
         </Box>
     </Box>
   )

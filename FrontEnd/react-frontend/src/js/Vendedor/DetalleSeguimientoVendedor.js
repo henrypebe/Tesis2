@@ -126,8 +126,8 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
             padding: "20px",
             width: "85.3%",
             marginTop: "-1.9px",
-            minHeight: "86vh",
-            maxHeight: "86vh",
+            minHeight: "88vh",
+            maxHeight: "88vh",
             }}
         >
             <Box
@@ -174,7 +174,7 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
                 marginBottom: "15px",
                 }}
             />
-            <Box sx={{border: "2px solid black", height: SeguimientoSeleccionado.finalizarCliente?"91%":"74%", overflowY: "scroll", display:"flex", flexDirection:"column"}} 
+            <Box sx={{border: "2px solid black", height: SeguimientoSeleccionado.finalizarCliente?"91%":"84%", overflowY: "scroll", display:"flex", flexDirection:"column"}} 
                 ref={scrollContainerRef} onScroll={handleScroll}>
                 {ListaMensaje && ListaMensaje.map((mensaje) => (
                     <Box

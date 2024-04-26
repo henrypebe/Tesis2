@@ -15,6 +15,8 @@ import MenuAdministrador from "./js/Administrador/MenuAdministrador";
 import { useState } from "react";
 import RolVendedorDeter from "./js/Login/RolVendedorDeter";
 import SeleccionTienda from "./js/Login/SeleccionTienda";
+import BusquedaTienda from "./js/Login/BusquedaTienda";
+import InformeVendedorAsist from "./js/Login/InformeVendedorAsist";
 
 function App() {
   const [isLoggedInAdministrador] = useState(() => {
@@ -55,6 +57,9 @@ function App() {
         <Route path="/Rol/:idUsuario/:Existente" element={<RolDeterminar onLoginComprador={handleLoginComprador}/>} />
         <Route path="/SeleccionTienda/:idUsuario" element={<SeleccionTienda onLoginVendedor={handleLoginVendedor}/>} />
         <Route path="/RolVendedor/:idUsuario" element={<RolVendedorDeter onLoginVendedor={handleLoginVendedor}/>} />
+        {/* <Route path="/RolVendedor/:idUsuario" element={<RolVendedorDeter onLoginVendedor={handleLoginVendedor}/>} /> */}
+        <Route path="/BusquedaTienda/:idUsuario" element={<BusquedaTienda />} />
+        <Route path="/InformePublicacion" element={<InformeVendedorAsist />} />
         <Route path="/TiendaInformacion/:idUsuario" element={<TiendaInformacion onLoginVendedor={handleLoginVendedor}/>} />
         <Route path="/RecuperarContrasenhaPrimer" element={<RecuperarContrasenha />} />
         <Route path="/RecuperarContrasenhaSegundo" element={<EstablecerContrasenha />} />

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 
 export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaVendedor, setMostrarVentas, setMostrarMisProductos,
-  setMostrarSeguimientoVendedor, setMostrarBilletera, setMostrarReclamo, informacionTienda}) {
+  setMostrarSeguimientoVendedor, setMostrarBilletera, setMostrarReclamo, informacionTienda, setMostrarGestionVendedor}) {
   
   const handleClickEstadistica = () =>{
     setMostrarInicio(false);
@@ -25,9 +25,14 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
     setMostrarSeguimientoVendedor(true);
   }
 
-  const handleClickBilletera = () =>{
+  // const handleClickBilletera = () =>{
+  //   setMostrarInicio(false);
+  //   setMostrarBilletera(true);
+  // }
+
+  const handleClickGestionVendedor = () =>{
     setMostrarInicio(false);
-    setMostrarBilletera(true);
+    setMostrarGestionVendedor(true);
   }
 
   const handleClickReclamo = () =>{
@@ -188,12 +193,12 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
         
         <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50BAFF", border:"1px solid #7B7B7B", width:"715px", marginRight:"20px",
         '&:hover': {backgroundColor:"#50BAFF", border:"1px solid #7B7B7B"}}}
-        onClick={handleClickBilletera}
+        onClick={handleClickGestionVendedor}
         >
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
-            <img src='https://cdn-icons-png.flaticon.com/512/118/118111.png' alt=''
+            <img src='https://cdn-icons-png.freepik.com/512/327/327628.png' alt=''
               style={{marginRight:"10px", color:"black", height:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>¿Billetera incorporada?</Typography>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"80%"}}>Vendedores esperando aprobación:</Typography>
             <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
               {Estadistica && Estadistica.cantidadMetodoPago>0? "Si":"No"}
             </Typography>

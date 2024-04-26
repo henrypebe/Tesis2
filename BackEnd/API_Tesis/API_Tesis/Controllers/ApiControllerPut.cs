@@ -1,6 +1,8 @@
 ﻿using API_Tesis.BD;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -778,6 +780,48 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpPut]
+        [Route("/AsignarTiendaVendedorAsistente")]
+        public async Task<IActionResult> AsignarTiendaVendedorAsistente(int idUsuario, int idTienda)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string selectQuery = "SELECT COUNT(*) FROM Tienda WHERE IdTienda = @idTienda";
+                    using (MySqlCommand selectCommand = new MySqlCommand(selectQuery, connection))
+                    {
+                        selectCommand.Parameters.AddWithValue("@idTienda", idTienda);
+                        int count = Convert.ToInt32(await selectCommand.ExecuteScalarAsync());
+
+                        if (count == 0)
+                        {
+                            return BadRequest("No se encontró una tienda con ese ID");
+                        }
+                    }
+
+                    string updateQuery = "UPDATE Vendedor SET TiendaID = @TiendaID, Estado = @Estado WHERE usuarioId = @usuarioId";
+                    using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@TiendaID", idTienda);
+                        command.Parameters.AddWithValue("@usuarioId", idUsuario);
+                        command.Parameters.AddWithValue("@Estado", 2);
+
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
         [Route("/EditarRolVendedorUsuario")]
         public async Task<IActionResult> EditarVendedorUsuario(int idUsuario, bool esAsistenteVendedor)
         {
@@ -788,11 +832,13 @@ namespace API_Tesis.Controllers
                 {
                     await connection.OpenAsync();
 
-                    string updateQuery = "UPDATE Vendedor SET esAdministrador = @esAdministrador WHERE usuarioId = @usuarioId AND Estado = 1";
+                    string updateQuery = "UPDATE Vendedor SET esAdministrador = @esAdministrador, Estado = @Estado WHERE usuarioId = @usuarioId";
                     using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
                     {
                         command.Parameters.AddWithValue("@esAdministrador", !esAsistenteVendedor);
                         command.Parameters.AddWithValue("@usuarioId", idUsuario);
+                        if(esAsistenteVendedor) command.Parameters.AddWithValue("@Estado", 2);
+                        else command.Parameters.AddWithValue("@Estado", 1);
 
                         await command.ExecuteNonQueryAsync();
                     }
@@ -874,6 +920,99 @@ namespace API_Tesis.Controllers
                         command.Parameters.AddWithValue("@IdProducto", idProducto);
 
                         await command.ExecuteNonQueryAsync();
+                    }
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/AprobaciónVendedorAsistente")]
+        public async Task<IActionResult> AprobaciónVendedorAsistente(int idUsuario, int Estado)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE Vendedor SET Estado = @Estado WHERE usuarioId = @usuarioId";
+                    using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@Estado", Estado);
+                        command.Parameters.AddWithValue("@usuarioId", idUsuario);
+
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    string correoDestino = "";
+                    string query = "SELECT Correo FROM Usuario WHERE IdUsuario = @usuarioId";
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@usuarioId", idUsuario);
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                correoDestino = reader.GetString("Correo");
+                            }
+                        }
+                    }
+
+                    string query2 = "SELECT Correo, Contrasenha FROM CorreoEmisor WHERE IdCorreoEmisor=1;";
+                    using (MySqlCommand command2 = new MySqlCommand(query2, connection))
+                    {
+                        using (MySqlDataReader reader2 = command2.ExecuteReader())
+                        {
+                            while (reader2.Read())
+                            {
+                                string correoOrigen = reader2.GetString("Correo");
+                                string contraseñaCorreo = reader2.GetString("Contrasenha");
+
+                                DateTime now = DateTime.Now;
+
+                                string formattedDate = now.ToString("dd/MM/yyyy HH:mm");
+                                string asunto = $"Estado de aprobación como vendedor asistente - {formattedDate}";
+                                StringBuilder htmlBody = new StringBuilder();
+                                htmlBody.Append("<h3>A continuación se informa el estado de la aprobación como vendedor Asistente</h3>");
+                                if (Estado == 1)
+                                {
+                                    htmlBody.Append($"<b><p>Aprobado</p></b>");
+                                    htmlBody.Append($"<p>Puede ingresar al login correctamente</p>");
+                                }
+                                else
+                                {
+                                    htmlBody.Append($"<b><p>Rechazado</p></b>");
+                                    htmlBody.Append($"<p>Puede ingresar al login usando otro rol</p>");
+                                }
+
+                                MailMessage message = new MailMessage
+                                {
+                                    From = new MailAddress(correoOrigen, "Notificaciones E-Commerce"),
+                                    Subject = asunto,
+                                    Body = htmlBody.ToString(),
+                                    IsBodyHtml = true
+                                };
+
+                                message.To.Add(correoDestino);
+
+                                SmtpClient clienteSmtp = new SmtpClient("smtp.gmail.com")
+                                {
+                                    Port = 587,
+                                    Credentials = new NetworkCredential(correoOrigen, contraseñaCorreo),
+                                    EnableSsl = true
+                                };
+
+                                await clienteSmtp.SendMailAsync(message);
+                                Console.WriteLine("Correo enviado con la información de los tickets sin tareas.");
+                            }
+                        }
                     }
                     connection.Close();
                     return Ok();
