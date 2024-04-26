@@ -385,7 +385,8 @@ namespace API_Tesis.Controllers
                         imageBytes = memoryStream.ToArray();
                     }
                     connection.Open();
-                    string query = @"UPDATE Tienda SET Nombre = @Nombre, Descripcion = @Descripcion, Direccion = @Direccion, Provincia = @Provincia, Pais = @Pais, Foto=@Foto WHERE IdTienda = @IdTienda AND Estado = 1";
+                    string query = @"UPDATE Tienda SET Nombre = @Nombre, Descripcion = @Descripcion, Direccion = @Direccion, Provincia = @Provincia, Pais = @Pais, Foto = @Foto, Estado = @Estado
+                    WHERE IdTienda = @IdTienda AND Estado <> 4";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Nombre", nombre);
                     command.Parameters.AddWithValue("@Descripcion", descripcion);
@@ -393,7 +394,7 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@Provincia", Provincia);
                     command.Parameters.AddWithValue("@Pais", pais);
                     command.Parameters.AddWithValue("@IdTienda", idTienda);
-                    command.Parameters.AddWithValue("@Estado", 1);
+                    command.Parameters.AddWithValue("@Estado", 2);
                     command.Parameters.AddWithValue("@Foto", imageBytes);
                     int rowsAffected = await command.ExecuteNonQueryAsync();
 
@@ -540,7 +541,7 @@ namespace API_Tesis.Controllers
                     string updateQuery = "UPDATE Tienda SET Estado = @Estado " +
                         "WHERE UsuarioID = @idUsuario";
                     MySqlCommand command = new MySqlCommand(updateQuery, connection);
-                    command.Parameters.AddWithValue("@Estado", 1);
+                    command.Parameters.AddWithValue("@Estado", 2);
                     command.Parameters.AddWithValue("@idUsuario", idUsuario);
 
                     await command.ExecuteNonQueryAsync();
@@ -682,7 +683,7 @@ namespace API_Tesis.Controllers
                     if (esAdministrador)
                     {
                         await connection.OpenAsync();
-                        updateQuery = "UPDATE Tienda SET Estado = 0 WHERE UsuarioID = @IdUsuario";
+                        updateQuery = "UPDATE Tienda SET Estado = 4 WHERE UsuarioID = @IdUsuario";
                         command = new MySqlCommand(updateQuery, connection);
                         command.Parameters.AddWithValue("@IdUsuario", idUsuario);
                         await command.ExecuteNonQueryAsync();
@@ -1013,6 +1014,36 @@ namespace API_Tesis.Controllers
                                 Console.WriteLine("Correo enviado con la información de los tickets sin tareas.");
                             }
                         }
+                    }
+                    connection.Close();
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al editar el usuario: {ex.Message}");
+            }
+        }
+        [HttpPut]
+        [Route("/AprobaciónTienda")]
+        public async Task<IActionResult> AprobaciónTienda(int idTienda, int Estado, string MotivoRechazo)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string updateQuery = "UPDATE Tienda SET Estado = @Estado, MotivoRechazo = @MotivoRechazo WHERE IdTienda = @IdTienda";
+                    using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@Estado", Estado);
+                        command.Parameters.AddWithValue("@IdTienda", idTienda);
+                        if(MotivoRechazo != "?") command.Parameters.AddWithValue("@MotivoRechazo", MotivoRechazo);
+                        else command.Parameters.AddWithValue("@MotivoRechazo", "");
+
+                        await command.ExecuteNonQueryAsync();
                     }
                     connection.Close();
                     return Ok();

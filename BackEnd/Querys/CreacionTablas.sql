@@ -57,9 +57,10 @@ CREATE TABLE Tienda (
     Provincia Text,
     Pais text,
     Foto LONGBLOB,
+    MotivoRechazo TEXT,
     UsuarioID INT NOT NULL,
     FOREIGN KEY (UsuarioID) REFERENCES Usuario(IdUsuario),
-    Estado boolean
+    Estado INT
 );
 
 CREATE TABLE Producto (
@@ -227,11 +228,11 @@ SELECT * FROM Chat;
 SELECT * FROM MetodoPago;
 SELECT * FROM Usuario WHERE Estado = 1;
 
-ALTER TABLE Vendedor MODIFY COLUMN Estado INT;
+ALTER TABLE Tienda MODIFY COLUMN Estado INT;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
-ALTER TABLE Producto ADD MotivoRechazo TEXT;
+ALTER TABLE Tienda ADD MotivoRechazo TEXT;
 ALTER TABLE Producto ADD TiempoEnvio TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
@@ -241,6 +242,8 @@ ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 
-SELECT COUNT(DISTINCT m.IdMetodoPago) FROM MetodoPago m
-INNER JOIN Tienda t ON t.UsuarioID = m.UsuarioID
-WHERE t.UsuarioID = 1;
+SELECT COUNT(DISTINCT p.IdProducto) AS CantidadProductos
+FROM Tienda t
+INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+INNER JOIN Producto p ON p.TiendaID = t.IdTienda
+WHERE t.Estado = 1 AND t.IdTienda = 1;

@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Pagination, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react';
 import CardGestionAprobacion from './CardGestionAprobacion';
 
@@ -39,19 +39,33 @@ export default function GestionAprobacion({handleChangeProductoSeleccionado}) {
       return () => clearInterval(interval);
   }, []);
 
+  const [currentPage, setCurrentPage] = useState(0);
+  const rowsPerPage = 12;
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage - 1);
+  };
+
   return (
     <Box sx={{padding:"20px", width:"80.37%", marginTop:"-1.9px", height:"88vh"}}>
-        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px"}}>Gestión de aprobaciones</Typography>
+        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px"}}>Gestión de aprobación de productos</Typography>
         
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
         {productosList && productosList.length > 0?
         (
-          productosList.map(producto => (
-            <CardGestionAprobacion 
-            producto={producto} handleChangeProductoSeleccionado={handleChangeProductoSeleccionado}
-            />
-          ))
+          <>
+            <Box sx={{height:"93%"}}>
+              {productosList.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(producto => (
+              <CardGestionAprobacion 
+                producto={producto} handleChangeProductoSeleccionado={handleChangeProductoSeleccionado}
+              />
+              ))}
+            </Box>
+            
+            <Box sx={{ display:"flex", justifyContent:"center"}}>
+              <Pagination count={Math.ceil(productosList.length / rowsPerPage)} page={currentPage + 1} onChange={handleChangePage}/>
+            </Box>
+          </>
         ):
         (
           <Box>
@@ -60,6 +74,7 @@ export default function GestionAprobacion({handleChangeProductoSeleccionado}) {
             </Typography>
           </Box>
         )}
+
     </Box>
   )
 }

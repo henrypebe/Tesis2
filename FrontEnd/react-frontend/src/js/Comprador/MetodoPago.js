@@ -270,17 +270,19 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                     // throw new Error("Error al obtener la lista de Métodos de pago");
                 }
             }else{
-                await fetch(
-                    `https://localhost:7240/EnviarCorreo?idUsuario=${idUsuario}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-                handleOpen(idPedido, fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio);
-                toast.error("Se detectó un movimiento fraudulento");
+                if(esFraude === "Fraude"){
+                    await fetch(
+                        `https://localhost:7240/EnviarCorreo?idUsuario=${idUsuario}`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    );
+                    handleOpen(idPedido, fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio);
+                    toast.error("Se detectó un movimiento fraudulento");
+                }
             }
         }else{
             toast.error('Debe de tener una dirección de entrega y un correo aleatorio para crear un pedido.');

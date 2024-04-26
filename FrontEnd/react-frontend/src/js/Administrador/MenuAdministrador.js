@@ -8,6 +8,8 @@ import DetallePedidoAdministrador from './DetallePedidoAdministrador';
 import GestionAprobacion from './GestionAprobacion';
 import DetalleProductoAdministrador from './DetalleProductoAdministrador';
 import { useParams } from 'react-router-dom';
+import GestionAprobacionTienda from './GestionAprobacionTienda';
+import DetalleTienda from './DetalleTienda';
 
 export default function MenuAdministrador() {
   const { idUsuario } = useParams();
@@ -15,12 +17,15 @@ export default function MenuAdministrador() {
   const [mostrarInicio, setMostrarInicio] = useState(true);
   const [mostrarEstadistica, setMostrarEstadistica] = useState(false);
   const [mostrarGestionAprobacion, setMostrarGestionAprobacion] = useState(false);
+  const [mostrarGestionAprobacionTienda, setMostrarGestionAprobacionTienda] = useState(false);
+  const [mostrarDetalleTienda, setMostrarDetalleTienda] = useState(false);
 
   const [mostrarPedidoDetalle, setMostrarPedidoDetalle] = useState(false);
   const [mostrarProductoDetalle, setMostrarProductoDetalle] = useState(false);
 
   const [ProductoSeleccionado, setMostrarProductoSeleccionado] = useState(false);
   const [PedidoSeleccionado, setPedidoSeleccionado] = useState(false);
+  const [TiendaSeleccionado, setTiendaSeleccionado] = useState(false);
 
   const handleChangeProductoSeleccionado = (producto) =>{
     setMostrarProductoSeleccionado(producto);
@@ -34,16 +39,24 @@ export default function MenuAdministrador() {
     setMostrarPedidoDetalle(true);
   }
 
+  const handleChangeTiendaSeleccionado = (tienda) =>{
+    setTiendaSeleccionado(tienda);
+    setMostrarGestionAprobacionTienda(false);
+    setMostrarDetalleTienda(true);
+  }
+
     return (
     <Box sx={{display:"flex", flexDirection:"column"}}>
         <BarraSuperior opcionAdministrador={opcionAdministrador} idUsuario={idUsuario}/>
 
         <Box sx={{display:"flex", flexDirection:"row"}}>
             <BarraLateralAdministrador mostrarInicio={mostrarInicio} setMostrarInicio={setMostrarInicio} mostrarEstadistica={mostrarEstadistica}
-            setMostrarEstadistica={setMostrarEstadistica} mostrarGestionAprobacion={mostrarGestionAprobacion}
-            setMostrarGestionAprobacion={setMostrarGestionAprobacion} mostrarPedidoDetalle={mostrarPedidoDetalle}
-            setMostrarPedidoDetalle={setMostrarPedidoDetalle} mostrarProductoDetalle={mostrarProductoDetalle}
-            setMostrarProductoDetalle={setMostrarProductoDetalle}
+              setMostrarEstadistica={setMostrarEstadistica} mostrarGestionAprobacion={mostrarGestionAprobacion}
+              setMostrarGestionAprobacion={setMostrarGestionAprobacion} mostrarPedidoDetalle={mostrarPedidoDetalle}
+              setMostrarPedidoDetalle={setMostrarPedidoDetalle} mostrarProductoDetalle={mostrarProductoDetalle}
+              setMostrarProductoDetalle={setMostrarProductoDetalle} mostrarGestionAprobacionTienda={mostrarGestionAprobacionTienda}
+              setMostrarGestionAprobacionTienda={setMostrarGestionAprobacionTienda} mostrarDetalleTienda={mostrarDetalleTienda}
+              setMostrarDetalleTienda={setMostrarDetalleTienda}
             />
             {mostrarInicio && <InicioAdministrador setMostrarInicio={setMostrarInicio} setMostrarEstadistica={setMostrarEstadistica}
             setMostrarGestionAprobacion={setMostrarGestionAprobacion} />}
@@ -58,6 +71,11 @@ export default function MenuAdministrador() {
 
             {mostrarProductoDetalle && <DetalleProductoAdministrador setMostrarGestionAprobacion={setMostrarGestionAprobacion}
             setMostrarProductoDetalle={setMostrarProductoDetalle} ProductoSeleccionado={ProductoSeleccionado}/>}
+
+            {mostrarGestionAprobacionTienda && <GestionAprobacionTienda handleChangeTiendaSeleccionado={handleChangeTiendaSeleccionado}/>}
+
+            {mostrarDetalleTienda && <DetalleTienda setMostrarGestionAprobacionTienda={setMostrarGestionAprobacionTienda}
+            setMostrarDetalleTienda={setMostrarDetalleTienda} TiendaSeleccionado={TiendaSeleccionado}/>}
         </Box>
     </Box>
   )

@@ -56,7 +56,7 @@ export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) 
             width: "100%",
           }}
         >
-          Pedido ID: {reclamo.idPedido}
+          Pedido ID: {reclamo.idPedido.toFixed(0).padStart(2, '0')}
         </Typography>
         <Typography
           sx={{

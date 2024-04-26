@@ -60,7 +60,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
       if (response.ok) {
         const usuario = await response.json();
-        console.log(usuario);
+        // console.log(usuario);
         setInformacionUsuario(usuario);
       } else if (response.status === 404) {
         throw new Error("Usuario no encontrado");
@@ -87,7 +87,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
       if (response.ok) {
         const tienda = await response.json();
-        // console.log(tienda);
+        console.log(tienda);
         setInformacionTienda(tienda);
         setTimeout(() => {
           setOpenModaQuinto(true);
@@ -137,6 +137,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       setPaisTiendaCambiado(informacionTienda.pais ?? "");
       setPreviewImageTienda(informacionTienda.foto ?? "");
       setIsImageUploadedTienda(informacionTienda.foto);
+      setEstadoTienda(informacionTienda.estado ?? 0);
+      setMotivoRechazo(informacionTienda.motivoRechazo ?? "");
     }
   }, [informacionUsuario, informacionTienda]);
 
@@ -152,6 +154,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const [DireccionTiendaCambiado, setDireccionTiendaCambiado] = useState("");
   const [ProvinciaTiendaCambiado, setProvinciaTiendaCambiado] = useState("");
   const [PaisTiendaCambiado, setPaisTiendaCambiado] = useState("");
+  const [EstadoTienda, setEstadoTienda] = useState("");
+  const [MotivoRechazo, setMotivoRechazo] = useState("");
   
   const [ValorBloqueoContrasenha, setValorBloqueoContrasenha] = useState(true);
 
@@ -227,7 +231,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     boxShadow: 24,
     padding: "10px",
     borderRadius: "8px",
-    height: "79%",
+    height: EstadoTienda === 3?"84%":"79%",
   };
 
   const handleChangeCerrarSesion = () => {
@@ -441,7 +445,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       );
 
       if (response.ok) {
-        toast.success("Se editó correctamente la información de la tienda", { autoClose: 2000 });
+        toast.success("Se solicitó la publicación de la tienda", { autoClose: 2000 });
         handleCloseModalQuinto();
       } else if (response.status === 404) {
         throw new Error("Usuario no encontrado");
@@ -1171,7 +1175,9 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                   width: "100%",
                 }}
               >
-                Editar tienda
+                Tienda - <b style={{color:EstadoTienda === 3? "red":EstadoTienda === 2? "#86882D": EstadoTienda === 1?"#286C23":""}}>
+                  {EstadoTienda===3? "Rechazado":EstadoTienda === 2? "Pendiente": EstadoTienda === 1? "Aprobado":""}
+                </b>
               </Typography>
 
               <IconButton
@@ -1188,6 +1194,28 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                 <CancelIcon sx={{ fontSize: "50px" }} />
               </IconButton>
             </Box>
+
+            {EstadoTienda === 3 &&
+            (
+              <Box sx={{display:"flex", flexDirection:"row"}}>
+                <Typography
+                  sx={{
+                    color: "black",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                    marginRight:"2px"
+                  }}
+                >Motivo de rechazo:</Typography>
+                <Typography
+                  sx={{
+                    color: "red",
+                    fontWeight: "bold",
+                    fontSize: "18px"
+                  }}
+                >{MotivoRechazo}</Typography>
+              </Box>
+            )}
+
             <hr
               style={{
                 margin: "10px 0",
@@ -1426,7 +1454,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                height: "35%",
+                height: EstadoTienda === 3?"32.5%":"35%",
                 marginTop: "15px",
               }}
             >

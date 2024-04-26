@@ -73,6 +73,13 @@ def preprocesar_datos_2(df):
     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
     df = df.dropna(subset=['Fecha_Hora'])
     
+    df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
+    df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
+    df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
+    df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
+    df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
+    df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
+    
     return df
 
 def cargar_pipeline_y_predecir(datos_directos):
@@ -83,13 +90,13 @@ def cargar_pipeline_y_predecir(datos_directos):
     df_nuevos_datos = preprocesar_datos_2(df_nuevos_datos)
     df_nuevos_datos.drop(['Nombre', 'Fecha_Hora'], axis=1, inplace=True)
     
-    # predicciones = Entrenamiento(df_nuevos_datos)
+    # # predicciones = Entrenamiento(df_nuevos_datos)
     with open(pipeline_file, 'rb') as file:
         pipeline = pickle.load(file)
     
     predicciones = pipeline.predict(df_nuevos_datos)
     
-    valor_prediccion = 0 if predicciones[0] else 1
+    valor_prediccion = 1 if predicciones[0] else 0
     
     reentrenar_y_guardar_pipeline(df_nuevos_datos, pipeline_file, pipeline, valor_prediccion)
     
@@ -97,6 +104,7 @@ def cargar_pipeline_y_predecir(datos_directos):
         return "Fraude"
     else:
         return "No Fraude"
+    # return "OK"
 
 def reentrenar_y_guardar_pipeline(nuevos_datos, pipeline_file, pipeline, valor_prediccion):
     X_nuevos = nuevos_datos

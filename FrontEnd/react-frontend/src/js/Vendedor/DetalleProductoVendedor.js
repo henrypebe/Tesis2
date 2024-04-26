@@ -6,8 +6,10 @@ import CancelIcon from "@mui/icons-material/Cancel";
 export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto, productoInformacion, handleChangeHistoria,
     OpcionSeleccionado}) {
 
+console.log(productoInformacion);
+
     const [Open, setOpen] = React.useState(false);
-    const partes = productoInformacion.cantidadGarantia.split("_");
+    const partes = productoInformacion?productoInformacion.cantidadGarantia.split("_"):"";
     const numero = partes[0];
     const texto = partes[1];
 
@@ -19,8 +21,8 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
     const handleClose = () => {setOpen(false);};
 
     useEffect(() => {
-        if(productoInformacion.estadoAprobacion === "Rechazado" && OpcionSeleccionado !== 1) setOpen(true);
-    }, [productoInformacion.estadoAprobacion, OpcionSeleccionado]);
+        if(productoInformacion && productoInformacion.estadoAprobacion === "Rechazado" && OpcionSeleccionado !== 1) setOpen(true);
+    }, [productoInformacion, OpcionSeleccionado]);
 
     const style = {
         position: "absolute",
@@ -69,7 +71,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
             </Box>
 
             <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-                <img src={productoInformacion.imagen} alt="Descripción de la imagen" 
+                <img src={productoInformacion && productoInformacion.imagen} alt="Descripción de la imagen" 
                     style={{height:"170px", maxWidth:"200px", minWidth:"200px"}}
                 />
                 <Divider orientation="vertical" flexItem sx={{ backgroundColor: "black", height: "auto", marginRight:"20px", marginLeft:"20px", border:"2px solid black"}} />
@@ -82,7 +84,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        {productoInformacion.nombre}
+                        {productoInformacion && productoInformacion.nombre}
                     </Typography>
                     <Typography
                         sx={{
@@ -92,7 +94,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        Fecha de creación: {new Date(productoInformacion.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {new Date(productoInformacion.fechaCreacion).toLocaleTimeString()}
+                        Fecha de creación: {productoInformacion && new Date(productoInformacion.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {productoInformacion && new Date(productoInformacion.fechaCreacion).toLocaleTimeString()}
                     </Typography>
                     <Typography
                         sx={{
@@ -102,7 +104,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        Cantidad de ventas: {productoInformacion.cantidadVentas} {productoInformacion.cantidadVentas>1?"ventas":"venta"}
+                        Cantidad de ventas: {productoInformacion && productoInformacion.cantidadVentas} {productoInformacion && productoInformacion.cantidadVentas>1?"ventas":"venta"}
                     </Typography>
                     <Typography
                         sx={{
@@ -122,7 +124,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        Tipo de producto: {productoInformacion.tipoProducto}
+                        Tipo de producto: {productoInformacion && productoInformacion.tipoProducto}
                     </Typography>
                 </Box>
             </Box>
@@ -139,7 +141,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                     marginBottom:"5px"
                 }}
             >
-                Cantidad de Stock disponible: {productoInformacion.stock} unidades
+                Cantidad de Stock disponible: {productoInformacion && productoInformacion.stock} unidades
             </Typography>
             <Typography
                 sx={{
@@ -149,7 +151,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                     width: "100%",
                 }}
             >
-                Precio del producto: S/. {productoInformacion.precio.toFixed(2)}
+                Precio del producto: S/. {productoInformacion && productoInformacion.precio.toFixed(2)}
             </Typography>
         </Box>
 
@@ -157,7 +159,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
             height:"31%"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"90%"}}>Descripción del producto:</Typography>
             <Typography sx={{height:"50%", marginTop:"10px", fontSize:"20px"}}>
-                {productoInformacion.descripcion}
+                {productoInformacion && productoInformacion.descripcion}
             </Typography>
         </Box>
 
@@ -235,7 +237,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             borderRadius:"6px"
                         }}
                     >
-                        {productoInformacion.motivoRechazo}
+                        {productoInformacion && productoInformacion.motivoRechazo}
                     </Typography>
                 </Box>
             </Box>

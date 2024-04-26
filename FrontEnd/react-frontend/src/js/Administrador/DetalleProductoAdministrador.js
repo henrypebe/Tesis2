@@ -286,7 +286,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                     }}
                     onClick={handleCambioDatos}
                 >
-                    Guardar cambios
+                    Aceptar
                 </Button>
             </Box>
         </Modal>

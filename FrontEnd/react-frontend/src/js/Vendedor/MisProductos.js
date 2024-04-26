@@ -172,10 +172,10 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                         const isFirstElement = index === 0;
                         return isFirstElement ? 
                         (
-                            <ProductoMayorDem productoPrimero={producto}
-                            handleChangeEditarProducto={handleChangeEditarProducto} handleOpenModal={handleOpenModal}
-                            setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
-                            setOpcionSeleccionado={setOpcionSeleccionado}
+                            <ProductoMayorDem productoPrimero={producto} handleOpenModal={handleOpenModal}
+                              setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
+                              setOpcionSeleccionado={setOpcionSeleccionado} setProductoInformacion={setProductoInformacion}
+                              setOpcionEditarProducto={setOpcionEditarProducto} setMostrarEditarProducto={setMostrarEditarProducto}
                             />
                         )
                         : (

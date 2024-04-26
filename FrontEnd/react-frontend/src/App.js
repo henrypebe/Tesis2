@@ -17,6 +17,7 @@ import RolVendedorDeter from "./js/Login/RolVendedorDeter";
 import SeleccionTienda from "./js/Login/SeleccionTienda";
 import BusquedaTienda from "./js/Login/BusquedaTienda";
 import InformeVendedorAsist from "./js/Login/InformeVendedorAsist";
+import PresentacionSistema from "./js/Presentacion/PresentacionSistema";
 
 function App() {
   const [isLoggedInAdministrador] = useState(() => {
@@ -49,7 +50,9 @@ function App() {
       <ToastContainer />
       <Routes>
         {/* Pantallas de Login */}
-        <Route path="/" element={<Navigate to="/Login" />} />
+        {/* <Route path="/" element={<Navigate to="/Login" />} /> */}
+        <Route path="/" element={<Navigate to="/Inicio" />} />
+        <Route path="/Inicio" element={<PresentacionSistema />} />
         <Route path="/Login" element={<LoginPage />} />
         <Route path="/CreateUser" element={<CreateUser />} />
         <Route path="/TokenPantalla/:idUsuario" element={<TokenPantalla onLoginAdministrador={handleLoginAdministrador} onLoginComprador={handleLoginComprador}

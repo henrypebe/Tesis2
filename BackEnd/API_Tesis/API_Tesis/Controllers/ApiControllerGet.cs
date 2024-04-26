@@ -281,7 +281,8 @@ namespace API_Tesis.Controllers
                 string query = @"SELECT p.*, t.Nombre AS NombreTienda, t.Foto AS FotoTienda 
                         FROM Producto p 
                         INNER JOIN Tienda t ON p.TiendaID = t.IdTienda 
-                        WHERE p.Estado = 1 AND p.EstadoAprobacion <> 'Pendiente' AND p.EstadoAprobacion <> 'Rechazado' AND Stock >= 1";
+                        WHERE p.Estado = 1 AND p.EstadoAprobacion <> 'Pendiente' AND p.EstadoAprobacion <> 'Rechazado' AND Stock >= 1
+                        AND t.Estado = 1";
 
                 if (busqueda != "nada")
                 {
@@ -722,7 +723,8 @@ namespace API_Tesis.Controllers
                         INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
-                        WHERE c.TiendaID = @TiendaID AND pp.TieneSeguimiento=true";
+                        WHERE c.TiendaID = @TiendaID AND pp.TieneSeguimiento=true
+                        ORDER BY c.FinalizarCliente ASC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -1061,6 +1063,152 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
+        [Route("/ListarTiendaGestion")]
+        public async Task<IActionResult> ListarTiendaGestion()
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                List<Tienda> Tiendas = new List<Tienda>();
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT t.IdTienda, t.Nombre, t.Descripcion, t.Direccion, t.Provincia, t.Pais, t.Foto, u.Nombre AS NombreDueño, u.Apellido AS ApellidoDueño
+                        FROM Tienda t
+                        INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        WHERE t.Estado = 2";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (reader.Read())
+                            {
+                                int IdTienda = reader.GetInt32("IdTienda");
+                                Tienda tienda = Tiendas.FirstOrDefault(p => p.IdTienda == IdTienda);
+                                if (tienda == null)
+                                {
+                                    tienda = new Tienda
+                                    {
+                                        IdTienda = IdTienda,
+                                        Nombre = reader.GetString("Nombre"),
+                                        Descripcion = reader.GetString("Descripcion"),
+                                        Foto = ConvertirBytesAImagen(reader["Foto"] as byte[]),
+                                        Direccion = reader.GetString("Direccion"),
+                                        Provincia = reader.GetString("Provincia"),
+                                        NombreDueño = reader.GetString("NombreDueño"),
+                                        ApellidoDueño = reader.GetString("ApellidoDueño"),
+                                        Pais = reader.GetString("Pais")
+                                    };
+
+                                    Tiendas.Add(tienda);
+                                }
+                            }
+                            return Ok(Tiendas);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/CantidadProductoXTienda")]
+        public async Task<IActionResult> CantidadProductoXTienda(int idTienda)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                       SELECT COUNT(DISTINCT p.IdProducto) AS CantidadProductos
+                        FROM Tienda t
+                        INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        INNER JOIN Producto p ON p.TiendaID = t.IdTienda
+                        WHERE t.Estado = 1 AND t.IdTienda = @IdTienda";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdTienda", idTienda);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            int count = 0;
+                            if (reader.Read())
+                            {
+                                count = reader.GetInt32("CantidadProductos");
+                            }
+                            return Ok(count);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarTiendaGeneral")]
+        public async Task<IActionResult> ListarTiendaGeneral()
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                List<Tienda> Tiendas = new List<Tienda>();
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT t.IdTienda, t.Nombre, t.Descripcion, t.Direccion, t.Provincia, t.Pais, t.Foto, u.Nombre AS NombreDueño, u.Apellido AS ApellidoDueño
+                        FROM Tienda t
+                        INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        WHERE t.Estado = 1";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (reader.Read())
+                            {
+                                int IdTienda = reader.GetInt32("IdTienda");
+                                Tienda tienda = Tiendas.FirstOrDefault(p => p.IdTienda == IdTienda);
+                                if (tienda == null)
+                                {
+                                    tienda = new Tienda
+                                    {
+                                        IdTienda = IdTienda,
+                                        Nombre = reader.GetString("Nombre"),
+                                        Descripcion = reader.GetString("Descripcion"),
+                                        Foto = ConvertirBytesAImagen(reader["Foto"] as byte[]),
+                                        Direccion = reader.GetString("Direccion"),
+                                        Provincia = reader.GetString("Provincia"),
+                                        NombreDueño = reader.GetString("NombreDueño"),
+                                        ApellidoDueño = reader.GetString("ApellidoDueño"),
+                                        Pais = reader.GetString("Pais")
+                                    };
+
+                                    Tiendas.Add(tienda);
+                                }
+                            }
+                            return Ok(Tiendas);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/ListarProductoReclamos")]
         public async Task<IActionResult> ListarProductoReclamos(int idTienda)
         {
@@ -1074,7 +1222,8 @@ namespace API_Tesis.Controllers
 
                     string query = @"
                         SELECT pp.ProductoID, pr.Nombre AS NombreProducto, pr.Foto AS FotoProducto,
-                        u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente, pp.Cantidad AS CantidadProducto, pp.IdPedidoXProducto
+                        u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente, pp.Cantidad AS CantidadProducto, pp.IdPedidoXProducto,
+                        pp.PedidoID
                         FROM PedidoXProducto pp
                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                         INNER JOIN Pedidos p ON p.IdPedido = pp.PedidoID
@@ -1097,6 +1246,7 @@ namespace API_Tesis.Controllers
                                     {
                                         IdPedidoXProducto = IdPedidoXProducto,
                                         ProductoID = reader.GetInt32("ProductoID"),
+                                        PedidoID = reader.GetInt32("PedidoID"),
                                         FotoProducto = ConvertirBytesAImagen(reader["FotoProducto"] as byte[]),
                                         NombreProducto = reader.GetString("NombreProducto"),
                                         NombreCliente = reader.GetString("NombreCliente"),
@@ -2063,7 +2213,7 @@ namespace API_Tesis.Controllers
                 {
                     connection.Open();
 
-                    string query = "SELECT IdTienda, Nombre, Descripcion, Direccion, Provincia, Pais, Foto FROM Tienda WHERE UsuarioID = @IdUsuario AND Estado = 1";
+                    string query = "SELECT IdTienda, Nombre, Descripcion, Direccion, Provincia, Pais, Foto, Estado, MotivoRechazo FROM Tienda WHERE UsuarioID = @IdUsuario AND Estado <> 4";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -2081,6 +2231,8 @@ namespace API_Tesis.Controllers
                                 tienda.Direccion = reader.IsDBNull(reader.GetOrdinal("Direccion")) ? null : reader.GetString("Direccion");
                                 tienda.Provincia = reader.IsDBNull(reader.GetOrdinal("Provincia")) ? null : reader.GetString("Provincia");
                                 tienda.Pais = reader.IsDBNull(reader.GetOrdinal("Pais")) ? null : reader.GetString("Pais");
+                                tienda.Estado = reader.IsDBNull(reader.GetOrdinal("Estado")) ? 0 : reader.GetInt32("Estado");
+                                tienda.MotivoRechazo = reader.IsDBNull(reader.GetOrdinal("MotivoRechazo")) ? "" : reader.GetString("MotivoRechazo");
                                 tienda.UsuarioId = idUsuario;
                                 connection.Close();
                                 return Ok(tienda);

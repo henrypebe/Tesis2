@@ -44,7 +44,11 @@ export default function ProductoComprador({setMostrarDetalleProducto, setMostrar
           throw new Error("Error al obtener la lista de productos");
         }
       };
-      obtenerListaProducto();
+      // obtenerListaProducto();
+      const interval = setInterval(() => {
+        obtenerListaProducto();
+      }, 100);
+      return () => clearInterval(interval);
   }, [Busqueda]);
   
   const [currentPage, setCurrentPage] = useState(0);

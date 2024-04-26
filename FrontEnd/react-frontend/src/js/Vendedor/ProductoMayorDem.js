@@ -4,12 +4,19 @@ import { Box, Divider, IconButton, Typography} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-export default function ProductoMayorDem({productoPrimero, handleChangeEditarProducto, handleOpenModal, setMostrarMisProductos, setMostrarDetalleProducto,
-  setOpcionSeleccionado}) {
+export default function ProductoMayorDem({productoPrimero, handleOpenModal, setMostrarMisProductos, setMostrarDetalleProducto,
+  setOpcionSeleccionado, setProductoInformacion, setOpcionEditarProducto, setMostrarEditarProducto}) {
     const handleChangeDetalleProductoVendedor = () =>{
-        setMostrarMisProductos(false);
-        setMostrarDetalleProducto(true);
-        setOpcionSeleccionado(0);
+      setMostrarMisProductos(false);
+      setMostrarDetalleProducto(true);
+      setOpcionSeleccionado(0);
+      setProductoInformacion(productoPrimero);
+    }
+    const handleChangeEditarProducto = () =>{
+      setMostrarMisProductos(false);
+      setProductoInformacion(productoPrimero);
+      setOpcionEditarProducto(0);
+      setMostrarEditarProducto(true);
     }
     return (
     <Box
@@ -174,7 +181,7 @@ export default function ProductoMayorDem({productoPrimero, handleChangeEditarPro
         >
           <IconButton
             sx={{ marginRight: "10px", height: "50%" }}
-            onClick={() => handleChangeEditarProducto(2)}
+            onClick={() => handleChangeEditarProducto()}
           >
             <EditIcon sx={{ fontSize: "40px" }} />
           </IconButton>

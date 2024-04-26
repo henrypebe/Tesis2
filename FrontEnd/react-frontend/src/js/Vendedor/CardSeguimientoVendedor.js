@@ -41,32 +41,29 @@ export default function CardSeguimientoVendedor({HandleChangeSeguimientoSeleccio
             <Typography
             sx={{
                 color: "black",
-                fontWeight: "bold",
                 fontSize: "24px",
                 width: "100%",
             }}
             >
-            {seguimiento.nombreProducto}
+            <b>Producto:</b> {seguimiento.nombreProducto}
             </Typography>
             <Typography
             sx={{
                 color: "black",
-                fontWeight: "bold",
                 fontSize: "24px",
                 width: "100%",
             }}
             >
-            {seguimiento.nombreCliente} {seguimiento.apellidoCliente}
+            <b>Cliente:</b> {seguimiento.nombreCliente} {seguimiento.apellidoCliente}
             </Typography>
             <Typography
             sx={{
                 color: "black",
-                fontWeight: "bold",
                 fontSize: "24px",
                 width: "100%",
             }}
             >
-            {new Date(seguimiento.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+            <b>Fecha de creación:</b> {new Date(seguimiento.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}
             </Typography>
         </Box>
 

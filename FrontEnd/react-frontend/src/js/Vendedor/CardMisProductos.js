@@ -142,7 +142,7 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
           <IconButton sx={{ marginRight: "10px", height: "50%" }} onClick={handleChangeEditarProducto}>
             <EditIcon sx={{ fontSize: "40px" }} />
           </IconButton>
-          <IconButton sx={{ marginRight: "10px", height: "50%" }} onClick={handleChangeDetalleProductoVendedor}>
+          <IconButton sx={{ marginRight: "10px", height: "50%" }} onClick={()=>{handleChangeDetalleProductoVendedor();}}>
             <VisibilityIcon sx={{ fontSize: "40px" }} />
           </IconButton>
           <IconButton sx={{marginRight:"10px", height:"50%"}} onClick={() => {handleOpenModal(producto);}}>

@@ -19,10 +19,10 @@ import { useParams } from 'react-router-dom';
 import DetalleReclamo from './DetalleReclamo';
 
 export default function MenuComprador() {
-  const [mostrarInicio, setMostrarInicio] = useState(true);
+  const [mostrarInicio, setMostrarInicio] = useState(false);
   const [mostrarPedidos, setMostrarPedidos] = useState(false);
   const [mostrarDetallePedido, setMostrarDetallePedido] = useState(false);
-  const [mostrarProductos, setMostrarProductos] = useState(false);
+  const [mostrarProductos, setMostrarProductos] = useState(true);
   const [mostrarEstadistica, setMostrarEstadistica] = useState(false);
   const [mostrarMetodoPagoAdicionar, setMostrarMetodoPagoAdicionar] = useState(false);
   const [mostrarDetalleProducto, setMostrarDetalleProducto] = useState(false);

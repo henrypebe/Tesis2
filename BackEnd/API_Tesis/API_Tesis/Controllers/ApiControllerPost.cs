@@ -393,7 +393,7 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@Provincia", Provincia);
                     command.Parameters.AddWithValue("@Pais", pais);
                     command.Parameters.AddWithValue("@UsuarioID", idUsuario);
-                    command.Parameters.AddWithValue("@Estado", 1);
+                    command.Parameters.AddWithValue("@Estado", 2);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 
                     string updateQuery = "UPDATE Vendedor SET TiendaID = @TiendaID WHERE usuarioId = @UsuarioID";

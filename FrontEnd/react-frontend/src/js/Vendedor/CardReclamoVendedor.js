@@ -12,7 +12,7 @@ export default function CardReclamoVendedor({reclamo}) {
         border: "2px solid black",
         padding: "10px",
         borderRadius: "10px",
-        width: "80%",
+        width: "90%",
         marginBottom: "10px",
       }}
     >
@@ -43,7 +43,7 @@ export default function CardReclamoVendedor({reclamo}) {
             width: "100%",
           }}
         >
-          {reclamo.nombreProducto}
+          Producto: {reclamo.nombreProducto}
         </Typography>
         <Typography
           sx={{
@@ -53,7 +53,7 @@ export default function CardReclamoVendedor({reclamo}) {
             width: "100%",
           }}
         >
-          {reclamo.nombreCliente} {reclamo.apellidoCliente}
+          Cliente: {reclamo.nombreCliente} {reclamo.apellidoCliente}
         </Typography>
         <Typography
           sx={{
@@ -63,7 +63,7 @@ export default function CardReclamoVendedor({reclamo}) {
             width: "100%",
           }}
         >
-          Cantidad: {reclamo.cantidadProducto}
+          ID del pedido: {reclamo.pedidoID.toFixed(0).padStart(2, '0')}
         </Typography>
       </Box>
 
