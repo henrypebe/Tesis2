@@ -55,6 +55,38 @@ async function getAllTransactions() {
     }
 }
 
+async function getAllProducts() {
+    try {
+        // Obtiene el número total de productos almacenadas en el contrato
+        const totalProducts = await ecommerceContract.methods.transactionProductCount().call();
+        console.log("Número total de productos:", totalProducts);
+
+        // Obtiene todos los detalles de todas las productos
+        const allProducts = [];
+        for (let i = 0; i < totalProducts; i++) {
+            const products = await ecommerceContract.methods.getProductTransaction(i).call();
+            allProducts.push(products);
+        }
+
+        console.log("Detalles de todas las productos:", allProducts);
+    } catch (error) {
+        console.error("Error al obtener las productos:", error);
+    }
+}
+
+async function getProductsByTransaction(transactionId) {
+    try {
+        const result = await ecommerceContract.methods.getProductsByTransaction(transactionId).call();
+        console.log("Matching Product IDs:", result[0]);
+        console.log("Matching Names:", result[1]);
+        console.log("Matching Prices:", result[2]);
+    } catch (error) {
+        console.error('Error fetching products by transaction:', error);
+    }
+}
+
 // createAndVerifyTransaction();
 
-getAllTransactions();
+// getAllTransactions();
+getAllProducts();
+// getProductsByTransaction("0x7777081249eff865e7e8056e409a17886a87cadca370f74e99ddeb48c7e8671a");

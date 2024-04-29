@@ -95,7 +95,7 @@ export default function ProductosPresentacion() {
         <>
             <Box sx={{height:"28%"}}>
                 {ListaTiendaSeleccionado && ListaTiendaSeleccionado.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(tienda => (
-                    <CardTiendaPresentacion tienda={tienda}/>
+                    <CardTiendaPresentacion tienda={tienda} opcion={0}/>
                 ))}
             </Box>
             <Box sx={{ display:"flex", justifyContent:"center"}}>

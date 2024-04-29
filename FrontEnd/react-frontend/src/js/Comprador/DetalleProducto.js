@@ -24,7 +24,7 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
             cantidad: 1,
             imagen: ProductoSeleccionado.imagen,
             stockMaximo: ProductoSeleccionado.stock,
-            idTienda: ProductoSeleccionado.idTienda,
+            tiendaNombre: ProductoSeleccionado.tiendaNombre,
             fechaEnvio: ProductoSeleccionado.fechaEnvio,
             costoEnvio: ProductoSeleccionado.costoEnvio,
             opcionSeparado:0
@@ -73,7 +73,7 @@ export default function DetalleProducto({setMostrarDetalleProducto, setMostrarPr
                 cantidad: 1,
                 imagen: ProductoSeleccionado.imagen,
                 stockMaximo: ProductoSeleccionado.stock,
-                idTienda: ProductoSeleccionado.idTienda,
+                tiendaNombre: ProductoSeleccionado.tiendaNombre,
                 fechaEnvio: ProductoSeleccionado.fechaEnvio,
                 cantidadOferta: ProductoSeleccionado.cantidadOferta,
                 costoEnvio: ProductoSeleccionado.costoEnvio,

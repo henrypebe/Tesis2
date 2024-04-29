@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 
-export default function CardTiendaPresentacion({tienda}) {
+export default function CardTiendaPresentacion({tienda, opcion, setOpcionPantalla, setTiendaSeleccionado}) {
     const [listaTiendaSeleccionado, setListaTiendaSeleccionado] = useState(null);
     useEffect(() => {
         const obtenerListaProducto = async () => {
@@ -32,8 +32,17 @@ export default function CardTiendaPresentacion({tienda}) {
         };
         obtenerListaProducto();
     }, [tienda.idTienda]);
+
+    const handleClick = () =>{
+      if(opcion === 1){
+        setOpcionPantalla(true);
+        setTiendaSeleccionado(tienda.idTienda);
+      }
+    }
+
     return (
     <Button sx={{color:"black", padding:"0px", marginRight:"15px", marginBottom:"10px", '&:hover': {backgroundColor:"white"}}}
+      onClick={()=>{handleClick();}}
     >
         <Box sx={{border:"2px solid black", borderRadius:"5px", width:"240px", padding:"10px"}}>
             <Box sx={{display:"flex", justifyContent:"center"}}>

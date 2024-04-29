@@ -205,7 +205,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         }
     }
 
-    const HandleProcesoPago = async(metodo, fechaResultado, totalDescuento, idPedido) =>{
+    const HandleProcesoPago = async(metodo, fechaResultado, totalDescuento, idPedido, productos) =>{
         if((InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== "") && 
             (InformacionUsuario.correoAleatorio !== null || InformacionUsuario.correoAleatorio !== "")){
             let totalAmount = productos.reduce((total, producto) => {
@@ -241,7 +241,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 );
                 const promises = productos.map(producto => crearPedidoXProducto(producto, idPedido));
                 await Promise.all(promises);
-                createAndVerifyTransaction(fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio);
+                createAndVerifyTransaction(fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio, productos);
                 const formData = new FormData();
                 formData.append('token', metodo.token);
                 formData.append('Monto', totalAmount);
@@ -319,7 +319,8 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         return fechaResultado;
     };
 
-    async function createAndVerifyTransaction(fechaResultado, total, totalDescuento, token, costoEnvio) {
+    async function createAndVerifyTransaction(fechaResultado, total, totalDescuento, token, costoEnvio, productos) {
+        // console.log(productos);
         try {
             // Conexión a Ganache
             const web3 = new Web3('http://localhost:7545');
@@ -335,7 +336,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             const totalEntero = parseInt(Math.round(total * 100));
             const totalDescuentoEntero = parseInt(Math.round(totalDescuento * 100));
             const costoEnvioEntero = Math.round(costoEnvio * 100);
-            
+
             // Crear la transacción en el contrato
             const accounts = await web3.eth.getAccounts();
             const account = accounts[0];
@@ -353,6 +354,21 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 )
                 .send({ from: account, gas: 5000000 });
             const transactionId = txReceipt.transactionHash.toString();
+
+            for (const producto of productos) {
+                await contractInstance.methods
+                    .createProductTransaction(
+                        transactionId,
+                        producto.idProducto,
+                        producto.nombreProducto,
+                        producto.precio,
+                        producto.cantidad,
+                        producto.tiendaNombre,
+                        (producto.precio*producto.cantidad*producto.cantidadOferta)/100
+                    )
+                    .send({ from: account, gas: 5000000 });
+            }
+
             await fetch(
                 `https://localhost:7240/IngresarHashBlockchain?hash=${transactionId}`,
                 {
@@ -432,7 +448,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 
                 const idPedido = await response.json();
 
-                HandleProcesoPago(metodo, fechaResultado, totalDescuento, idPedido);
+                HandleProcesoPago(metodo, fechaResultado, totalDescuento, idPedido, productos);
             } else if (response.status === 404) {
                 throw new Error("Pedido no encontrado");
             } else {

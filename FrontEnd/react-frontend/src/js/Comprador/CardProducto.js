@@ -29,7 +29,7 @@ export default function CardProducto({HandleChangeProductoSeleccionado, producto
 
             <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", height:"40px"}}>
                 <Typography sx={{marginRight:"10px", fontSize:"15px"}}>
-                    <b>Precio:</b> S/. {producto.precio.toFixed(2)}
+                    <b>Precio:</b> S/. {producto && producto.precio && producto.precio.toFixed(2)}
                 </Typography>
                 {producto.cantidadOferta > 0 ?
                 (

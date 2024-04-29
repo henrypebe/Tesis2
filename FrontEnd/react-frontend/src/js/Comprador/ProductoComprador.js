@@ -1,15 +1,20 @@
-import { Box, Button, TextField, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react';
+import { Box, Button, Checkbox, Typography } from '@mui/material'
+import React, {useState } from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import CardProducto from './CardProducto';
-import SearchIcon from '@mui/icons-material/Search';
-import Pagination from '@mui/material/Pagination';
+import ProductoListComprador from './ProductoListComprador';
+import TiendaListComprador from './TiendaListComprador';
+import ProductoPorTiendaComprador from './ProductoPorTiendaComprador';
 
-export default function ProductoComprador({setMostrarDetalleProducto, setMostrarProductos, setMostrarCarrito, setMostrarOpcionCarrito, HandleChangeProductoSeleccionado,
-  conteoCarritoCompra}) {
-  
-  const [productosList, setProductosList] = useState(null);
-  const [Busqueda, setBusqueda] = useState("");
+export default function ProductoComprador({setMostrarDetalleProducto, setMostrarProductos, setMostrarCarrito, setMostrarOpcionCarrito, 
+  HandleChangeProductoSeleccionado, conteoCarritoCompra}) {
+  const [checkTienda, setCheckTienda] = useState(false);
+  const [opcionPantalla, setOpcionPantalla] = useState(false);
+  const [TiendaSeleccionado, setTiendaSeleccionado] = useState(false);
+
+  const handleCheckChange = () => {
+    setCheckTienda(!checkTienda);
+    setOpcionPantalla(false);
+  };
 
   const handleCarrito = () =>{
     setMostrarDetalleProducto(false);
@@ -18,110 +23,57 @@ export default function ProductoComprador({setMostrarDetalleProducto, setMostrar
     setMostrarOpcionCarrito(1);
   }
 
-  useEffect(() => {
-    const obtenerListaProducto = async () => {
-        try {
-          const response = await fetch(
-            `https://localhost:7240/ListasProductosGeneral?busqueda=${Busqueda === ""? "nada" : Busqueda}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-    
-          if (response.ok) {
-            const producto = await response.json();
-            setProductosList(producto);
-          } else if (response.status === 404) {
-            throw new Error("Productos no encontrado");
-          } else {
-            throw new Error("Error al obtener la lista de productos");
-          }
-        } catch (error) {
-          console.error("Error al obtener la lista de productos", error);
-          throw new Error("Error al obtener la lista de productos");
-        }
-      };
-      // obtenerListaProducto();
-      const interval = setInterval(() => {
-        obtenerListaProducto();
-      }, 100);
-      return () => clearInterval(interval);
-  }, [Busqueda]);
-  
-  const [currentPage, setCurrentPage] = useState(0);
-  const rowsPerPage = 12;
-  const handleChangePage = (event, newPage) => {
-    setCurrentPage(newPage - 1);
-  };
-
   return (
     <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", height:"88vh"}}>
-      <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px", width:"90%"}}>Productos</Typography>
-        
-        <Button variant="contained" sx={{backgroundColor:"white", color: "black", border:"2px solid black", borderRadius:"5px", padding:"8px", width:"9%", height:"40px",
-        '&:hover': {backgroundColor:"white"}}}
-        onClick={handleCarrito}
-        >
-          <ShoppingCartIcon sx={{fontSize:"30px", marginRight:"12px"}}/>
-          <Typography sx={{fontWeight:"bold", fontSize:"26px"}}>{conteoCarritoCompra}</Typography>
-        </Button>
-      </Box>
-
-      <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
-
-      <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", marginRight:"10px"}}>Nombre o tipo del producto:</Typography>
+      <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
         <Box sx={{display:"flex", flexDirection:"row"}}>
-        <TextField
-          id="outlined-basic"
-          label="Búsqueda del producto"
-          variant="outlined"
-          sx={{
-            height: 40,
-            '& .MuiInputBase-root': {
-              height: '100%',
-            },
-          }}
-          InputProps={{
-            startAdornment: (
-              <SearchIcon sx={{marginRight:"10px"}} />
-            ),
-          }}
-          defaultValue={Busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
+          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px"}}>Productos</Typography>
+          <Box sx={{marginLeft:"10px", display:"flex", flexDirection:"row", alignItems:"center"}}>
+            <Checkbox checked={checkTienda} onChange={handleCheckChange}/>
+            <Typography sx={{color:"black", fontSize:"20px"}}>Por Tienda</Typography>
+          </Box>
+        </Box>
+        
+        <Box sx={{width:"30%", display:"flex", justifyContent:"flex-end", alignItems:"center"}}>
+          <Button variant="contained" sx={{backgroundColor:"white", color: "black", border:"2px solid black", borderRadius:"5px", padding:"8px", 
+            width:"40%", height:"40px", marginRight:"15px",
+            '&:hover': {backgroundColor:"white"}}}
+            onClick={handleCarrito}
+          >
+            <ShoppingCartIcon sx={{fontSize:"30px", marginRight:"12px"}}/>
+            <Typography sx={{fontWeight:"bold", fontSize:"26px"}}>{conteoCarritoCompra}</Typography>
+          </Button>
+
+          {opcionPantalla && (
+            <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", fontSize:"17px",
+              width:"40%",
+              fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={()=>{setOpcionPantalla(false);}}>
+              Atrás
+            </Button>
+          )}
         </Box>
       </Box>
 
       <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
-      <Box sx={{height:"84.5%"}}>
-        {productosList && productosList.length > 0 ? 
-        (
-          <>
-            <Box sx={{height:"93%"}}>
-              {productosList.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(producto => (
-              <CardProducto HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado} producto={producto}/>
-              ))}
-            </Box>
-            <Box sx={{ display:"flex", justifyContent:"center"}}>
-              <Pagination count={Math.ceil(productosList.length / rowsPerPage)} page={currentPage + 1} onChange={handleChangePage}/>
-            </Box>
-          </>
-        ):
-        (
-          <Box>
-            <Typography sx={{fontSize:"20px", fontWeight:"bold"}}>
-              No se tiene productos disponibles
-            </Typography>
-          </Box>
-        )
-        }
-      </Box>
+      {!checkTienda?
+      (
+        <ProductoListComprador HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado}/>
+      )
+      :
+      (
+        <>
+          {!opcionPantalla?
+          (
+            <TiendaListComprador HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado} setOpcionPantalla={setOpcionPantalla}
+            setTiendaSeleccionado={setTiendaSeleccionado}/>
+          )
+          :
+          (
+            <ProductoPorTiendaComprador TiendaSeleccionado={TiendaSeleccionado} HandleChangeProductoSeleccionado={HandleChangeProductoSeleccionado}/>
+          )}
+        </>
+      )}
 
     </Box>
   )

@@ -37,13 +37,14 @@ export default function MenuComprador() {
 
   const { idUsuario } = useParams();
 
-  const [ProductoSeleccionado, setProductoSeleccionado] = useState();
   const [PedidoSeleccionado, setPedidoSeleccionado] = useState();
   const [SeguimientoSeleccionado, setSeguimientoSeleccionado] = useState();
+  
+  const [ProductoSeleccionado, setProductoSeleccionado] = useState();
   const [conteoCarritoCompra, setConteoCarritoCompra] = useState(0);
   const [productos, setProductos] = useState([]);
-  const [ReclamoSeleccionado, setReclamoSeleccionado] = useState();
 
+  const [ReclamoSeleccionado, setReclamoSeleccionado] = useState();
   const [opcionPedidoDetalle, setOpcionPedidoDetalle] = useState();
 
   const HandleChangeProductoSeleccionado = (producto) =>{

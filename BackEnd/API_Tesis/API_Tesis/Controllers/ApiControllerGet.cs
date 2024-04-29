@@ -1155,8 +1155,81 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
+        [Route("/ListarProductosPorTienda")]
+        public async Task<IActionResult> ListarProductosPorTienda(int idTienda, string busqueda)
+        {
+            List<Producto> productos = new List<Producto>();
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                       SELECT p.*, t.Nombre AS NombreTienda, t.Foto AS FotoTienda
+                        FROM Producto p
+                        INNER JOIN Tienda t ON p.TiendaID = t.IdTienda
+                        WHERE p.Estado = 1 AND p.EstadoAprobacion <> 'Pendiente' AND p.EstadoAprobacion <> 'Rechazado'
+                        AND Stock >= 1 AND t.IdTienda = @IdTienda";
+
+                    if (busqueda != "nada")
+                    {
+                        query += " AND (p.Nombre LIKE @Busqueda OR p.TipoProducto LIKE @Busqueda OR p.IdProducto LIKE @Busqueda)";
+                    }
+
+                    query += " ORDER BY CantidadVentas DESC";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        if (busqueda != "nada")
+                        {
+                            command.Parameters.AddWithValue("@Busqueda", $"%{busqueda}%");
+                        }
+                        command.Parameters.AddWithValue("@IdTienda", idTienda);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (reader.Read())
+                            {
+                                string nombreProducto = reader.GetString("Nombre").Replace("_", " ");
+                                string descripcionProducto = reader.GetString("Descripcion").Replace("_", " ");
+                                string FechaEnvio = reader.IsDBNull(reader.GetOrdinal("TiempoEnvio")) ? "" : reader.GetString("TiempoEnvio");
+                                Producto producto = new Producto
+                                {
+                                    IdProducto = reader.GetInt32("IdProducto"),
+                                    Nombre = nombreProducto,
+                                    Precio = reader.GetDouble("Precio"),
+                                    Stock = reader.GetInt32("Stock"),
+                                    Descripcion = descripcionProducto,
+                                    CantidadOferta = reader.GetDouble("CantidadOferta"),
+                                    CostoEnvio = reader.GetDouble("CostoEnvio"),
+                                    FechaEnvio = FechaEnvio,
+                                    CantidadGarantia = reader.IsDBNull(reader.GetOrdinal("CantidadGarantia")) ? "" : reader.GetString("CantidadGarantia"),
+                                    EstadoAprobacion = reader.IsDBNull(reader.GetOrdinal("EstadoAprobacion")) ? "" : reader.GetString("EstadoAprobacion"),
+                                    MotivoRechazo = reader.IsDBNull(reader.GetOrdinal("MotivoRechazo")) ? "" : reader.GetString("MotivoRechazo"),
+                                    TipoProducto = reader.IsDBNull(reader.GetOrdinal("TipoProducto")) ? "" : reader.GetString("TipoProducto"),
+                                    TiendaId = reader.GetInt32("TiendaId"),
+                                    TiendaNombre = reader.IsDBNull(reader.GetOrdinal("NombreTienda")) ? "" : reader.GetString("NombreTienda"),
+                                    TiendaFoto = ConvertirBytesAImagen(reader["FotoTienda"] as byte[]),
+                                    Imagen = ConvertirBytesAImagen(reader["Foto"] as byte[]),
+                                    CantidadVentas = reader.GetInt32("CantidadVentas"),
+                                    FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                };
+                                productos.Add(producto);
+                            }
+                            return Ok(productos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/ListarTiendaGeneral")]
-        public async Task<IActionResult> ListarTiendaGeneral()
+        public async Task<IActionResult> ListarTiendaGeneral(string busquedaTienda)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
             try
@@ -1172,8 +1245,17 @@ namespace API_Tesis.Controllers
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
                         WHERE t.Estado = 1";
 
+                    if (busquedaTienda != "nada")
+                    {
+                        query += " AND (t.Nombre LIKE @Busqueda OR t.IdTienda LIKE @Busqueda)";
+                    }
+
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
+                        if (busquedaTienda != "nada")
+                        {
+                            command.Parameters.AddWithValue("@Busqueda", $"%{busquedaTienda}%");
+                        }
                         using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (reader.Read())
