@@ -1,18 +1,26 @@
 import { Box, Button, Typography } from '@mui/material'
 import React from 'react'
 
-export default function InicioAdministrador({setMostrarInicio, setMostrarEstadistica, setMostrarGestionAprobacion}) {
+export default function InicioAdministrador({setMostrarInicio, setMostrarEstadistica, setMostrarGestionAprobacion, setMostrarGestionAprobacionTienda}) {
 
     const handleChangeEstadistica = () =>{
         setMostrarInicio(false);
         setMostrarEstadistica(true);
         setMostrarGestionAprobacion(false);
+        setMostrarGestionAprobacionTienda(false);
     }
 
     const handleChangeAprobacion = () =>{
         setMostrarInicio(false);
         setMostrarEstadistica(false);
         setMostrarGestionAprobacion(true);
+        setMostrarGestionAprobacionTienda(false);
+    }
+    const handleChangeAprobacionTienda = () =>{
+        setMostrarInicio(false);
+        setMostrarEstadistica(false);
+        setMostrarGestionAprobacion(false);
+        setMostrarGestionAprobacionTienda(true);
     }
     
   return (
@@ -45,7 +53,7 @@ export default function InicioAdministrador({setMostrarInicio, setMostrarEstadis
             <Button sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", border:"2px solid black",
             borderRadius:"6px", backgroundColor:"#50BAFF", width:"80%", color:"black", height:"50%",
             '&:hover':{backgroundColor:"#50BAFF"}}}
-            onClick={handleChangeAprobacion}
+            onClick={handleChangeAprobacionTienda}
             >
                 <img src='https://cdn-icons-png.flaticon.com/512/746/746900.png' alt='' style={{height:"120px"}}/>
                 <Typography sx={{fontWeight:"bold", fontSize:"30px", marginLeft:"50px", width:"40%"}}>

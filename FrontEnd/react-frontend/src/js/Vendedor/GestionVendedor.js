@@ -81,7 +81,7 @@ export default function GestionVendedor({informacionTienda}) {
             <Box sx={{height:"88%"}}>
                 {ListaVendedoresAsistentes && ListaVendedoresAsistentes.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((vendedor) => {
                     return(
-                        <CardGestionVendedor vendedor={vendedor} handleInformacionVendedorAsistente={handleInformacionVendedorAsistente}/>
+                      <CardGestionVendedor vendedor={vendedor} handleInformacionVendedorAsistente={handleInformacionVendedorAsistente}/>
                     );
                 })}
             </Box>

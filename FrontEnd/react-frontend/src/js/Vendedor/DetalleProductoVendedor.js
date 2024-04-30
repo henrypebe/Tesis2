@@ -6,7 +6,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto, productoInformacion, handleChangeHistoria,
     OpcionSeleccionado}) {
 
-console.log(productoInformacion);
+// console.log(productoInformacion);
 
     const [Open, setOpen] = React.useState(false);
     const partes = productoInformacion?productoInformacion.cantidadGarantia.split("_"):"";

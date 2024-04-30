@@ -59,7 +59,7 @@ export default function MenuAdministrador() {
               setMostrarDetalleTienda={setMostrarDetalleTienda}
             />
             {mostrarInicio && <InicioAdministrador setMostrarInicio={setMostrarInicio} setMostrarEstadistica={setMostrarEstadistica}
-            setMostrarGestionAprobacion={setMostrarGestionAprobacion} />}
+            setMostrarGestionAprobacion={setMostrarGestionAprobacion} setMostrarGestionAprobacionTienda={setMostrarGestionAprobacionTienda}/>}
 
             {mostrarEstadistica && <EstadisticaAdministrador handleChangePedidoSeleccionado={handleChangePedidoSeleccionado}/>}
 

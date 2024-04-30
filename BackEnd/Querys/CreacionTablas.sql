@@ -121,6 +121,14 @@ CREATE TABLE HistorialCambiosProducto (
     FOREIGN KEY (ProductoID) REFERENCES Producto(IdProducto)
 );
 
+CREATE TABLE HistorialCambiosTienda (
+    IdHistorialCambiosTienda INT AUTO_INCREMENT PRIMARY KEY,
+    FechaHora Datetime,
+    Descripcion TEXT,
+    TiendaID INT NOT NULL,
+    FOREIGN KEY (TiendaID) REFERENCES Tienda(IdTienda)
+);
+
 CREATE TABLE Chat (
     IdChat INT AUTO_INCREMENT PRIMARY KEY,
     Estado TEXT,

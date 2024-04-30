@@ -368,45 +368,124 @@ namespace API_Tesis.Controllers
         [HttpPut]
         [Route("/EditarTienda")]
         public async Task<ActionResult> EditarTienda([FromForm] int idTienda, [FromForm] string nombre, [FromForm] IFormFile image, [FromForm] string descripcion,
-            [FromForm] string direccion, [FromForm] string Provincia, [FromForm] string pais)
+    [FromForm] string direccion, [FromForm] string Provincia, [FromForm] string pais)
         {
             try
             {
                 descripcion = descripcion.Replace('_', ' ');
                 direccion = direccion.Replace('_', ' ');
                 Provincia = Provincia.Replace('_', ' ');
+
                 string connectionString = _configuration.GetConnectionString("DefaultConnection");
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+                MySqlConnection connection = new MySqlConnection(connectionString);
+                await connection.OpenAsync();
+                
+                byte[] imageBytes = null;
+                if (image != null)
                 {
-                    byte[] imageBytes;
                     using (var memoryStream = new MemoryStream())
                     {
                         await image.CopyToAsync(memoryStream);
                         imageBytes = memoryStream.ToArray();
                     }
-                    connection.Open();
-                    string query = @"UPDATE Tienda SET Nombre = @Nombre, Descripcion = @Descripcion, Direccion = @Direccion, Provincia = @Provincia, Pais = @Pais, Foto = @Foto, Estado = @Estado
-                    WHERE IdTienda = @IdTienda AND Estado <> 4";
-                    MySqlCommand command = new MySqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@Nombre", nombre);
-                    command.Parameters.AddWithValue("@Descripcion", descripcion);
-                    command.Parameters.AddWithValue("@Direccion", direccion);
-                    command.Parameters.AddWithValue("@Provincia", Provincia);
-                    command.Parameters.AddWithValue("@Pais", pais);
-                    command.Parameters.AddWithValue("@IdTienda", idTienda);
-                    command.Parameters.AddWithValue("@Estado", 2);
-                    command.Parameters.AddWithValue("@Foto", imageBytes);
-                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                }
 
-                    if (rowsAffected > 0)
+                // Obtener los datos actuales de la tienda
+                string selectQuery = @"SELECT Nombre, Descripcion, Direccion, Provincia, Pais, Foto FROM Tienda WHERE IdTienda = @IdTienda";
+                MySqlCommand selectCommand = new MySqlCommand(selectQuery, connection);
+                selectCommand.Parameters.AddWithValue("@IdTienda", idTienda);
+
+                using (var reader = await selectCommand.ExecuteReaderAsync())
+                {
+                    if (reader.Read())
                     {
-                        connection.Close();
-                        return Ok();
+                        string nombreActual = reader.GetString(0);
+                        string descripcionActual = reader.GetString(1);
+                        string direccionActual = reader.GetString(2);
+                        string provinciaActual = reader.GetString(3);
+                        string paisActual = reader.GetString(4);
+                        byte[] fotoActual = (byte[])reader.GetValue(5);
+
+                        bool cambios = false;
+                        StringBuilder detallesCambio = new StringBuilder();
+
+                        // Verificar si hay cambios en los datos
+                        if (nombre != nombreActual)
+                        {
+                            cambios = true;
+                            detallesCambio.AppendLine($"Nombre cambiado de '{nombreActual}' a '{nombre}'");
+                        }
+
+                        if (descripcion != descripcionActual)
+                        {
+                            cambios = true;
+                            detallesCambio.AppendLine($"Descripción cambiada de '{descripcionActual}' a '{descripcion}'");
+                        }
+
+                        if (direccion != direccionActual)
+                        {
+                            cambios = true;
+                            detallesCambio.AppendLine($"Dirección cambiada de '{direccionActual}' a '{direccion}'");
+                        }
+
+                        if (Provincia != provinciaActual)
+                        {
+                            cambios = true;
+                            detallesCambio.AppendLine($"Provincia cambiada de '{provinciaActual}' a '{Provincia}'");
+                        }
+
+                        if (pais != paisActual)
+                        {
+                            cambios = true;
+                            detallesCambio.AppendLine($"País cambiado de '{paisActual}' a '{pais}'");
+                        }
+
+                        reader.Close();
+
+                        if (cambios)
+                        {
+                            // Realizar el update en la tabla Tienda
+                            string updateQuery = @"UPDATE Tienda SET Nombre = @Nombre, Descripcion = @Descripcion, Direccion = @Direccion, Provincia = @Provincia, Pais = @Pais, 
+                                Foto = @Foto, Estado = @Estado WHERE IdTienda = @IdTienda AND Estado <> 4";
+                            MySqlCommand updateCommand = new MySqlCommand(updateQuery, connection);
+                            updateCommand.Parameters.AddWithValue("@Nombre", nombre);
+                            updateCommand.Parameters.AddWithValue("@Descripcion", descripcion);
+                            updateCommand.Parameters.AddWithValue("@Direccion", direccion);
+                            updateCommand.Parameters.AddWithValue("@Provincia", Provincia);
+                            updateCommand.Parameters.AddWithValue("@Pais", pais);
+                            updateCommand.Parameters.AddWithValue("@IdTienda", idTienda);
+                            updateCommand.Parameters.AddWithValue("@Estado", 2);
+                            updateCommand.Parameters.AddWithValue("@Foto", imageBytes);
+
+                            // Ejecutar el update
+                            await updateCommand.ExecuteNonQueryAsync();
+
+                            await connection.CloseAsync();
+                            await connection.OpenAsync();
+
+                            // Insertar el registro en la tabla HistorialCambiosTienda
+                            string insertQuery = @"INSERT INTO HistorialCambiosTienda (FechaHora, Descripcion, TiendaID) VALUES (@FechaHora, @Descripcion, @TiendaID)";
+                            MySqlCommand insertCommand = new MySqlCommand(insertQuery, connection);
+                            insertCommand.Parameters.AddWithValue("@FechaHora", DateTime.Now);
+                            insertCommand.Parameters.AddWithValue("@Descripcion", detallesCambio.ToString());
+                            insertCommand.Parameters.AddWithValue("@TiendaID", idTienda);
+
+                            await insertCommand.ExecuteNonQueryAsync();
+                        }
+
+                        if (cambios)
+                        {
+                            return Ok();
+                        }
+                        else
+                        {
+                            return NoContent(); // No hay cambios
+                        }
                     }
                     else
                     {
-                        connection.Close();
-                        return NotFound();
+                        return NotFound(); // Tienda no encontrada
                     }
                 }
             }

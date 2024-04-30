@@ -5,6 +5,7 @@ import {
   IconButton,
   Link,
   Modal,
+  Pagination,
   TextField,
   Typography,
 } from "@mui/material";
@@ -15,11 +16,14 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SHA256 } from "crypto-js";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import HistoryIcon from '@mui/icons-material/History';
+import LineaDetalleProductoVisualizar from "../Vendedor/LineaDetalleProductoVisualizar";
 
 export default function BarraSuperior({ opcionAdministrador, idUsuario, esVendedorAdministrador }) {
   const [open, setOpen] = React.useState(false);
   const [openModalCuarto, setOpenModaCuarto] = React.useState(false);
   const [openModalQuinto, setOpenModaQuinto] = React.useState(false);
+  const [openModalSegundo, setOpenModaSegundo] = React.useState(false);
 
   const [informacionUsuario, setInformacionUsuario] = useState();
   const [informacionTienda, setInformacionTienda] = useState();
@@ -27,6 +31,15 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
   const handleOpen = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
   const handleClose = () => {setOpen(false);};
+
+  const handleOpenSegundo = () =>{
+    handleInformacionInicioVendedor();
+  }
+
+  const handleCloseSegundo = () => {
+    setOpenModaSegundo(false);
+    handleOpenModalQuinto();
+  };
 
   // const handleOpenModalCuarto = () => {
   //   setOpenModaCuarto(true);
@@ -40,10 +53,46 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const handleOpenModalQuinto = () => {
     obtenerInformacionTienda();
   };
+
   const handleCloseModalQuinto = () => {
     setOpenModaQuinto(false);
     setOpen(true);
     handleCancelTienda();
+  };
+
+  const [HistorialProductos, setHistorialProductos] = React.useState();
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const rowsPerPage = 15;
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage - 1);
+  };
+  const handleInformacionInicioVendedor = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7240/ListarHistorialCambiosTienda?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const historial = await response.json();
+        setHistorialProductos(historial);
+        setOpenModaSegundo(true);
+        setOpenModaQuinto(false);
+        console.log(historial);
+      } else if (response.status === 404) {
+        throw new Error("Seguimiento no encontrado");
+      } else {
+        throw new Error("Error al obtener la lista de estadistica");
+      }
+    } catch (error) {
+      console.error("Error al obtener la lista de estadistica", error);
+      throw new Error("Error al obtener la lista de estadistica");
+    }
   };
 
   const obtenerRolesIdUsuario = async (idUsuario) => {
@@ -1180,19 +1229,25 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
                 </b>
               </Typography>
 
-              <IconButton
-                sx={{
-                  backgroundColor: "white",
-                  color: "black",
-                  width: "80px",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                  "&:hover": { backgroundColor: "white" },
-                }}
-                onClick={handleCloseModalQuinto}
-              >
-                <CancelIcon sx={{ fontSize: "50px" }} />
-              </IconButton>
+              <Box sx={{display:"flex", flexDirection:"row"}}>
+                <IconButton onClick={() => {handleOpenSegundo();}}>
+                  <HistoryIcon sx={{fontSize:"40px", color:"black"}}/>
+                </IconButton>
+
+                <IconButton
+                  sx={{
+                    backgroundColor: "white",
+                    color: "black",
+                    width: "80px",
+                    fontSize: "17px",
+                    fontWeight: "bold",
+                    "&:hover": { backgroundColor: "white" },
+                  }}
+                  onClick={handleCloseModalQuinto}
+                >
+                  <CancelIcon sx={{ fontSize: "50px" }} />
+                </IconButton>
+              </Box>
             </Box>
 
             {EstadoTienda === 3 &&
@@ -1503,6 +1558,71 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
             >
               Guardar cambios
             </Button>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={openModalSegundo}
+          onClose={handleCloseSegundo}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={{ ...styleQuinto }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: "30px",
+                  width: "100%",
+                }}
+              >
+                Historial de cambios de la tienda
+              </Typography>
+
+              <IconButton
+                sx={{
+                  backgroundColor: "white",
+                  color: "black",
+                  width: "80px",
+                  fontSize: "17px",
+                  fontWeight: "bold",
+                  "&:hover": { backgroundColor: "white" },
+                }}
+                onClick={handleCloseSegundo}
+              >
+                <CancelIcon sx={{ fontSize: "50px" }} />
+              </IconButton>
+            </Box>
+
+            <hr
+              style={{
+                margin: "10px 0",
+                border: "0",
+                borderTop: "2px solid #ccc",
+                marginTop: "10px",
+                marginBottom: "15px",
+              }}
+            />
+
+            <Box sx={{height:"88%"}}>
+              {HistorialProductos && HistorialProductos.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((cambio) => {
+                return(
+                  <LineaDetalleProductoVisualizar cambio={cambio}/>
+                );
+              })}
+            </Box>
+
+            <Box sx={{ display:"flex", justifyContent:"center"}}>
+                <Pagination count={Math.ceil(HistorialProductos ? HistorialProductos.length / rowsPerPage : 0)} page={currentPage + 1} onChange={handleChangePage}/>
+            </Box>
           </Box>
         </Modal>
       </Box>

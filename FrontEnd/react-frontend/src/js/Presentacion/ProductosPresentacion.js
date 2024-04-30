@@ -57,7 +57,7 @@ export default function ProductosPresentacion() {
         const obtenerListaProducto = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ListarTiendaGeneral`,
+                `https://localhost:7240/ListarTiendaGeneral?busquedaTienda=${"nada"}`,
                 {
                   method: "GET",
                   headers: {

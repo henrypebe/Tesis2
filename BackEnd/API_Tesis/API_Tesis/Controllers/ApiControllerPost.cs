@@ -402,6 +402,15 @@ namespace API_Tesis.Controllers
                     updateCommand.Parameters.AddWithValue("@UsuarioID", idUsuario);
                     await updateCommand.ExecuteNonQueryAsync();
 
+                    await connection.OpenAsync();
+                    query = @"INSERT INTO HistorialCambiosTienda (FechaHora, Descripcion, TiendaID) VALUES (@FechaHora, @Descripcion, @idGenerado)";
+                    command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@FechaHora", DateTime.Now);
+                    command.Parameters.AddWithValue("@Descripcion", "Se realizó la creación de la tienda");
+                    command.Parameters.AddWithValue("@idGenerado", idGenerado);
+                    await command.ExecuteScalarAsync();
+                    await connection.CloseAsync();
+
                     return Ok(idGenerado);
                 }
             }

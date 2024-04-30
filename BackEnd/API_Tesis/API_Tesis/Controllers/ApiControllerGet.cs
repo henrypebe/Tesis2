@@ -440,6 +440,47 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
+        [Route("/ListarHistorialCambiosTienda")]
+        public async Task<IActionResult> ListarHistorialCambiosTienda(int idTienda)
+        {
+            try
+            {
+                List<HistorialProducto> HistorialProductos = new List<HistorialProducto>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                        SELECT h.FechaHora, h.Descripcion FROM HistorialCambiosTienda h
+                        WHERE h.TiendaID = @idTienda";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@idTienda", idTienda);
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                HistorialProducto HistorialProducto = new HistorialProducto
+                                {
+                                    FechaHora = reader.GetDateTime("FechaHora"),
+                                    Descripcion = reader.GetString("Descripcion"),
+                                };
+
+                                HistorialProductos.Add(HistorialProducto);
+                            }
+                            return Ok(HistorialProductos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/ListarPedidosCompletadosPorFecha")]
         public async Task<IActionResult> ListarPedidosCompletadosPorFecha(int idUsuario, DateTime FechaFiltro)
         {
