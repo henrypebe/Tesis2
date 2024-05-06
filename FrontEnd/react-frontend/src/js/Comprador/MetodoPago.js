@@ -166,7 +166,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     const AlgoritmoObtener = async(fechaResultado, totalAmount, token, tipoProducto) =>{
         const _fechaResultado = new Date(fechaResultado);
         const año = _fechaResultado.getFullYear();
-        const mes = ('0' + (_fechaResultado.getMonth() + 1)).slice(-2); // Agregar 1 porque los meses van de 0 a 11
+        const mes = ('0' + (_fechaResultado.getMonth() + 1)).slice(-2);
         const dia = ('0' + _fechaResultado.getDate()).slice(-2);
         const hora = ('0' + _fechaResultado.getHours()).slice(-2);
         const minutos = ('0' + _fechaResultado.getMinutes()).slice(-2);
@@ -182,7 +182,6 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         `Método de Pago (Número de Cuenta Encriptado): ${token}\n` +
         `Numeros de cambios del método de pago: ${InformacionUsuario.cantMetodoPago}\n` +
         `Cantidad de Productos en el Pedido: ${conteoCarritoCompra}\n` +
-        // `Cantidad de Productos en el Pedido: 100000\n` +
         `Tipo de Producto (con mayor valor): ${tipoProducto}`;
 
         try {

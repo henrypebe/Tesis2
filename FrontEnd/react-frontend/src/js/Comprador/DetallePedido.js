@@ -2,7 +2,7 @@ import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableH
 import React, { useEffect } from 'react'
 
 export default function DetallePedido({setMostrarDetallePedido, setMostrarPedidos, setMostrarSeguimiento, PedidoSeleccionado, idUsuario, opcionPedidoDetalle}) {
-    // console.log(PedidoSeleccionado);
+    console.log(PedidoSeleccionado);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [FinalizarCliente, setFinalizarCliente] = React.useState();
@@ -109,7 +109,9 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
     return (
     <Box sx={{width:"87.1%", marginTop:"-1.9px", height:"88vh", padding:"20px"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Pedidos - {concatenarNombresTiendas(PedidoSeleccionado)}</Typography>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+                ID Pedido {PedidoSeleccionado.idPedido.toFixed(0).padStart(2, '0')} - {concatenarNombresTiendas(PedidoSeleccionado)}
+            </Typography>
             <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
             fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleBackPedido}>
                 Atrás

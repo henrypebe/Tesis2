@@ -246,7 +246,9 @@ namespace API_Tesis.Controllers
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
+
                     string secretKey;
+                    //Llamado a la clave almacenada en la base de datos
                     string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
                     using (MySqlCommand command = new MySqlCommand(query2, connection))
                     {
@@ -262,10 +264,12 @@ namespace API_Tesis.Controllers
                             }
                         }
                     }
+                    //Inicio de la encriptación
                     byte[] salt = Encoding.UTF8.GetBytes("saltValue");
                     byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
                     string base64Key = Convert.ToBase64String(keyBytes);
                     string encryptedText = Encrypt(contrasenhaVariado, base64Key);
+                    
                     string[] nombreApellidoArray = nombreApellido.Split(' ');
                     string nombre = nombreApellidoArray[0];
                     string apellido = nombreApellidoArray.Length > 1 ? nombreApellidoArray[1] : string.Empty;
@@ -886,6 +890,8 @@ namespace API_Tesis.Controllers
                                 bool esVendedor = reader.GetBoolean("EsVendedor");
                                 await connection.CloseAsync();
                                 await connection.OpenAsync();
+                                
+                                //Llamada a la clave en la base de datos
                                 string secretKey;
                                 string query2 = "SELECT KeyVar FROM KeyEncript WHERE IdKey = 1";
                                 using (MySqlCommand command = new MySqlCommand(query2, connection))
@@ -902,6 +908,7 @@ namespace API_Tesis.Controllers
                                         }
                                     }
                                 }
+                                //Inicio de la desencriptación
                                 byte[] salt = Encoding.UTF8.GetBytes("saltValue");
                                 byte[] keyBytes = new Rfc2898DeriveBytes(secretKey, salt, 10000, HashAlgorithmName.SHA256).GetBytes(16);
                                 string base64Key = Convert.ToBase64String(keyBytes);

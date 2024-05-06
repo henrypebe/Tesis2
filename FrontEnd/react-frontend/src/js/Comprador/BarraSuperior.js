@@ -29,7 +29,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const [informacionTienda, setInformacionTienda] = useState();
   const [loading, setLoading] = React.useState(true);
 
-  const handleOpen = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario);};
+  const handleOpen = () => {setOpen(true); obtenerRolesIdUsuario(idUsuario); setValorBloqueoContrasenha(true);};
   const handleClose = () => {setOpen(false);};
 
   const handleOpenSegundo = () =>{
@@ -448,6 +448,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
         }, 10);
         setTimeout(() => {
           setContrasenha("");
+          setValorBloqueoContrasenha(true);
           handleClose();
           setTimeout(() => {
             handleOpen();

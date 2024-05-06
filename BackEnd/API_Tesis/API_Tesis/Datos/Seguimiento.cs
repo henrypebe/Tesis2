@@ -3,6 +3,7 @@
     public class Seguimiento
     {
         public int IdChat { get; set; }
+        public int IdPedido { get; set; }
         public int IdPedidoXProducto { get; set; }
         public string NombreTienda { get; set; }
         public string NombreDuenho { get; set; }

@@ -54,7 +54,7 @@ export default function GestionAprobacion({handleChangeProductoSeleccionado}) {
         {productosList && productosList.length > 0?
         (
           <>
-            <Box sx={{height:"93%"}}>
+            <Box sx={{height:"90%"}}>
               {productosList.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(producto => (
               <CardGestionAprobacion 
                 producto={producto} handleChangeProductoSeleccionado={handleChangeProductoSeleccionado}

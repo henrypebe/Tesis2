@@ -11,7 +11,7 @@ export default function CardSeguimientoVendedor({HandleChangeSeguimientoSeleccio
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        height: "100px",
+        height: "125px",
         border: "2px solid black",
         padding: "10px",
         borderRadius: "10px",
@@ -22,7 +22,7 @@ export default function CardSeguimientoVendedor({HandleChangeSeguimientoSeleccio
         <img
             src={seguimiento.fotoProducto}
             alt=""
-            style={{ height: "80px", width:"10%" }}
+            style={{ height: "105px", width:"10%" }}
         />
 
         <Divider
@@ -38,6 +38,15 @@ export default function CardSeguimientoVendedor({HandleChangeSeguimientoSeleccio
         />
 
         <Box sx={{ display: "flex", flexDirection: "column", width: "40%" }}>
+            <Typography
+            sx={{
+                color: "black",
+                fontSize: "24px",
+                width: "100%",
+            }}
+            >
+            <b>ID Pedido:</b> {seguimiento.idPedido.toFixed(0).padStart(2, '0')}
+            </Typography>
             <Typography
             sx={{
                 color: "black",

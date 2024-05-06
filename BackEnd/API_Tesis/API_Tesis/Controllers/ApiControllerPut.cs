@@ -35,7 +35,7 @@ namespace API_Tesis.Controllers
                     UPDATE Pedidos 
                         SET Estado = 
                         CASE 
-                            WHEN Estado = 3 THEN Estado   -- No se hace ningún cambio si el estado actual es 3
+                            WHEN Estado = 3 THEN Estado
                             WHEN DATE(FechaEntrega) <= DATE(NOW()) THEN 2 
                             ELSE 1 
                         END";

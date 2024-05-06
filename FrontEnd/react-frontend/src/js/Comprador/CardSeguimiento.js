@@ -47,27 +47,25 @@ export default function CardSeguimiento({HandleChangeSeguimientoSeleccionado, se
             width: "100%",
           }}
         >
-          {seguimiento.nombreProducto}
+          ID Pedido {seguimiento.idPedido.toFixed(0).padStart(2, '0')} - {seguimiento.nombreProducto}
         </Typography>
         <Typography
           sx={{
             color: "black",
-            fontWeight: "bold",
             fontSize: "24px",
             width: "100%",
           }}
         >
-          {seguimiento.nombreTienda}
+          <b>Tienda:</b> {seguimiento.nombreTienda}
         </Typography>
         <Typography
           sx={{
             color: "black",
-            fontWeight: "bold",
             fontSize: "24px",
             width: "100%",
           }}
         >
-          {seguimiento.nombreDuenho} {seguimiento.apellidoDuenho}
+          <b>Dueño:</b> {seguimiento.nombreDuenho} {seguimiento.apellidoDuenho}
         </Typography>
       </Box>
 

@@ -41,7 +41,7 @@ export default function SeguimientoVendedor({informacionTienda, HandleChangeSegu
   }, [informacionTienda.idTienda]);
 
   const [currentPage, setCurrentPage] = React.useState(0);
-  const rowsPerPage = 5;
+  const rowsPerPage = 4;
   const handleChangePage = (event, newPage) => {
       setCurrentPage(newPage - 1);
   };

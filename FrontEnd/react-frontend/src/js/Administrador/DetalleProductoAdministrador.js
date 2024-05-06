@@ -41,7 +41,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
 
     const handleCambioDatosAprobado = async(estado) =>{
         const response = await fetch(
-            `https://localhost:7240/CambioEstadoAprobaciónProducto?idProducto=${ProductoSeleccionado.idProducto}&EstadoPuesto=${estado}&MotivoRechazo=${MotivoRechazo}`,
+            `https://localhost:7240/CambioEstadoAprobaciónProducto?idProducto=${ProductoSeleccionado.idProducto}&EstadoPuesto=${estado}&MotivoRechazo=${"?"}`,
             {
               method: "PUT",
               headers: {
@@ -272,7 +272,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                     sx={{
                         width: '100%'
                     }}
-                    defaultValue={MotivoRechazo}
+                    defaultValue={MotivoRechazo === "?"?"":MotivoRechazo}
                     onChange={(e) => setMotivoRechazo(e.target.value)}
                 />
                 <Button

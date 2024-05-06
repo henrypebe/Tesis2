@@ -64,7 +64,8 @@ def cargar_datos(nombre_archivo):
         if fragmentos:
             datos_procesados.append(tuple(fragmentos))
     
-    return pd.DataFrame(datos_procesados, columns=['ID', 'Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Fraude'])
+    return pd.DataFrame(datos_procesados, columns=['ID', 'Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 
+                                                   'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Fraude'])
 
 # Función para preprocesar los datos
 def preprocesar_datos(df):
@@ -141,82 +142,83 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
 pipeline_file = "pipeline.pkl"
 
 # Cargar y preprocesar los datos
-# ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude.txt")
-# df = cargar_datos(ruta_archivo)
-# df = preprocesar_datos(df)
+ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude.txt")
+df = cargar_datos(ruta_archivo)
+df = preprocesar_datos(df)
 
-# # Separar datos en características (X) y etiquetas (y)
-# # features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto']
-# features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Anho', 'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
-# X = df[features]
-# y = df['Fraude']
+# Separar datos en características (X) y etiquetas (y)
+# features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto']
+features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Anho', 
+            'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
+X = df[features]
+y = df['Fraude']
 
-# # Dividir datos en conjunto de entrenamiento y prueba
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Dividir datos en conjunto de entrenamiento y prueba
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# # # Crear y entrenar el modelo
-# pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
-# pipeline.fit(X_train, y_train)
+# # Crear y entrenar el modelo
+pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
+pipeline.fit(X_train, y_train)
     
-# # Guardar el modelo en un archivo
-# with open(pipeline_file, 'wb') as file:
-#     pickle.dump(pipeline, file)
+# Guardar el modelo en un archivo
+with open(pipeline_file, 'wb') as file:
+    pickle.dump(pipeline, file)
 
-# entrenar_y_guardar_pipeline(pipeline, X_train, y_train, pipeline_file)
+entrenar_y_guardar_pipeline(pipeline, X_train, y_train, pipeline_file)
 
-# evaluar_modelo(pipeline, X_test, y_test)
-# title = "Learning Curves (Random Forest)"
-# plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
-# plt.show()
+evaluar_modelo(pipeline, X_test, y_test)
+title = "Learning Curves (Random Forest)"
+plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
+plt.show()
 
-def cargar_datos_2(datos):
-    datos_procesados = []
-    fragmentos = []
-    for linea in datos:
-        if linea.strip() == '':
-            if fragmentos:
-                datos_procesados.append(tuple(fragmentos))
-                fragmentos = []
-            continue
-        clave, valor = linea.strip().split(': ', 1)
-        fragmentos.append(valor)
-    if fragmentos:
-        datos_procesados.append(tuple(fragmentos))
+# def cargar_datos_2(datos):
+#     datos_procesados = []
+#     fragmentos = []
+#     for linea in datos:
+#         if linea.strip() == '':
+#             if fragmentos:
+#                 datos_procesados.append(tuple(fragmentos))
+#                 fragmentos = []
+#             continue
+#         clave, valor = linea.strip().split(': ', 1)
+#         fragmentos.append(valor)
+#     if fragmentos:
+#         datos_procesados.append(tuple(fragmentos))
 
-    return pd.DataFrame(datos_procesados, columns=['ID', 'Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto'])
+#     return pd.DataFrame(datos_procesados, columns=['ID', 'Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto'])
 
-def preprocesar_datos_2(df):
-    df = df.copy()
-    label_encoders = {}
-    for column in ['Direccion', 'Tipo_Producto', 'Cuenta']:
-        label_encoders[column] = LabelEncoder()
-        df[column] = label_encoders[column].fit_transform(df[column])
+# def preprocesar_datos_2(df):
+#     df = df.copy()
+#     label_encoders = {}
+#     for column in ['Direccion', 'Tipo_Producto', 'Cuenta']:
+#         label_encoders[column] = LabelEncoder()
+#         df[column] = label_encoders[column].fit_transform(df[column])
     
-    # Conversión de la columna 'Fecha_Hora' a tipo datetime
-    df['Fecha_Hora'] = pd.to_datetime(df['Fecha_Hora'], errors='coerce', format='%Y-%m-%d %H:%M:%S')
-    # Eliminación de filas con valores faltantes en 'Fecha_Hora'
-    df = df.dropna(subset=['Fecha_Hora'])
+#     # Conversión de la columna 'Fecha_Hora' a tipo datetime
+#     df['Fecha_Hora'] = pd.to_datetime(df['Fecha_Hora'], errors='coerce', format='%Y-%m-%d %H:%M:%S')
+#     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
+#     df = df.dropna(subset=['Fecha_Hora'])
     
-    df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
-    df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
-    df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
-    df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
-    df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
-    df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
+#     df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
+#     df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
+#     df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
+#     df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
+#     df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
+#     df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
     
-    return df
+#     return df
 
-datos_directos = [
-    "ID: 20",
-    "Nombre y Apellido del Comprador: Michael Smith",
-    "Fecha de Creación del Pedido: 2024-04-15 12:32:00",
-    "Lugar de Entrega: 7657 Obrien Forest, West Holly, OH 24807",
-    "Cantidad de cambios de lugar de entrega durante el ultimo mes: 1",
-    "Costo total del Pedido: 38",
-    "Método de Pago (Número de Cuenta Encriptado): pm_1P7KAtG77lj0glGvxvqiL2c6",
-    "Numeros de cambios del método de pago: 0",
-    "Cantidad de Productos en el Pedido: 20",
-    "Tipo de Producto (con mayor valor): Tecnología"
-]
+# datos_directos = [
+#     "ID: 20",
+#     "Nombre y Apellido del Comprador: Michael Smith",
+#     "Fecha de Creación del Pedido: 2024-04-15 12:32:00",
+#     "Lugar de Entrega: 7657 Obrien Forest, West Holly, OH 24807",
+#     "Cantidad de cambios de lugar de entrega durante el ultimo mes: 1",
+#     "Costo total del Pedido: 38",
+#     "Método de Pago (Número de Cuenta Encriptado): pm_1P7KAtG77lj0glGvxvqiL2c6",
+#     "Numeros de cambios del método de pago: 0",
+#     "Cantidad de Productos en el Pedido: 20",
+#     "Tipo de Producto (con mayor valor): Tecnología"
+# ]
 
-cargar_pipeline_y_predecir(datos_directos, pipeline_file)
+# cargar_pipeline_y_predecir(datos_directos, pipeline_file)

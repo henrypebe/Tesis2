@@ -246,7 +246,7 @@ namespace API_Tesis.Controllers
                                 try
                                 {
                                     await clienteSmtp.SendMailAsync(message);
-                                    Console.WriteLine("Correo enviado con la información de los tickets sin tareas.");
+                                    Console.WriteLine("Correo enviado correctamente");
                                     return Ok(idUsuario);
                                 }
                                 catch (Exception ex)
@@ -757,7 +757,8 @@ namespace API_Tesis.Controllers
 
                     string query = @"
                         SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreCliente,u.Apellido AS ApellidoCliente, c.IdChat, pr.Nombre AS NombreProducto,
-                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, p.FechaCreacion, c.FinalizarCliente
+                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, p.FechaCreacion, c.FinalizarCliente,
+                        p.IdPedido
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                         INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
@@ -781,6 +782,7 @@ namespace API_Tesis.Controllers
                                     seguimientoExistente = new Seguimiento
                                     {
                                         IdChat = idChat,
+                                        IdPedido = reader.IsDBNull(reader.GetOrdinal("IdPedido")) ? 0 : reader.GetInt32("IdPedido"),
                                         IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
                                         NombreTienda = reader.GetString("NombreTienda"),
                                         NombreCliente = reader.GetString("NombreCliente"),
@@ -820,7 +822,7 @@ namespace API_Tesis.Controllers
 
                     string query = @"
                         SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho,u.Apellido AS ApellidoDuenho, c.IdChat, pr.Nombre AS NombreProducto,
-                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, c.FinalizarCliente
+                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, c.FinalizarCliente, p.IdPedido
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                         INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
@@ -843,6 +845,7 @@ namespace API_Tesis.Controllers
                                     seguimientoExistente = new Seguimiento
                                     {
                                         IdChat = idChat,
+                                        IdPedido = reader.IsDBNull(reader.GetOrdinal("IdPedido")) ? 0 : reader.GetInt32("IdPedido"),
                                         IdPedidoXProducto = reader.GetInt32("IdPedidoXProducto"),
                                         NombreTienda = reader.GetString("NombreTienda"),
                                         NombreDuenho = reader.GetString("NombreDuenho"),
@@ -1807,7 +1810,7 @@ namespace API_Tesis.Controllers
                         (SELECT COUNT(*) 
                          FROM Usuario 
                          JOIN Pedidos ON Usuario.IdUsuario = Pedidos.UsuarioID 
-                         WHERE Usuario.IdUsuario = @IdUsuario 
+                         WHERE Usuario.IdUsuario = @IdUsuario AND Pedidos.Estado <> 3
                          GROUP BY Usuario.IdUsuario, Usuario.Nombre, Usuario.Apellido) AS CantidadPedidos,
     
                         (SELECT COUNT(*) 
@@ -2052,8 +2055,8 @@ namespace API_Tesis.Controllers
                                             IdPedido = idPedido,
                                             NombreCliente = reader.GetString("NombreCliente"),
                                             ApellidoCliente = reader.GetString("ApellidoCliente"),
-                                            FechaEntrega = reader.GetDateTime("FechaEntrega"),
-                                            FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                            FechaEntrega = reader.IsDBNull(reader.GetOrdinal("FechaEntrega")) ? DateTime.MinValue : reader.GetDateTime("FechaEntrega"),
+                                            FechaCreacion = reader.IsDBNull(reader.GetOrdinal("FechaCreacion")) ? DateTime.MinValue : reader.GetDateTime("FechaCreacion"),
                                             Total = reader.GetDouble("Total"),
                                             Estado = reader.GetInt32("Estado"),
                                             ProductosLista = new List<ProductoPedido>()
@@ -2073,7 +2076,7 @@ namespace API_Tesis.Controllers
                                         Cantidad = reader.GetInt32("CantidadProducto"),
                                         Precio = reader.GetDouble("Precio"),
                                         TieneReclamo = reader.GetBoolean("TieneReclamo"),
-                                        FechaReclamo = reader.GetDateTime("FechaReclamo"),
+                                        FechaReclamo = reader.IsDBNull(reader.GetOrdinal("FechaReclamo")) ? DateTime.MinValue : reader.GetDateTime("FechaReclamo")
                                     });
                                 }
                                 return Ok(pedidos);

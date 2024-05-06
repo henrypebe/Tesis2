@@ -104,7 +104,6 @@ def cargar_pipeline_y_predecir(datos_directos):
         return "Fraude"
     else:
         return "No Fraude"
-    # return "OK"
 
 def reentrenar_y_guardar_pipeline(nuevos_datos, pipeline_file, pipeline, valor_prediccion):
     X_nuevos = nuevos_datos

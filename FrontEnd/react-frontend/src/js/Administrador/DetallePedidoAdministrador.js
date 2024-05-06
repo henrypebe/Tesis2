@@ -2,6 +2,9 @@ import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableH
 import React from 'react'
 
 export default function DetallePedidoAdministrador({setMostrarEstadistica, setMostrarPedidoDetalle, PedidoSeleccionado}) {
+    
+    console.log(PedidoSeleccionado);
+
     const handleChange = () =>{
         setMostrarPedidoDetalle(false);
         setMostrarEstadistica(true);
@@ -44,7 +47,7 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
         <Box sx={{padding:"20px", width:"80.37%", marginTop:"-1.9px", height:"88vh"}}>
             <Box sx={{display:"flex", flexDirection:"row"}}>
                 
-                <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Pedidos - Tienda 1</Typography>
+                <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Pedidos ID {PedidoSeleccionado.idPedido} - Tienda</Typography>
 
                 <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
                     fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleChange}>

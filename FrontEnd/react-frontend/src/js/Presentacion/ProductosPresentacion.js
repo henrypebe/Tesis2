@@ -35,6 +35,7 @@ export default function ProductosPresentacion() {
               if (response.ok) {
                 const producto = await response.json();
                 setProductosList(producto);
+                // console.log(producto);
               } else if (response.status === 404) {
                 throw new Error("Productos no encontrado");
               } else {
@@ -92,7 +93,9 @@ export default function ProductosPresentacion() {
         
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
-        <>
+        {ListaTiendaSeleccionado && ListaTiendaSeleccionado.length > 0?
+        (
+          <>
             <Box sx={{height:"28%"}}>
                 {ListaTiendaSeleccionado && ListaTiendaSeleccionado.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map(tienda => (
                     <CardTiendaPresentacion tienda={tienda} opcion={0}/>
@@ -102,7 +105,15 @@ export default function ProductosPresentacion() {
                 <Pagination count={Math.ceil(ListaTiendaSeleccionado? ListaTiendaSeleccionado.length / rowsPerPage: 0)} page={currentPage + 1} 
                 onChange={handleChangePage}/>
             </Box>
-        </>
+          </>
+        ):
+        (
+          <Box sx={{height:"28%"}}>
+            <Typography sx={{fontSize:"20px", fontWeight:"bold"}}>
+              No se tiene tiendas disponibles
+            </Typography>
+          </Box>
+        )}
 
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Productos disponibles</Typography>
         
@@ -136,7 +147,9 @@ export default function ProductosPresentacion() {
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
-        <>
+        {productosList && productosList.length > 0?
+        (
+          <>
             <Box sx={{height:"39.5%"}}>
               {productosList && productosList.slice(currentPage2 * rowsPerPage2, (currentPage2 + 1) * rowsPerPage2).map(producto => (
                 <CardProductoPresentacion producto={producto}/>
@@ -145,7 +158,15 @@ export default function ProductosPresentacion() {
             <Box sx={{ display:"flex", justifyContent:"center"}}>
                 <Pagination count={Math.ceil(productosList ? productosList.length / rowsPerPage2 : 0)} page={currentPage2 + 1} onChange={handleChangePage2}/>
             </Box>
-        </>
+          </>
+        ):
+        (
+          <Box sx={{height:"28%"}}>
+            <Typography sx={{fontSize:"20px", fontWeight:"bold"}}>
+              No se tiene productos disponibles
+            </Typography>
+          </Box>
+        )}
     </Box>
   )
 }
