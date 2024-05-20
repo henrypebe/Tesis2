@@ -1613,16 +1613,15 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
               }}
             />
 
-            <Box sx={{height:"88%"}}>
+            <Box sx={{height:"82%"}}>
               {HistorialProductos && HistorialProductos.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((cambio) => {
                 return(
                   <LineaDetalleProductoVisualizar cambio={cambio}/>
                 );
               })}
             </Box>
-
             <Box sx={{ display:"flex", justifyContent:"center"}}>
-                <Pagination count={Math.ceil(HistorialProductos ? HistorialProductos.length / rowsPerPage : 0)} page={currentPage + 1} onChange={handleChangePage}/>
+              <Pagination count={Math.ceil(HistorialProductos ? HistorialProductos.length / rowsPerPage : 0)} page={currentPage + 1} onChange={handleChangePage}/>
             </Box>
           </Box>
         </Modal>

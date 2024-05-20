@@ -5,6 +5,8 @@ import pickle
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, learning_curve, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.pipeline import make_pipeline
@@ -59,8 +61,11 @@ def cargar_datos(nombre_archivo):
                     datos_procesados.append(tuple(fragmentos))
                     fragmentos = []
                 continue
-            clave, valor = linea.strip().split(': ', 1)
-            fragmentos.append(valor)
+            try:
+                clave, valor = linea.strip().split(': ', 1)
+                fragmentos.append(valor)
+            except ValueError:
+                print("Error: la línea no sigue el formato esperado:", linea)
         if fragmentos:
             datos_procesados.append(tuple(fragmentos))
     
@@ -99,7 +104,7 @@ def evaluar_modelo(modelo, X_test, y_test):
     recall = recall_score(y_test, y_pred, average='micro')
     f1 = f1_score(y_test, y_pred, average='micro')
     conf_matrix = confusion_matrix(y_test, y_pred)
-    cv_scores = cross_val_score(pipeline, X, y, cv=5, scoring='accuracy')
+    cv_scores = cross_val_score(modelo, X, y, cv=5, scoring='accuracy')
 
     print("Accuracy:", accuracy)
     print("Precision:", precision)
@@ -139,11 +144,22 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     plt.legend(loc="best")
     return plt
 
-pipeline_file = "pipeline.pkl"
+# pipeline_file = "pipeline.pkl"
 
 # Cargar y preprocesar los datos
-ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude.txt")
-df = cargar_datos(ruta_archivo)
+# ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt")
+archivos = [
+    "ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt",
+    "ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt",
+    "ArchivosAdicionales/datos_pedidos_fraude_Esc3.txt"
+]
+# df = cargar_datos(ruta_archivo)
+dfs = []
+for archivo in archivos:
+    df_temp = cargar_datos(archivo)
+    dfs.append(df_temp)
+df = pd.concat(dfs, ignore_index=True)
+
 df = preprocesar_datos(df)
 
 # Separar datos en características (X) y etiquetas (y)
@@ -157,19 +173,27 @@ y = df['Fraude']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # # Crear y entrenar el modelo
-pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
-pipeline.fit(X_train, y_train)
+# pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
+# pipeline.fit(X_train, y_train)
+
+# pipeline2 = make_pipeline(StandardScaler(), DecisionTreeClassifier())
+# pipeline2.fit(X_train, y_train)
+
+pipeline3 = make_pipeline(StandardScaler(), GradientBoostingClassifier())
+pipeline3.fit(X_train, y_train)
     
 # Guardar el modelo en un archivo
-with open(pipeline_file, 'wb') as file:
-    pickle.dump(pipeline, file)
+# with open(pipeline_file, 'wb') as file:
+#     pickle.dump(pipeline, file)
 
-entrenar_y_guardar_pipeline(pipeline, X_train, y_train, pipeline_file)
+# entrenar_y_guardar_pipeline(pipeline, X_train, y_train, pipeline_file)
 
-evaluar_modelo(pipeline, X_test, y_test)
-title = "Learning Curves (Random Forest)"
-plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
-plt.show()
+# evaluar_modelo(pipeline, X_test, y_test)
+# evaluar_modelo(pipeline2, X_test, y_test)
+evaluar_modelo(pipeline3, X_test, y_test)
+# title = "Learning Curves (Random Forest)"
+# plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
+# plt.show()
 
 # def cargar_datos_2(datos):
 #     datos_procesados = []
