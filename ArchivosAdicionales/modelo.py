@@ -83,11 +83,31 @@ def preprocesar_datos_2(df):
     return df
 
 def cargar_pipeline_y_predecir(datos_directos):
+    FECHAS_FESTIVAS = [
+        (12, 24), # 24/12
+        (12, 25), # 25/12
+        (12, 26), # 26/12
+        (12, 30), # 30/12
+        (12, 31), # 31/12
+        (1, 1),   # 1/01
+        (7, 28),  # 28/07
+        (7, 27),  # 27/07
+        (7, 29),  # 29/07
+        (2, 14),   # 14/02
+        (2, 13),   # 13/02
+        (2, 15),   # 15/02
+    ]
     # Cargar los datos directos y preprocesarlos
-    pipeline_file = "pipeline.pkl"
     datos_directos_string = convertir_datos_directos(datos_directos)
     df_nuevos_datos = cargar_datos_2(datos_directos_string)
     df_nuevos_datos = preprocesar_datos_2(df_nuevos_datos)
+    
+    fecha_pedido = df_nuevos_datos['Fecha_Hora'].iloc[0]
+    if (fecha_pedido.month, fecha_pedido.day) in FECHAS_FESTIVAS:
+        pipeline_file = "pipelineEsc3.pkl"
+    else:
+        pipeline_file = random.choice(["pipeline.pkl", "pipelineEsc2.pkl"])
+    
     df_nuevos_datos.drop(['Nombre', 'Fecha_Hora'], axis=1, inplace=True)
     
     # # predicciones = Entrenamiento(df_nuevos_datos)

@@ -144,14 +144,12 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     plt.legend(loc="best")
     return plt
 
-# pipeline_file = "pipeline.pkl"
+pipeline_file = "pipelineEsc3.pkl"
 
 # Cargar y preprocesar los datos
 # ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt")
 archivos = [
-    "ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt",
-    "ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt",
-    "ArchivosAdicionales/datos_pedidos_fraude_Esc3.txt"
+    "ArchivosAdicionales/datos_pedidos_fraude_Esc3.txt",
 ]
 # df = cargar_datos(ruta_archivo)
 dfs = []
@@ -173,24 +171,25 @@ y = df['Fraude']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # # Crear y entrenar el modelo
-# pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
-# pipeline.fit(X_train, y_train)
+pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
+pipeline.fit(X_train, y_train)
 
 # pipeline2 = make_pipeline(StandardScaler(), DecisionTreeClassifier())
 # pipeline2.fit(X_train, y_train)
 
-pipeline3 = make_pipeline(StandardScaler(), GradientBoostingClassifier())
-pipeline3.fit(X_train, y_train)
+# pipeline3 = make_pipeline(StandardScaler(), GradientBoostingClassifier())
+# pipeline3.fit(X_train, y_train)
     
 # Guardar el modelo en un archivo
-# with open(pipeline_file, 'wb') as file:
-#     pickle.dump(pipeline, file)
+with open(pipeline_file, 'wb') as file:
+    pickle.dump(pipeline, file)
 
 # entrenar_y_guardar_pipeline(pipeline, X_train, y_train, pipeline_file)
 
-# evaluar_modelo(pipeline, X_test, y_test)
+evaluar_modelo(pipeline, X_test, y_test)
 # evaluar_modelo(pipeline2, X_test, y_test)
-evaluar_modelo(pipeline3, X_test, y_test)
+# evaluar_modelo(pipeline3, X_test, y_test)
+
 # title = "Learning Curves (Random Forest)"
 # plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
 # plt.show()
