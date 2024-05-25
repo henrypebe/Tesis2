@@ -30,7 +30,7 @@ def cargar_pipeline_y_predecir(datos_directos, pipeline_file):
     
     # Cargar el pipeline desde el archivo
     with open(pipeline_file, 'rb') as file:
-        pipeline = pickle.load(file)
+        pipeline, X_train_prev, y_train_prev = pickle.load(file)
     
     # Realizar predicciones con el pipeline cargado
     predicciones = pipeline.predict(df_nuevos_datos)
@@ -40,16 +40,22 @@ def cargar_pipeline_y_predecir(datos_directos, pipeline_file):
     # Imprimir las predicciones
     print(f"\nPredicción para el movimiento: {'Fraude' if predicciones[0] else 'No Fraude'}")
     
-    reentrenar_y_guardar_pipeline(df_nuevos_datos, pipeline_file, pipeline, valor_prediccion)
+    reentrenar_y_guardar_pipeline(df_nuevos_datos, pipeline_file, pipeline, valor_prediccion, X_train_prev, y_train_prev)
     
-def reentrenar_y_guardar_pipeline(nuevos_datos, pipeline_file, pipeline, valor_prediccion):
+def reentrenar_y_guardar_pipeline(nuevos_datos, pipeline_file, pipeline, valor_prediccion, X_train_prev, y_train_prev):
     X_nuevos = nuevos_datos
     y_nuevos = np.array([valor_prediccion])
     
-    pipeline.fit(X_nuevos, y_nuevos)
+    # Agregar los nuevos datos a los datos de entrenamiento previos
+    X_train = pd.concat([X_train_prev, X_nuevos], ignore_index=True)
+    y_train = np.concatenate([y_train_prev, y_nuevos])
     
+    # Reentrenar el pipeline con los datos combinados
+    pipeline.fit(X_train, y_train)
+    
+    # Guardar el pipeline y los datos de entrenamiento actualizados
     with open(pipeline_file, 'wb') as file:
-        pickle.dump(pipeline, file)
+        pickle.dump((pipeline, X_train, y_train), file)
 
 def cargar_datos(nombre_archivo):
     with open(nombre_archivo, 'r', encoding='latin1') as archivo:
@@ -144,12 +150,13 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     plt.legend(loc="best")
     return plt
 
-pipeline_file = "pipelineEsc3.pkl"
+pipeline_file = "pipelineEsc2.pkl"
 
 # Cargar y preprocesar los datos
 # ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt")
+
 archivos = [
-    "ArchivosAdicionales/datos_pedidos_fraude_Esc3.txt",
+    "ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt",
 ]
 # df = cargar_datos(ruta_archivo)
 dfs = []
@@ -160,7 +167,7 @@ df = pd.concat(dfs, ignore_index=True)
 
 df = preprocesar_datos(df)
 
-# Separar datos en características (X) y etiquetas (y)
+# # Separar datos en características (X) y etiquetas (y)
 # features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto']
 features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Anho', 
             'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
@@ -182,11 +189,13 @@ pipeline.fit(X_train, y_train)
     
 # Guardar el modelo en un archivo
 with open(pipeline_file, 'wb') as file:
-    pickle.dump(pipeline, file)
+    pickle.dump((pipeline, X_train, y_train), file)
+    
+    
 
 # entrenar_y_guardar_pipeline(pipeline, X_train, y_train, pipeline_file)
 
-evaluar_modelo(pipeline, X_test, y_test)
+# evaluar_modelo(pipeline, X_test, y_test)
 # evaluar_modelo(pipeline2, X_test, y_test)
 # evaluar_modelo(pipeline3, X_test, y_test)
 
@@ -194,54 +203,54 @@ evaluar_modelo(pipeline, X_test, y_test)
 # plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
 # plt.show()
 
-# def cargar_datos_2(datos):
-#     datos_procesados = []
-#     fragmentos = []
-#     for linea in datos:
-#         if linea.strip() == '':
-#             if fragmentos:
-#                 datos_procesados.append(tuple(fragmentos))
-#                 fragmentos = []
-#             continue
-#         clave, valor = linea.strip().split(': ', 1)
-#         fragmentos.append(valor)
-#     if fragmentos:
-#         datos_procesados.append(tuple(fragmentos))
+def cargar_datos_2(datos):
+    datos_procesados = []
+    fragmentos = []
+    for linea in datos:
+        if linea.strip() == '':
+            if fragmentos:
+                datos_procesados.append(tuple(fragmentos))
+                fragmentos = []
+            continue
+        clave, valor = linea.strip().split(': ', 1)
+        fragmentos.append(valor)
+    if fragmentos:
+        datos_procesados.append(tuple(fragmentos))
 
-#     return pd.DataFrame(datos_procesados, columns=['ID', 'Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto'])
+    return pd.DataFrame(datos_procesados, columns=['ID', 'Nombre', 'Fecha_Hora', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto'])
 
-# def preprocesar_datos_2(df):
-#     df = df.copy()
-#     label_encoders = {}
-#     for column in ['Direccion', 'Tipo_Producto', 'Cuenta']:
-#         label_encoders[column] = LabelEncoder()
-#         df[column] = label_encoders[column].fit_transform(df[column])
+def preprocesar_datos_2(df):
+    df = df.copy()
+    label_encoders = {}
+    for column in ['Direccion', 'Tipo_Producto', 'Cuenta']:
+        label_encoders[column] = LabelEncoder()
+        df[column] = label_encoders[column].fit_transform(df[column])
     
-#     # Conversión de la columna 'Fecha_Hora' a tipo datetime
-#     df['Fecha_Hora'] = pd.to_datetime(df['Fecha_Hora'], errors='coerce', format='%Y-%m-%d %H:%M:%S')
-#     # Eliminación de filas con valores faltantes en 'Fecha_Hora'
-#     df = df.dropna(subset=['Fecha_Hora'])
+    # Conversión de la columna 'Fecha_Hora' a tipo datetime
+    df['Fecha_Hora'] = pd.to_datetime(df['Fecha_Hora'], errors='coerce', format='%Y-%m-%d %H:%M:%S')
+    # Eliminación de filas con valores faltantes en 'Fecha_Hora'
+    df = df.dropna(subset=['Fecha_Hora'])
     
-#     df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
-#     df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
-#     df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
-#     df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
-#     df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
-#     df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
+    df.loc[:, 'Anho'] = df['Fecha_Hora'].dt.year
+    df.loc[:, 'Mes'] = df['Fecha_Hora'].dt.month
+    df.loc[:, 'Dia'] = df['Fecha_Hora'].dt.day
+    df.loc[:, 'Hora'] = df['Fecha_Hora'].dt.hour
+    df.loc[:, 'Minuto'] = df['Fecha_Hora'].dt.minute
+    df.loc[:, 'Segundo'] = df['Fecha_Hora'].dt.second
     
-#     return df
+    return df
 
-# datos_directos = [
-#     "ID: 20",
-#     "Nombre y Apellido del Comprador: Michael Smith",
-#     "Fecha de Creación del Pedido: 2024-04-15 12:32:00",
-#     "Lugar de Entrega: 7657 Obrien Forest, West Holly, OH 24807",
-#     "Cantidad de cambios de lugar de entrega durante el ultimo mes: 1",
-#     "Costo total del Pedido: 38",
-#     "Método de Pago (Número de Cuenta Encriptado): pm_1P7KAtG77lj0glGvxvqiL2c6",
-#     "Numeros de cambios del método de pago: 0",
-#     "Cantidad de Productos en el Pedido: 20",
-#     "Tipo de Producto (con mayor valor): Tecnología"
-# ]
+datos_directos = [
+    "ID: 3",
+    "Nombre y Apellido del Comprador: Pepito Alvez",
+    "Fecha de Creación del Pedido: 2024-05-26 23:29:20",
+    "Lugar de Entrega: Direccion 1",
+    "Cantidad de cambios de lugar de entrega durante el ultimo mes: 1",
+    "Costo total del Pedido: 21",
+    "Método de Pago (Número de Cuenta Encriptado): pm_1P7KAtG77lj0glGvxvqiL2c6",
+    "Numeros de cambios del método de pago: 1",
+    "Cantidad de Productos en el Pedido: 1",
+    "Tipo de Producto (con mayor valor): Juguetes"
+]
 
-# cargar_pipeline_y_predecir(datos_directos, pipeline_file)
+cargar_pipeline_y_predecir(datos_directos, pipeline_file)

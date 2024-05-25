@@ -10,6 +10,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+import random
 
 def cargar_datos(nombre_archivo):
     with open(nombre_archivo, 'r', encoding='latin1') as archivo:
@@ -112,27 +113,33 @@ def cargar_pipeline_y_predecir(datos_directos):
     
     # # predicciones = Entrenamiento(df_nuevos_datos)
     with open(pipeline_file, 'rb') as file:
-        pipeline = pickle.load(file)
+        pipeline, X_train_prev, y_train_prev = pickle.load(file)
     
     predicciones = pipeline.predict(df_nuevos_datos)
     
     valor_prediccion = 1 if predicciones[0] else 0
     
-    reentrenar_y_guardar_pipeline(df_nuevos_datos, pipeline_file, pipeline, valor_prediccion)
+    reentrenar_y_guardar_pipeline(df_nuevos_datos, pipeline_file, pipeline, valor_prediccion, X_train_prev, y_train_prev)
     
     if(predicciones[0]):
         return "Fraude"
     else:
         return "No Fraude"
 
-def reentrenar_y_guardar_pipeline(nuevos_datos, pipeline_file, pipeline, valor_prediccion):
+def reentrenar_y_guardar_pipeline(nuevos_datos, pipeline_file, pipeline, valor_prediccion, X_train_prev, y_train_prev):
     X_nuevos = nuevos_datos
     y_nuevos = np.array([valor_prediccion])
     
-    pipeline.fit(X_nuevos, y_nuevos)
+    # Agregar los nuevos datos a los datos de entrenamiento previos
+    X_train = pd.concat([X_train_prev, X_nuevos], ignore_index=True)
+    y_train = np.concatenate([y_train_prev, y_nuevos])
     
+    # Reentrenar el pipeline con los datos combinados
+    pipeline.fit(X_train, y_train)
+    
+    # Guardar el pipeline y los datos de entrenamiento actualizados
     with open(pipeline_file, 'wb') as file:
-        pickle.dump(pipeline, file)
+        pickle.dump((pipeline, X_train, y_train), file)
         
 def Entrenamiento(df_nuevos_datos):
     pipeline_file = "pipeline.pkl"

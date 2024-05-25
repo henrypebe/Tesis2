@@ -250,8 +250,11 @@ ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 
-SELECT COUNT(DISTINCT p.IdProducto) AS CantidadProductos
-FROM Tienda t
-INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-INNER JOIN Producto p ON p.TiendaID = t.IdTienda
-WHERE t.Estado = 1 AND t.IdTienda = 1;
+ UPDATE Usuario U
+                    SET CantMetodoPago = (
+                        SELECT COUNT(*)
+                        FROM MetodoPago MP
+                        WHERE MP.UsuarioID = U.IdUsuario AND MP.Estado = 1
+                        AND IdUsuario = 3
+                    )
+                    WHERE IdUsuario = 3

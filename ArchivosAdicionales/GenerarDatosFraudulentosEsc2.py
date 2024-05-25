@@ -68,8 +68,8 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
     cantidad_productos= 0
     idUsuario=0
     tipo_producto_mayoria=""
-    rangos_cantidad_productos = {nombre: (random.randint(5, 10), random.randint(30, 60)) for nombre in nombres_compradores}
-    rangos_cantidad_precio = {nombre: (random.randint(6, 25), random.randint(50, 80)) for nombre in nombres_compradores}
+    rangos_cantidad_productos = {nombre: (random.randint(1, 10), random.randint(30, 60)) for nombre in nombres_compradores}
+    rangos_cantidad_precio = {nombre: (random.randint(6, 25), random.randint(50, 300)) for nombre in nombres_compradores}
     
     with open("ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt", "w") as archivo:
         for _ in range(num_pedidos):
@@ -119,7 +119,7 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
                     if costo_pedido == 0:
                         costo_pedido = random.randint(min_cantidadPrecio, max_cantidadPrecio)
                     
-                    cantidad_productos = random.choice([random.randint(1, int(min_cantidad * 0.5)), int(max_cantidad * random.choice([1.3, 1.5]))])
+                    cantidad_productos = random.choice([random.randint(0, int(min_cantidad * 0.5)), int(max_cantidad * random.choice([1.3, 1.5]))])
 
                 elif tipo_fraude == 'monto_inusual':
                     if fecha_creacion_pedido is None:

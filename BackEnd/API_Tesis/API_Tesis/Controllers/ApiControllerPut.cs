@@ -56,6 +56,73 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpPut]
+        [Route("/ActualizarCantidadDireccion")]
+        public async Task<IActionResult> ActualizarCantidadDireccion(int idUsuario)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    UPDATE Usuario 
+                        SET CantCambiosDireccion = 1
+                    WHERE IdUsuario = @IdUsuario
+                        END";
+
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                if (rowsAffected > 0)
+                {
+                    connection.Close();
+                    return Ok();
+                }
+                else
+                {
+                    connection.Close();
+                    return NotFound();
+                }
+            }
+        }
+        [HttpPut]
+        [Route("/ActualizarCantidadMetodoPago")]
+        public async Task<IActionResult> ActualizarCantidadMetodoPago(int idUsuario)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    UPDATE Usuario U
+                    SET CantMetodoPago = (
+                        SELECT COUNT(*)
+                        FROM MetodoPago MP
+                        WHERE MP.UsuarioID = U.IdUsuario AND MP.Estado = 1
+                        AND IdUsuario = @IdUsuario
+                    )
+                    WHERE IdUsuario = @IdUsuario
+                    ";
+
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                if (rowsAffected > 0)
+                {
+                    connection.Close();
+                    return Ok();
+                }
+                else
+                {
+                    connection.Close();
+                    return NotFound();
+                }
+            }
+        }
+        [HttpPut]
         [Route("/ActualizarEstadoPedido")]
         public async Task<IActionResult> ActualizarEstadoPedido(int idPedido, int valor)
         {
