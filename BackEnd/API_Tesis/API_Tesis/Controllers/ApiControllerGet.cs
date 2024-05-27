@@ -2339,7 +2339,11 @@ namespace API_Tesis.Controllers
                 {
                     connection.Open();
 
-                    string query = "SELECT IdTienda, Nombre, Descripcion, Direccion, Provincia, Pais, Foto, Estado, MotivoRechazo FROM Tienda WHERE UsuarioID = @IdUsuario AND Estado <> 4";
+                    string query = @"SELECT T.IdTienda, T.Nombre, T.Descripcion, T.Direccion, T.Provincia, 
+                    T.Pais, T.Foto, T.Estado, T.MotivoRechazo
+                    FROM Vendedor V
+                    INNER JOIN Tienda T ON T.IdTienda = V.TiendaID
+                    WHERE V.usuarioId = @IdUsuario AND V.Estado <> 4";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {

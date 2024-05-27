@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 
 export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaVendedor, setMostrarVentas, setMostrarMisProductos,
-  setMostrarSeguimientoVendedor, setMostrarBilletera, setMostrarReclamo, informacionTienda, setMostrarGestionVendedor}) {
+  setMostrarSeguimientoVendedor, setMostrarBilletera, setMostrarReclamo, informacionTienda, setMostrarGestionVendedor, esVendedorAdministrador}) {
   
   const handleClickEstadistica = () =>{
     setMostrarInicio(false);
@@ -191,19 +191,21 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
 
       <Box sx={{ width:"100%", display:"flex", justifyContent:"center", height:"100px", marginBottom:"20px"}}>
         
-        <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50BAFF", border:"1px solid #7B7B7B", width:"715px", marginRight:"20px",
-        '&:hover': {backgroundColor:"#50BAFF", border:"1px solid #7B7B7B"}}}
-        onClick={handleClickGestionVendedor}
-        >
-          <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
-            <img src='https://cdn-icons-png.freepik.com/512/327/327628.png' alt=''
-              style={{marginRight:"10px", color:"black", height:"50px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"80%"}}>Vendedores esperando aprobación:</Typography>
-            <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
-              {Estadistica && Estadistica.cantidadMetodoPago>0? "Si":"No"}
-            </Typography>
-          </Box>
-        </Button>
+        {esVendedorAdministrador && (
+          <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50BAFF", border:"1px solid #7B7B7B", width:"715px", marginRight:"20px",
+          '&:hover': {backgroundColor:"#50BAFF", border:"1px solid #7B7B7B"}}}
+          onClick={handleClickGestionVendedor}
+          >
+            <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"100%"}}>
+              <img src='https://cdn-icons-png.freepik.com/512/327/327628.png' alt=''
+                style={{marginRight:"10px", color:"black", height:"50px"}}/>
+              <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"80%"}}>Vendedores esperando aprobación:</Typography>
+              <Typography sx={{color:"black", width:"30%", textAlign:"right", fontSize:"25px"}}>
+                {Estadistica && Estadistica.cantidadMetodoPago>0? "Si":"No"}
+              </Typography>
+            </Box>
+          </Button>
+        )}
 
         <Button variant="contained" sx={{display:"flex", flexDirection:"row", background:"#50BAFF", border:"1px solid #7B7B7B", width:"715px",
         '&:hover': {backgroundColor:"#50BAFF", border:"1px solid #7B7B7B"}}}

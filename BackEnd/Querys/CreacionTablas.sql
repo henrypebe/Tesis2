@@ -250,11 +250,8 @@ ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 
- UPDATE Usuario U
-                    SET CantMetodoPago = (
-                        SELECT COUNT(*)
-                        FROM MetodoPago MP
-                        WHERE MP.UsuarioID = U.IdUsuario AND MP.Estado = 1
-                        AND IdUsuario = 3
-                    )
-                    WHERE IdUsuario = 3
+SELECT T.IdTienda, T.Nombre, T.Descripcion, T.Direccion, T.Provincia, 
+T.Pais, T.Foto, T.Estado, T.MotivoRechazo
+FROM Vendedor V
+INNER JOIN Tienda T ON T.IdTienda = V.TiendaID
+WHERE V.usuarioId = 1 AND V.Estado <> 4;

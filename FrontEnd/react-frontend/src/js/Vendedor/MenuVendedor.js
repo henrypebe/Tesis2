@@ -135,13 +135,13 @@ export default function MenuVendedor() {
             setMostrarEditarProducto={setMostrarEditarProducto} mostrarDetalleSeguimiento={mostrarDetalleSeguimiento}
             setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento} mostrarDetalleBilletera={mostrarDetalleBilletera}
             setMostrarnDetalleBilletera={setMostrarnDetalleBilletera} historialProducto={historialProducto} setHistoriaProducto={setHistoriaProducto}
-            mostrarGestionVendedor={mostrarGestionVendedor} setMostrarGestionVendedor={setMostrarGestionVendedor}
+            mostrarGestionVendedor={mostrarGestionVendedor} setMostrarGestionVendedor={setMostrarGestionVendedor} esVendedorAdministrador={esVendedorAdministrador}
             />
 
             {mostrarInicio && <InicioVendedor setMostrarInicio={setMostrarInicio} setMostrarEstadisticaVendedor={setMostrarEstadisticaVendedor}
             setMostrarVentas={setMostrarVentas} setMostrarMisProductos={setMostrarMisProductos}
             setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor} setMostrarBilletera={setMostrarBilletera} setMostrarReclamo={setMostrarReclamo}
-            informacionTienda={informacionTienda} setMostrarGestionVendedor={setMostrarGestionVendedor}/>}
+            informacionTienda={informacionTienda} setMostrarGestionVendedor={setMostrarGestionVendedor} esVendedorAdministrador={esVendedorAdministrador}/>}
 
             {mostrarVentas && <Ventas HandleChangeVentaSeleccionado={HandleChangeVentaSeleccionado} informacionTienda={informacionTienda}/>}
 

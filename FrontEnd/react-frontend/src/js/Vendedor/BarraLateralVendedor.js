@@ -14,7 +14,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
     mostrarEstadisticaVendedor, setMostrarEstadisticaVendedor, mostrarBilletera, setMostrarBilletera, mostrarDetalleVenta,
     setMostrarDetalleVenta,mostrarDetalleProducto, setMostrarDetalleProducto, mostrarEditarProducto, setMostrarEditarProducto,
     mostrarDetalleSeguimiento, setMostrarnDetalleSeguimiento, mostrarDetalleBilletera, setMostrarnDetalleBilletera, historialProducto,
-    setHistoriaProducto, mostrarGestionVendedor, setMostrarGestionVendedor}) {
+    setHistoriaProducto, mostrarGestionVendedor, setMostrarGestionVendedor, esVendedorAdministrador}) {
     const handleClickInicio = () => {
         setMostrarInicio(true);
         setMostrarVentas(false);
@@ -202,13 +202,15 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
             <Typography sx={{color:"black", fontWeight:"bold"}}>Billetera</Typography>
         </Button> */}
 
-        <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
-            marginBottom:"10px", backgroundColor: mostrarGestionVendedor? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
-            onClick={handleClickGestionVendedor}
+        {esVendedorAdministrador && (
+            <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
+                marginBottom:"10px", backgroundColor: mostrarGestionVendedor? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+                onClick={handleClickGestionVendedor}
             >
-            <PeopleOutlineIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold", textAlign:"left", width:"60%"}}>Gestión de vendedores</Typography>
-        </Button>
+                <PeopleOutlineIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
+                <Typography sx={{color:"black", fontWeight:"bold", textAlign:"left", width:"60%"}}>Gestión de vendedores</Typography>
+            </Button>
+        )}
     </Box>
   )
 }

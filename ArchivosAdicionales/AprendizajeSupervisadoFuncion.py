@@ -150,13 +150,15 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     plt.legend(loc="best")
     return plt
 
-pipeline_file = "pipelineEsc2.pkl"
+pipeline_file = "pipeline.pkl"
 
 # Cargar y preprocesar los datos
 # ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt")
 
 archivos = [
+    "ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt",
     "ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt",
+    "ArchivosAdicionales/datos_pedidos_fraude_Esc3.txt",
 ]
 # df = cargar_datos(ruta_archivo)
 dfs = []
@@ -188,8 +190,8 @@ pipeline.fit(X_train, y_train)
 # pipeline3.fit(X_train, y_train)
     
 # Guardar el modelo en un archivo
-with open(pipeline_file, 'wb') as file:
-    pickle.dump((pipeline, X_train, y_train), file)
+# with open(pipeline_file, 'wb') as file:
+#     pickle.dump((pipeline, X_train, y_train), file)
     
     
 
@@ -199,9 +201,9 @@ with open(pipeline_file, 'wb') as file:
 # evaluar_modelo(pipeline2, X_test, y_test)
 # evaluar_modelo(pipeline3, X_test, y_test)
 
-# title = "Learning Curves (Random Forest)"
-# plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
-# plt.show()
+title = "Learning Curves (Random Forest)"
+plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
+plt.show()
 
 def cargar_datos_2(datos):
     datos_procesados = []
@@ -253,4 +255,4 @@ datos_directos = [
     "Tipo de Producto (con mayor valor): Juguetes"
 ]
 
-cargar_pipeline_y_predecir(datos_directos, pipeline_file)
+# cargar_pipeline_y_predecir(datos_directos, pipeline_file)
