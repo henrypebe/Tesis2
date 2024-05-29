@@ -157,12 +157,30 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
         </Box>
 
         <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px"}}>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"40%"}}>
-                Costo total del pedido:
-            </Typography>
-            <Typography sx={{color:"black", fontSize:"24px", width:"100%"}}>
-                S/. {PedidoSeleccionado.total.toFixed(2)}
-            </Typography>
+            <Box sx={{width:"40%", display:"flex", flexDirection:"row"}}>
+                <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"71%"}}>
+                    Costo del pedido (sin envío):
+                </Typography>
+                <Typography sx={{color:"black", fontSize:"24px"}}>
+                    S/. {PedidoSeleccionado.total.toFixed(2)}
+                </Typography>
+            </Box>
+            <Box sx={{width:"28%", display:"flex", flexDirection:"row"}}>
+                <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"65%"}}>
+                    Costo de entrega:
+                </Typography>
+                <Typography sx={{color:"black", fontSize:"24px"}}>
+                    S/. {PedidoSeleccionado.costoEnvio.toFixed(2)}
+                </Typography>
+            </Box>
+            <Box sx={{width:"20%", display:"flex", flexDirection:"row"}}>
+                <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"55%"}}>
+                    Costo total:
+                </Typography>
+                <Typography sx={{color:"black", fontSize:"24px"}}>
+                    S/. {(PedidoSeleccionado.total + PedidoSeleccionado.costoEnvio).toFixed(2)}
+                </Typography>
+            </Box>
         </Box>
 
         <Box sx={{display:"flex", flexDirection:"column", marginBottom:"10px"}}>

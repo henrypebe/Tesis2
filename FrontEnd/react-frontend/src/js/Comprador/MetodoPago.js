@@ -159,7 +159,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         setCurrentPage(newPage - 1);
     };
     const handleCheckboxChange = (id) => {
-        console.log(id);
+        // console.log(id);
         setSelectedMethodId(id);
     };
 
@@ -184,7 +184,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         `Cantidad de Productos en el Pedido: ${conteoCarritoCompra}\n` +
         `Tipo de Producto (con mayor valor): ${tipoProducto}`;
 
-        console.log(datosDirectosString);
+        // console.log(datosDirectosString);
 
         try {
             const response = await fetch('http://localhost:5000/predecir', {
@@ -210,7 +210,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         if((InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== "") && 
             (InformacionUsuario.correoAleatorio !== null || InformacionUsuario.correoAleatorio !== "")){
             let totalAmount = productos.reduce((total, producto) => {
-                const precio = parseFloat(producto.precio - (producto.precio*producto.cantidadOferta/100));
+                const precio = parseFloat((producto.precio - (producto.precio*producto.cantidadOferta/100))*producto.cantidad);
                 return total + (precio);
             }, 0);
 
@@ -229,8 +229,6 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             totalAmount = totalAmount + costoEnvio;
 
             const esFraude = await AlgoritmoObtener(fechaResultado, totalAmount, metodo.token, productoConMayorValor.tipoProducto);
-
-            console.log(esFraude);
 
             if(esFraude !== "" && esFraude === "No Fraude"){
                 await fetch(
@@ -513,6 +511,8 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                         }
                     );
                 }
+
+                
                 const promises = productos.map(producto => crearPedidoXProducto(producto, PedidoSeleccionado));
                 await Promise.all(promises);
                 createAndVerifyTransaction(FechaSeleccionado, TotalSeleccionado, TotalDescuentoSeleccionado, TokenSeleccionado, CostoEnvioSeleccionado);
