@@ -1,11 +1,18 @@
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
+import { Box, Button, IconButton, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import React, { useEffect } from 'react';
+import CancelIcon from "@mui/icons-material/Cancel";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function DetallePedido({setMostrarDetallePedido, setMostrarPedidos, setMostrarSeguimiento, PedidoSeleccionado, idUsuario, opcionPedidoDetalle}) {
     console.log(PedidoSeleccionado);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [FinalizarCliente, setFinalizarCliente] = React.useState();
+
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => {setOpen(true);};
+    const handleClose = () => {setOpen(false);};
 
     useEffect(() => {
         const handlePedidoCompleteList = async () => {
@@ -57,6 +64,57 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
         setMostrarPedidos(true);
     };
 
+    const handleSinEntregaPedido = async () => {
+        try {
+            const realizarReclamoResponse = await fetch(
+                `https://localhost:7240/RealizarReclamoPedido?idPedido=${PedidoSeleccionado.idPedido}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+    
+            if (!realizarReclamoResponse.ok) {
+                throw new Error('Error al realizar el reclamo del pedido');
+            }
+    
+            const actualizarConfirmacionResponse = await fetch(
+                `https://localhost:7240/ActualizarConfirmacionPedido?idPedido=${PedidoSeleccionado.idPedido}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+    
+            if (!actualizarConfirmacionResponse.ok) {
+                throw new Error('Error al actualizar la confirmación del pedido');
+            }
+    
+            toast.success('El pedido fue reclamado', { autoClose: 2000 });
+        } catch (error) {
+            toast.error(error.message, { autoClose: 2000 });
+        }
+    };    
+
+    const handleConfirmacionPedido = async () =>{
+        const response = await fetch(
+            `https://localhost:7240/ActualizarConfirmacionPedido?idPedido=${PedidoSeleccionado.idPedido}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+        );
+        if (response.ok) {
+            handleBackPedido();
+        }
+    }
+
     const handleSeguimiento = async (producto) => {
 
         if(!producto.tieneSeguimiento){
@@ -106,16 +164,54 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
         return nombresTiendasConcatenados;
     }
 
+    const style = {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 1000,
+        bgcolor: "background.paper",
+        border: "2px solid #000",
+        boxShadow: 24,
+        padding: "20px",
+        borderRadius: "8px",
+        height: "auto"
+    };
+
     return (
     <Box sx={{width:"87.1%", marginTop:"-1.9px", height:"88vh", padding:"20px"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
-            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"60%"}}>
                 ID Pedido {PedidoSeleccionado.idPedido.toFixed(0).padStart(2, '0')} - {concatenarNombresTiendas(PedidoSeleccionado)}
             </Typography>
-            <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
-            fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleBackPedido}>
-                Atrás
-            </Button>
+            {PedidoSeleccionado.estado === 4? (
+                <Box sx={{display:"flex", flexDirection:"row", width:"38%", justifyContent:"flex-end"}}>
+                     <Button variant="contained" sx={{backgroundColor:"#86882D", color:"white", border:"2px solid 86882D", width:"36%", 
+                    fontSize:"17px", marginRight:"20px",
+                    fontWeight:"bold", '&:hover':{backgroundColor:"#86882D"}}} onClick={handleOpen}>
+                        Confirmar entrega
+                    </Button>
+                    <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
+                    fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleBackPedido}>
+                        Atrás
+                    </Button>
+                </Box>
+            ):
+            (
+                <Box sx={{display:"flex", flexDirection:"row"}}>
+                    {PedidoSeleccionado.reclamoPedido && (
+                        <Box sx={{backgroundColor:"#850E0E", height:"40px", width:"200px", padding:"5px", borderRadius:"6px", color:"white", fontWeight:"bold",
+                        display:"flex", alignItems:"center", justifyContent:"center", fontSize:"23px", marginRight:"10px"}}>
+                            Hecho reclamo
+                        </Box>
+                    )}
+                    <Button variant="contained" sx={{backgroundColor:"white", color:"black", border:"2px solid black", width:"150px", fontSize:"17px",
+                    fontWeight:"bold", '&:hover':{backgroundColor:"white"}}} onClick={handleBackPedido}>
+                        Atrás
+                    </Button>
+                </Box>
+            )}
+            
         </Box>
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
@@ -253,6 +349,101 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                 />
             </Paper>
         </Box>
+
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+            <Box sx={style}>
+                <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                }}
+                >
+                    <Typography
+                        sx={{
+                        color: "black",
+                        fontWeight: "bold",
+                        fontSize: "30px",
+                        width: "100%",
+                        }}
+                    >
+                        Confirmación de entrega de pedido
+                    </Typography>
+                    <IconButton
+                        sx={{
+                        backgroundColor: "white",
+                        color: "black",
+                        width: "80px",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        "&:hover": { backgroundColor: "white" },
+                        }}
+                        onClick={handleClose}
+                    >
+                        <CancelIcon sx={{ fontSize: "50px" }} />
+                    </IconButton>
+                </Box>
+
+                <hr
+                style={{
+                    margin: "10px 0",
+                    border: "0",
+                    borderTop: "2px solid #ccc",
+                    marginTop: "10px",
+                    marginBottom: "15px",
+                }}
+                />
+
+                <Box sx={{marginBottom:"20px"}}>
+                    <Typography sx={{fontSize:"25px", marginBottom:"10px"}}>
+                        Se entregó el pedido con ID {PedidoSeleccionado.idPedido} junto a estos productos:
+                    </Typography>
+                    {PedidoSeleccionado.productosLista.map((producto, index) => (
+                        <ul key={index} style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+                            <li style={{fontSize:"23px"}}>{producto.nombreProducto}</li>
+                        </ul>
+                    ))}
+                </Box>
+
+                <Box sx={{display:"flex", flexDirection:"row"}}>
+                    <Button
+                    variant="contained"
+                    sx={{
+                        backgroundColor: "#286C23",
+                        width: "50%",
+                        marginBottom:"10px",
+                        height:"100%",
+                        border:"2px solid #286C23",
+                        marginRight:"10px",
+                        "&:hover": { backgroundColor: "#286C23" },
+                    }}
+                    onClick={() => {handleConfirmacionPedido()}}
+                    >
+                        Confirmación
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        sx={{
+                        backgroundColor: "#C84C31",
+                        width: "50%",
+                        height:"100%",
+                        border:"2px solid #C84C31",
+                        "&:hover": { backgroundColor: "#C84C31" },
+                        }}
+                        onClick={() => {handleSinEntregaPedido()}}
+                    >
+                        No se entregó
+                    </Button>
+                </Box>
+            </Box>
+        </Modal>
     </Box>
   )
 }

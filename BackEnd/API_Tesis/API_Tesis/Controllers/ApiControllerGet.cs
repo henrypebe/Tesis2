@@ -503,7 +503,7 @@ namespace API_Tesis.Controllers
                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-                        WHERE p.UsuarioID = @IdUsuario";
+                        WHERE p.UsuarioID = @IdUsuario AND p.Estado <> 3";
 
                     if (FechaFiltro != DateTime.MinValue)
                     {
@@ -536,6 +536,7 @@ namespace API_Tesis.Controllers
                                         FechaCreacion = reader.GetDateTime("FechaCreacion"),
                                         Total = reader.GetDouble("Total"),
                                         Estado = reader.GetInt32("Estado"),
+                                        ReclamoPedido = reader.GetBoolean("Reclamo"),
                                         CostoEnvio = reader.GetDouble("CostoEnvio"),
                                         ProductosLista = new List<ProductoPedido>()
                                     };

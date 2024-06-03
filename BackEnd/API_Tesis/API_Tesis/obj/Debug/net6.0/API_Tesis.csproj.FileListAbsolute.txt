@@ -46,9 +46,15 @@ C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\staticwebassets.build.json
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\staticwebassets.development.json
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\scopedcss\bundle\API_Tesis.styles.css
-C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\API_Tesis.csproj.CopyComplete
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\API_Tesis.dll
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\refint\API_Tesis.dll
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\API_Tesis.pdb
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\API_Tesis.genruntimeconfig.cache
 C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\ref\API_Tesis.dll
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\API_Tesis.sourcelink.json
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\staticwebassets\msbuild.API_Tesis.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\staticwebassets\msbuild.build.API_Tesis.props
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.API_Tesis.props
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.API_Tesis.props
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\staticwebassets.pack.json
+C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\obj\Debug\net6.0\API_Tesis.csproj.Up2Date

@@ -23,7 +23,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
   const [fechaHabilitada, setFechaHabitada] = React.useState(true);
   const [pageCompleto, setPageCompleto] = React.useState(0);
   const [pagePendiente, setPagePendiente] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(2);
+  const [rowsPerPage, setRowsPerPage] = React.useState(3);
 
   const [pedidosCompleteList, setPedidosCompleteList] = useState(null);
   const [pedidosPendienteList, setPedidosPendienteList] = useState(null);
@@ -91,8 +91,9 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
             setPagePendiente(0);
             const pedidosFuturos = pedido.filter(_pedido => {
               const EstadoPedido = _pedido.estado
-              return EstadoPedido===1;
+              return EstadoPedido===1 || EstadoPedido === 4;
             });
+            pedidosFuturos.sort((a, b) => b.estado - a.estado);
             // console.log(pedidosFuturos);
             const pedidosPasados = pedido.filter(_pedido => {
               const EstadoPedido = _pedido.estado
@@ -167,36 +168,48 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{padding:"20px", width:"86.7%", marginTop:"-1.9px", height:"88vh"}}>
-        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px"}}>Pedidos</Typography>
+        <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", marginTop:"-12px"}}>
+          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", marginRight:"40px"}}>Pedidos</Typography>
+          <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"60%"}}>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", marginRight:"20px"}}>Fecha de entrega:</Typography>
 
-        <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
+            <DateTimePicker
+              label="Ingrese la fecha"
+              views={['year', 'month', 'day']}
+              format="DD/MM/YYYY"
+              sx={{
+                marginRight: "10px",
+                width: "40%",
+                '& .MuiInputBase-root': {
+                  height: "40px",
+                  minHeight: "40px",
+                  display: 'flex',
+                  alignItems: 'center'
+                },
+                '& .MuiInputLabel-root': {
+                  marginTop: BusquedaFecha ? "-5px" : "-18px",
+                  lineHeight: "40px",
+                }
+              }}
+              disabled={fechaHabilitada}
+              value={BusquedaFecha}
+              onChange={handleDateChange}
+            />
 
-        <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", marginRight:"20px"}}>Fecha de entrega:</Typography>
+            <Checkbox checked={!fechaHabilitada} onChange={() => setFechaHabitada(!fechaHabilitada)} />
 
-          <DateTimePicker
-            label="Ingrese la fecha"
-            views={['year', 'month', 'day']}
-            format="DD/MM/YYYY"
-            sx={{marginRight:"10px"}}
-            disabled={fechaHabilitada}
-            value={BusquedaFecha}
-            onChange={handleDateChange}
-          />
-
-          <Checkbox checked={!fechaHabilitada} onChange={() => setFechaHabitada(!fechaHabilitada)} />
-
-          <Typography sx={{color:"black", fontSize:"20px", marginRight:"20px"}}>Filtrar por fecha</Typography>
+            <Typography sx={{color:"black", fontSize:"20px", marginRight:"20px"}}>Filtrar por fecha</Typography>
+          </Box>
         </Box>
 
-        <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"15px", marginBottom:"15px"}} />
+        <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"10px"}} />
 
-        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", marginBottom:"10px"}}>Pedidos completados:</Typography>
+        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", marginBottom:"5px"}}>Pedidos completados:</Typography>
 
         {pedidosCompleteList && pedidosCompleteList.length>0?
         (
-          <Paper sx={{ width: '100%', overflow: 'hidden', height:"33%" }}>
-            <TableContainer sx={{ height:"80%" }}>
+          <Paper sx={{ width: '100%', overflow: 'hidden', height:"40.5%" }}>
+            <TableContainer sx={{ height:"85%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -222,7 +235,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                   const mesFormateado = mes < 10 ? '0' + mes : mes;
                   const fechaFormateada = `${diaFormateado}/${mesFormateado}/${año}`;
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido}>
+                    <TableRow hover role="checkbox" tabIndex={-1} key={pedido.idPedido} sx={{height:"70%"}}>
                       <TableCell sx={{fontSize:"16px", width:"17%"}}>
                         {fechaFormateada}
                       </TableCell>
@@ -264,12 +277,12 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"15px", marginBottom:"10px"}} />
 
-        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", marginBottom:"10px"}}>Pedidos pendientes:</Typography>
+        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", marginBottom:"5px"}}>Pedidos pendientes:</Typography>
 
         {pedidosPendienteList && pedidosPendienteList.length > 0?
         (
-          <Paper sx={{ width: '100%', overflow: 'hidden', height:"250px" }}>
-            <TableContainer sx={{ height:"200px" }}>
+          <Paper sx={{ width: '100%', overflow: 'hidden', height:"40.5%" }}>
+            <TableContainer sx={{ height:"85%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -306,7 +319,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
                       <TableCell>
                         <Button 
                           variant="contained" 
-                          sx={{backgroundColor:"#1C2536", '&:hover': {backgroundColor:"#1C2536"}}}
+                          sx={{backgroundColor:pedido.estado === 4? "#86882D":"#1C2536", '&:hover': {backgroundColor:pedido.estado === 4? "#86882D":"#1C2536"}}}
                           onClick={() => HandleChangePedidoSeleccionado(pedido, 0)}
                           disabled={pedido.tieneReclamo || pedido.finalizarReclamo}
                           >Ver Detalles

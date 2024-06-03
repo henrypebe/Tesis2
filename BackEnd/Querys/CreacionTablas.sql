@@ -250,8 +250,14 @@ ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
 
-SELECT T.IdTienda, T.Nombre, T.Descripcion, T.Direccion, T.Provincia, 
-T.Pais, T.Foto, T.Estado, T.MotivoRechazo
-FROM Vendedor V
-INNER JOIN Tienda T ON T.IdTienda = V.TiendaID
-WHERE V.usuarioId = 1 AND V.Estado <> 4;
+SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
+p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, pp.ProductoID, pp.Cantidad, pr.Precio, 
+pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto, pp.TieneReclamo,
+u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho, pr.CantidadOferta,
+p.CostoEnvio
+FROM Pedidos p
+INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
+INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+WHERE p.UsuarioID = 3 AND p.Estado <> 3;

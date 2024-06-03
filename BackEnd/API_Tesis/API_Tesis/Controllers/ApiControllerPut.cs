@@ -1,4 +1,5 @@
 ﻿using API_Tesis.BD;
+using API_Tesis.Datos;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using System.Net;
@@ -23,6 +24,36 @@ namespace API_Tesis.Controllers
             //timer.Start();
         }
         [HttpPut]
+        [Route("/ActualizarConfirmacionPedido")]
+        public async Task<IActionResult> ActualizarConfirmacionPedido(int idPedido)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    UPDATE Pedidos 
+                    SET Estado = 2
+                    WHERE IdPedido = @IdPedido";
+
+                MySqlCommand command = new MySqlCommand(query, connection);
+                command.Parameters.AddWithValue("@IdPedido", idPedido);
+                int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                if (rowsAffected > 0)
+                {
+                    connection.Close();
+                    return Ok();
+                }
+                else
+                {
+                    connection.Close();
+                    return NotFound();
+                }
+            }
+        }
+        [HttpPut]
         [Route("/ActualizarFechasPedidos")]
         public async Task<IActionResult> ActualizarFechasPedidos()
         {
@@ -33,12 +64,12 @@ namespace API_Tesis.Controllers
 
                 string query = @"
                     UPDATE Pedidos 
-                        SET Estado = 
+                    SET Estado = 
                         CASE 
-                            WHEN Estado = 3 THEN Estado
-                            WHEN DATE(FechaEntrega) <= DATE(NOW()) THEN 2 
+                            WHEN DATE(FechaEntrega) <= DATE(NOW()) THEN 4
                             ELSE 1 
-                        END";
+                        END
+                    WHERE Estado NOT IN (2, 3)";
 
                 MySqlCommand command = new MySqlCommand(query, connection);
                 int rowsAffected = await command.ExecuteNonQueryAsync();
