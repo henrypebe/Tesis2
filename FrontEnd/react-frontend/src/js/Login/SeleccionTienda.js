@@ -4,12 +4,13 @@ import { useParams } from 'react-router-dom';
 import BusinessIcon from '@mui/icons-material/Business';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 export default function SeleccionTienda({onLoginVendedor}) {
     const { idUsuario } = useParams();
     
     const handleChangeMantenerTienda = async() =>{
-        const response = await fetch(`https://localhost:7240/IniciarTiendaExistente?idUsuario=${idUsuario}`, {
+        const response = await fetch(`${BASE_URL}/IniciarTiendaExistente?idUsuario=${idUsuario}`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json',

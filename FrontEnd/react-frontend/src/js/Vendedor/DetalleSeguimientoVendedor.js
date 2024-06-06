@@ -1,5 +1,6 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
+import { BASE_URL } from "../../config";
 
 export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedor, setMostrarnDetalleSeguimiento, SeguimientoSeleccionado,
     informacionTienda}) {
@@ -18,7 +19,7 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
     const obtenerListaMensaje = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/ListarMensajesTiendaChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
+            `${BASE_URL}/ListarMensajesTiendaChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
             {
               method: "GET",
               headers: {
@@ -45,7 +46,7 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
     const HandleCreateMensaje = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/CreateMensajeTienda?ChatId=${SeguimientoSeleccionado.idChat}&EmisorId=${informacionTienda.idTienda}&Contenido=${mensajeEnviado}`,
+            `${BASE_URL}/CreateMensajeTienda?ChatId=${SeguimientoSeleccionado.idChat}&EmisorId=${informacionTienda.idTienda}&Contenido=${mensajeEnviado}`,
             {
               method: "POST",
               headers: {
@@ -72,7 +73,7 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
         const obtenerListaMensaje = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ListarMensajesTiendaChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
+                `${BASE_URL}/ListarMensajesTiendaChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
                 {
                   method: "GET",
                   headers: {

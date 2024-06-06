@@ -4,6 +4,7 @@ import CardMetodoPagoAdicionar from './CardMetodoPagoAdicionar';
 import CancelIcon from "@mui/icons-material/Cancel";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BASE_URL } from "../../config";
 
 export default function MetodoPagoAdicionar({setMostrarMetodoPagoAdicionar, setMetodoPagoAumento, idUsuario}) {
   const handleChangePantalla = () =>{
@@ -25,7 +26,7 @@ export default function MetodoPagoAdicionar({setMostrarMetodoPagoAdicionar, setM
         const handleInformacionInicioVendedor = async () => {
           try {
             const response = await fetch(
-              `https://localhost:7240/ListarBilleteraVendedor?idUsuario=${idUsuario}`,
+              `${BASE_URL}/ListarBilleteraVendedor?idUsuario=${idUsuario}`,
               {
                 method: "GET",
                 headers: {
@@ -53,7 +54,7 @@ export default function MetodoPagoAdicionar({setMostrarMetodoPagoAdicionar, setM
 
   const handleEliminarProducto = async() =>{
     const response = await 
-        fetch(`https://localhost:7240/EliminarMetodoPago?MetodoPago=${MetodoPagoSeleccionado.idMetodoPago}`, {
+        fetch(`${BASE_URL}/EliminarMetodoPago?MetodoPago=${MetodoPagoSeleccionado.idMetodoPago}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -71,7 +72,7 @@ export default function MetodoPagoAdicionar({setMostrarMetodoPagoAdicionar, setM
   const handleInformacionInicioVendedor = async () => {
     try {
       const response = await fetch(
-        `https://localhost:7240/ListarBilleteraVendedor?idUsuario=${idUsuario}`,
+        `${BASE_URL}/ListarBilleteraVendedor?idUsuario=${idUsuario}`,
         {
           method: "GET",
           headers: {

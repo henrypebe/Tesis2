@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from 'react-router-dom';
+import { BASE_URL } from "../../config";
 
 export default function TokenPantalla({onLoginAdministrador, onLoginComprador, onLoginVendedor}) {
   
@@ -12,7 +13,7 @@ export default function TokenPantalla({onLoginAdministrador, onLoginComprador, o
 
     const obtenerTokenPorIdUsuario = async (idUsuario) => {
         try {
-            const response = await fetch(`https://localhost:7240/TokenIdUsuario?id=${idUsuario}`);
+            const response = await fetch(`${BASE_URL}/TokenIdUsuario?id=${idUsuario}`);
     
             if (response.ok) {
                 const token = await response.text();
@@ -34,7 +35,7 @@ export default function TokenPantalla({onLoginAdministrador, onLoginComprador, o
             .then(async token => {
                 if(token === TokenVerificar){
                     const response = await fetch(
-                        `https://localhost:7240/ObtenerRol?idUsuario=${idUsuario}`,
+                        `${BASE_URL}/ObtenerRol?idUsuario=${idUsuario}`,
                         {
                           method: "GET",
                           headers: {

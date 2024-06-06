@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import StripePaymentFormVendedor from './StripePaymentFormVendedor';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { BASE_URL } from "../../config";
 
 export default function DetalleBilletera({setMostrarBilletera, setMostrarnDetalleBilletera, idUsuario}) {
     const handleBackPedido = () =>{
@@ -21,7 +22,7 @@ export default function DetalleBilletera({setMostrarBilletera, setMostrarnDetall
         const obtenerllave = async () => {
             try {
                 const response = await fetch(
-                    `https://localhost:7240/ObtenerLlavePublicaStripe`,
+                    `${BASE_URL}/ObtenerLlavePublicaStripe`,
                     {
                       method: "GET",
                       headers: {

@@ -18,6 +18,7 @@ import { SHA256 } from "crypto-js";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import HistoryIcon from '@mui/icons-material/History';
 import LineaDetalleProductoVisualizar from "../Vendedor/LineaDetalleProductoVisualizar";
+import { BASE_URL } from "../../config";
 
 export default function BarraSuperior({ opcionAdministrador, idUsuario, esVendedorAdministrador }) {
   const [open, setOpen] = React.useState(false);
@@ -69,7 +70,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const handleInformacionInicioVendedor = async () => {
     try {
       const response = await fetch(
-        `https://localhost:7240/ListarHistorialCambiosTienda?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
+        `${BASE_URL}/ListarHistorialCambiosTienda?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
         {
           method: "GET",
           headers: {
@@ -98,7 +99,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const obtenerRolesIdUsuario = async (idUsuario) => {
     try {
       const response = await fetch(
-        `https://localhost:7240/InformacionIdUsuario?idUsuario=${idUsuario}`,
+        `${BASE_URL}/InformacionIdUsuario?idUsuario=${idUsuario}`,
         {
           method: "GET",
           headers: {
@@ -125,7 +126,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const obtenerInformacionTienda = async () => {
     try {
       const response = await fetch(
-        `https://localhost:7240/InformacionTienda?idUsuario=${idUsuario}`,
+        `${BASE_URL}/InformacionTienda?idUsuario=${idUsuario}`,
         {
           method: "GET",
           headers: {
@@ -294,7 +295,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     
     if(informacionUsuario.esVendedor){
       const response = await fetch(
-        `https://localhost:7240/EliminarCuentaVendedor?idUsuario=${informacionUsuario.idUsuario}&esAdministrador=${informacionUsuario.esVendedorAdministrador}`,
+        `${BASE_URL}/EliminarCuentaVendedor?idUsuario=${informacionUsuario.idUsuario}&esAdministrador=${informacionUsuario.esVendedorAdministrador}`,
         {
           method: "PUT",
           headers: {
@@ -312,7 +313,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       }
     }else{
       const response = await fetch(
-        `https://localhost:7240/EliminarCuentaComprador?idUsuario=${informacionUsuario.idUsuario}`,
+        `${BASE_URL}/EliminarCuentaComprador?idUsuario=${informacionUsuario.idUsuario}`,
         {
           method: "PUT",
           headers: {
@@ -343,7 +344,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
     try {
       const hashedPassword = SHA256(contrasenha).toString();
       const response = await fetch(
-        `https://localhost:7240/EditarContrasenha?idUsuario=${idUsuario}&contrasenha=${hashedPassword}&ContrasenhaVariado=${contrasenha}`,
+        `${BASE_URL}/EditarContrasenha?idUsuario=${idUsuario}&contrasenha=${hashedPassword}&ContrasenhaVariado=${contrasenha}`,
         {
           method: "PUT",
           headers: {
@@ -378,7 +379,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       formData.append('correoAlternativo', correoAlternativoCambiado===""? "a": correoAlternativoCambiado);
 
       const response = await fetch(
-        `https://localhost:7240/EditarUsuario`,
+        `${BASE_URL}/EditarUsuario`,
         {
           method: "PUT",
           body: formData
@@ -401,7 +402,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const handleChangeEliminarCuenta = async () => {
     try {
       const response = await fetch(
-        `https://localhost:7240/CambiarEstadoUsuario?idUsuario=${idUsuario}&contrasenha=${verificarContrasenhaEliminar}&token=${verificarTokenEliminar}`,
+        `${BASE_URL}/CambiarEstadoUsuario?idUsuario=${idUsuario}&contrasenha=${verificarContrasenhaEliminar}&token=${verificarTokenEliminar}`,
         {
           method: "POST",
           headers: {
@@ -429,7 +430,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
   const handleVerificarToken = async () => {
     try {
       const response = await fetch(
-        `https://localhost:7240/VerificarToken?idUsuario=${idUsuario}`,
+        `${BASE_URL}/VerificarToken?idUsuario=${idUsuario}`,
         {
           method: "GET",
           headers: {
@@ -487,7 +488,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       formData.append('pais', PaisTiendaCambiado);
 
       const response = await fetch(
-        `https://localhost:7240/EditarTienda`,
+        `${BASE_URL}/EditarTienda`,
         {
           method: "PUT",
           body: formData

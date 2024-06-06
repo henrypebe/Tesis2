@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import StripePaymentForm from './StripePaymentForm';
+import { BASE_URL } from "../../config";
 
 export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMetodoPagoAumento, idUsuario}) {
     const handleBackPedido = () =>{
@@ -20,7 +21,7 @@ export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMet
         const obtenerllave = async () => {
             try {
                 const response = await fetch(
-                    `https://localhost:7240/ObtenerLlavePublicaStripe`,
+                    `${BASE_URL}/ObtenerLlavePublicaStripe`,
                     {
                       method: "GET",
                       headers: {

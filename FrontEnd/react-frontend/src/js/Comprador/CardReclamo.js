@@ -1,5 +1,6 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
 import React from "react";
+import { BASE_URL } from "../../config";
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 
 export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) {
@@ -7,7 +8,7 @@ export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) 
   const handleReclamo = async() =>{
     try {
       const response = await fetch(
-        `https://localhost:7240/InformacionPedidoReclamo?IdPedido=${reclamo.idPedido}`,
+        `${BASE_URL}/InformacionPedidoReclamo?IdPedido=${reclamo.idPedido}`,
         {
           method: "GET",
           headers: {

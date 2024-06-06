@@ -4,6 +4,7 @@ import { Box, Button, Link, TextField, Typography } from "@mui/material";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SHA256 } from 'crypto-js';
+import { BASE_URL } from "../../config";
 
 export default function LoginPage() {
   const [emailType, setEmailType] = useState("");
@@ -13,7 +14,7 @@ export default function LoginPage() {
     try {
       if(emailType !== '' || contrasenha !== ''){
         const hashedPassword = SHA256(contrasenha).toString();
-        const response = await fetch(`https://localhost:7240/login?_correo=${emailType}&_contrasenha=${hashedPassword}`, {
+        const response = await fetch(`${BASE_URL}/login?_correo=${emailType}&_contrasenha=${hashedPassword}`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',

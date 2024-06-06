@@ -1,6 +1,7 @@
 import { Box, Button, Divider, Typography } from '@mui/material'
 import React, { useEffect } from 'react';
 import HandshakeIcon from '@mui/icons-material/Handshake';
+import { BASE_URL } from "../../config";
 
 export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaVendedor, setMostrarVentas, setMostrarMisProductos,
   setMostrarSeguimientoVendedor, setMostrarBilletera, setMostrarReclamo, informacionTienda, setMostrarGestionVendedor, esVendedorAdministrador}) {
@@ -45,7 +46,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
     const handleInformacionInicioVendedor = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7240/InicioVendedor?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
+          `${BASE_URL}/InicioVendedor?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
           {
             method: "GET",
             headers: {

@@ -2,6 +2,7 @@ import { Box, Button, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { BASE_URL } from "../../config";
 
 export default function TiendaInformacion({onLoginVendedor}) {
     const [NombreTienda, setNombreTienda] = useState("");
@@ -14,7 +15,7 @@ export default function TiendaInformacion({onLoginVendedor}) {
     const handleCreateUser = async () => {
         try {
             const response = await 
-            fetch(`https://localhost:7240/CreateTienda?idUsuario=${idUsuario}&nombre=${NombreTienda}&descripcion=${Descripcion}&direccion=${Direccion}&Provincia=${Provincia}&pais=${Pais}`, {
+            fetch(`${BASE_URL}/CreateTienda?idUsuario=${idUsuario}&nombre=${NombreTienda}&descripcion=${Descripcion}&direccion=${Direccion}&Provincia=${Provincia}&pais=${Pais}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

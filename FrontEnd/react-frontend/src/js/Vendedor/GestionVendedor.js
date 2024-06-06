@@ -1,6 +1,7 @@
 import { Box, Pagination, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
-import CardGestionVendedor from './CardGestionVendedor'
+import CardGestionVendedor from './CardGestionVendedor';
+import { BASE_URL } from "../../config";
 
 export default function GestionVendedor({informacionTienda}) {
 
@@ -9,7 +10,7 @@ export default function GestionVendedor({informacionTienda}) {
     const handleInformacionVendedorAsistente = async () => {
         try {
         const response = await fetch(
-          `https://localhost:7240/ListarVendedoresAsistentes?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
+          `${BASE_URL}/ListarVendedoresAsistentes?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
           {
             method: "GET",
             headers: {
@@ -38,7 +39,7 @@ export default function GestionVendedor({informacionTienda}) {
           
             try {
             const response = await fetch(
-              `https://localhost:7240/ListarVendedoresAsistentes?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
+              `${BASE_URL}/ListarVendedoresAsistentes?idTienda=${informacionTienda?informacionTienda.idTienda:0}`,
               {
                 method: "GET",
                 headers: {

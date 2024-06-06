@@ -1,6 +1,7 @@
 import { Box, Typography, Pagination } from '@mui/material'
 import React, { useEffect } from 'react'
-import CardReclamo from './CardReclamo'
+import CardReclamo from './CardReclamo';
+import { BASE_URL } from "../../config";
 
 export default function ReclamoComprador({idUsuario, HandleChangeReclamoSeleccionado}) {
   const [ListaReclamos, setListaReclamos] = React.useState();
@@ -9,7 +10,7 @@ export default function ReclamoComprador({idUsuario, HandleChangeReclamoSeleccio
     const obtenerListaReclamos = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/VisualizarReclamosPorUsuario?idUsuario=${idUsuario}`,
+            `${BASE_URL}/VisualizarReclamosPorUsuario?idUsuario=${idUsuario}`,
             {
               method: "GET",
               headers: {

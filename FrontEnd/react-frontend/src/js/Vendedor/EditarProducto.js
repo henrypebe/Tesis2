@@ -2,6 +2,7 @@ import { Box, Button, FormControl, MenuItem, Select, TextField, Typography } fro
 import React from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 export default function EditarProducto({setMostrarMisProductos, setMostrarEditarProducto, opcionEditarProducto, informacionTienda, productoInformacion}) {
     const [NombreProducto, setNombreProducto] = React.useState(opcionEditarProducto === 0?productoInformacion.nombre:'');
@@ -84,7 +85,7 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                 formData.append('tiempoEnvio', cantidadEnvioTotal);
 
                 const response = await fetch(
-                  `https://localhost:7240/EditarProducto`,
+                  `${BASE_URL}/EditarProducto`,
                   {
                     method: "PUT",
                     body: formData
@@ -130,7 +131,7 @@ export default function EditarProducto({setMostrarMisProductos, setMostrarEditar
                 formData.append('tiempoEnvio', cantidadEnvioTotal);
                 
                 const response = await fetch(
-                    `https://localhost:7240/CreateProducto`,
+                    `${BASE_URL}/CreateProducto`,
                     {
                         method: "POST",
                         body: formData

@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { SHA256 } from 'crypto-js';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 export default function CreateUser() {
     const [email, setEmail] = useState('');
@@ -33,7 +34,7 @@ export default function CreateUser() {
 
           if(hashedPassword === hashedPassword2){
 
-            const response = await fetch(`https://localhost:7240/CreateUsuario?DNI=${DNI}&nombreApellido=${nombreApellido}&correo=${email}&contrasenha=${hashedPassword}&contrasenhaVariado=${contrasenha}`, {
+            const response = await fetch(`${BASE_URL}/CreateUsuario?DNI=${DNI}&nombreApellido=${nombreApellido}&correo=${email}&contrasenha=${hashedPassword}&contrasenhaVariado=${contrasenha}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

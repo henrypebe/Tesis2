@@ -2,6 +2,7 @@ import { Box, Pagination, TextField, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import CardTiendaPresentacion from '../Presentacion/CardTiendaPresentacion';
+import { BASE_URL } from "../../config";
 
 export default function TiendaListComprador({HandleChangeProductoSeleccionado, setOpcionPantalla, setTiendaSeleccionado}) {
     const [BusquedaTienda, setBusquedaTienda] = React.useState('');
@@ -10,7 +11,7 @@ export default function TiendaListComprador({HandleChangeProductoSeleccionado, s
         const obtenerListaTienda = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ListarTiendaGeneral?busquedaTienda=${BusquedaTienda===''?'nada':BusquedaTienda}`,
+                `${BASE_URL}/ListarTiendaGeneral?busquedaTienda=${BusquedaTienda===''?'nada':BusquedaTienda}`,
                 {
                   method: "GET",
                   headers: {

@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import { useParams } from 'react-router-dom';
+import { BASE_URL } from "../../config";
 
 export default function RolDeterminar({onLoginComprador}) {
     const { idUsuario, Existente } = useParams();
@@ -14,7 +15,7 @@ export default function RolDeterminar({onLoginComprador}) {
 
     const handleCreateUser = async () => {
         try {
-            const response = await fetch(`https://localhost:7240/editarRolUsuario?idUsuario=${idUsuario}&esComprador=${!esVendedor}&esVendedor=${esVendedor}`, {
+            const response = await fetch(`${BASE_URL}/editarRolUsuario?idUsuario=${idUsuario}&esComprador=${!esVendedor}&esVendedor=${esVendedor}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

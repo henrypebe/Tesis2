@@ -10,6 +10,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EcommerceContract from '../../Blockchain/build/contracts/Ecommerce.json';
 import "react-toastify/dist/ReactToastify.css";
+import { BASE_URL } from "../../config";
 const { add  } = require('date-fns');
 
 export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, productos, conteoCarritoCompra,
@@ -78,7 +79,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         const obtenerllave = async () => {
             try {
                 const response = await fetch(
-                    `https://localhost:7240/ObtenerLlavePublicaStripe`,
+                    `${BASE_URL}/ObtenerLlavePublicaStripe`,
                     {
                       method: "GET",
                       headers: {
@@ -99,7 +100,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         const ListarMétodosPago = async () => {
             try {
                 const response = await fetch(
-                    `https://localhost:7240/ListarBilleteraVendedor?idUsuario=${idUsuario}`,
+                    `${BASE_URL}/ListarBilleteraVendedor?idUsuario=${idUsuario}`,
                     {
                       method: "GET",
                       headers: {
@@ -122,7 +123,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         const InformacionUsuario = async () => {
             try {
                 const response = await fetch(
-                    `https://localhost:7240/InformacionIdUsuario?idUsuario=${idUsuario}`,
+                    `${BASE_URL}/InformacionIdUsuario?idUsuario=${idUsuario}`,
                     {
                       method: "GET",
                       headers: {
@@ -232,7 +233,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
 
             if(esFraude !== "" && esFraude === "No Fraude"){
                 await fetch(
-                    `https://localhost:7240/ActualizarEstadoPedido?idPedido=${idPedido}&valor=${1}`,
+                    `${BASE_URL}/ActualizarEstadoPedido?idPedido=${idPedido}&valor=${1}`,
                     {
                         method: "PUT",
                         headers: {
@@ -251,7 +252,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 formData.append('Opcion', 1);
                 try {
                     const response = await fetch(
-                        `https://localhost:7240/ProcesarPago`,
+                        `${BASE_URL}/ProcesarPago`,
                         {
                         method: "POST",
                         body: formData
@@ -273,7 +274,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             }else{
                 if(esFraude === "Fraude"){
                     await fetch(
-                        `https://localhost:7240/EnviarCorreo?idUsuario=${idUsuario}`,
+                        `${BASE_URL}/EnviarCorreo?idUsuario=${idUsuario}`,
                         {
                             method: "POST",
                             headers: {
@@ -371,7 +372,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             }
 
             await fetch(
-                `https://localhost:7240/IngresarHashBlockchain?hash=${transactionId}`,
+                `${BASE_URL}/IngresarHashBlockchain?hash=${transactionId}`,
                 {
                     method: "POST",
                     headers: {
@@ -393,7 +394,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         formData.append('stock', producto.stockMaximo);
         // formData.append('FechaEnvio', fechaISO);
         const response = await fetch(
-            `https://localhost:7240/CreatePedidoXProducto`,
+            `${BASE_URL}/CreatePedidoXProducto`,
             {
                 method: "POST",
                 body: formData
@@ -435,7 +436,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             formData.append('DireccionEntrega', InformacionUsuario.direccion);
 
             const response = await fetch(
-                `https://localhost:7240/CreatePedido`,
+                `${BASE_URL}/CreatePedido`,
                 {
                 method: "POST",
                 body: formData
@@ -461,7 +462,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     }
     const obtenerTokenPorIdUsuario = async (idUsuario) => {
         try {
-            const response = await fetch(`https://localhost:7240/TokenIdUsuario?id=${idUsuario}`);
+            const response = await fetch(`${BASE_URL}/TokenIdUsuario?id=${idUsuario}`);
     
             if (response.ok) {
                 const token = await response.text();
@@ -481,7 +482,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         obtenerTokenPorIdUsuario(idUsuario).then(async token => {
             if(token === TokenVerificar){
                 await fetch(
-                    `https://localhost:7240/ActualizarEstadoPedido?idPedido=${PedidoSeleccionado}&valor=${1}`,
+                    `${BASE_URL}/ActualizarEstadoPedido?idPedido=${PedidoSeleccionado}&valor=${1}`,
                     {
                         method: "PUT",
                         headers: {
@@ -491,7 +492,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 );
                 if(InformacionUsuario.cantCambiosDireccion > 5){
                     await fetch(
-                        `https://localhost:7240/ActualizarCantidadDireccion?idUsuario=${idUsuario}`,
+                        `${BASE_URL}/ActualizarCantidadDireccion?idUsuario=${idUsuario}`,
                         {
                             method: "PUT",
                             headers: {
@@ -502,7 +503,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 }
                 if(InformacionUsuario.cantMetodoPago > 5){
                     await fetch(
-                        `https://localhost:7240/ActualizarCantidadMetodoPago?idUsuario=${idUsuario}`,
+                        `${BASE_URL}/ActualizarCantidadMetodoPago?idUsuario=${idUsuario}`,
                         {
                             method: "PUT",
                             headers: {
@@ -524,7 +525,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 formData.append('Opcion', 1);
                 try {
                     const response = await fetch(
-                        `https://localhost:7240/ProcesarPago`,
+                        `${BASE_URL}/ProcesarPago`,
                         {
                         method: "POST",
                         body: formData

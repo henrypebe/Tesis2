@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 export default function BusquedaTienda() {
   const { idUsuario } = useParams();
@@ -20,7 +21,7 @@ export default function BusquedaTienda() {
   const handleCreateUser = async () => {
     try {
       const response = await 
-      fetch(`https://localhost:7240/AsignarTiendaVendedorAsistente?idUsuario=${idUsuario}&idTienda=${IdTienda}`, {
+      fetch(`${BASE_URL}/AsignarTiendaVendedorAsistente?idUsuario=${idUsuario}&idTienda=${IdTienda}`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json',

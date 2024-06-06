@@ -2,6 +2,7 @@ import { Box, Button, Divider, Typography } from '@mui/material'
 import React from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 export default function CardGestionVendedor({vendedor, handleInformacionVendedorAsistente}) {
 //   console.log(vendedor);
@@ -9,7 +10,7 @@ export default function CardGestionVendedor({vendedor, handleInformacionVendedor
   const handleCreateUser = async (estado) => {
     try {
       const response = await 
-        fetch(`https://localhost:7240/AprobaciónVendedorAsistente?idUsuario=${vendedor.idUsuario}&Estado=${estado}`, {
+        fetch(`${BASE_URL}/AprobaciónVendedorAsistente?idUsuario=${vendedor.idUsuario}&Estado=${estado}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

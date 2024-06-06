@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 export default function RecuperarContrasenha() {
     const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function RecuperarContrasenha() {
     
     const handleCreateUser = async () => {
         try {
-            const response = await fetch(`https://localhost:7240/RecuperarContrasenha?correo=${email}`, {
+            const response = await fetch(`${BASE_URL}/RecuperarContrasenha?correo=${email}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import CardEstadisticaCompra from '../Comprador/CardEstadisticaCompra'
+import CardEstadisticaCompra from '../Comprador/CardEstadisticaCompra';
+import { BASE_URL } from "../../config";
 
 export default function EstadisticaVendedor({informacionTienda}) {
   const [Estadistica, setEstadistica] = useState();
@@ -9,7 +10,7 @@ export default function EstadisticaVendedor({informacionTienda}) {
     const obtenerListaSeguimiento = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/EstadisticaVendedor?idTienda=${informacionTienda.idTienda}`,
+            `${BASE_URL}/EstadisticaVendedor?idTienda=${informacionTienda.idTienda}`,
             {
               method: "GET",
               headers: {

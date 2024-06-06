@@ -1,5 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { BASE_URL } from '../../config';
 
 export default function CardTiendaPresentacion({tienda, opcion, setOpcionPantalla, setTiendaSeleccionado}) {
     const [listaTiendaSeleccionado, setListaTiendaSeleccionado] = useState(null);
@@ -7,7 +8,7 @@ export default function CardTiendaPresentacion({tienda, opcion, setOpcionPantall
         const obtenerListaProducto = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/CantidadProductoXTienda?idTienda=${tienda.idTienda}`,
+                `${BASE_URL}/CantidadProductoXTienda?idTienda=${tienda.idTienda}`,
                 {
                   method: "GET",
                   headers: {

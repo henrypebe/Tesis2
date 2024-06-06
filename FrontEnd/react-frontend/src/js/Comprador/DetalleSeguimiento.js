@@ -1,6 +1,7 @@
 import { Box, Button, TextField, Typography, Modal, IconButton } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { BASE_URL } from "../../config";
 
 export default function DetalleSeguimiento({
   setMostrarSeguimiento,
@@ -40,7 +41,7 @@ export default function DetalleSeguimiento({
   const obtenerListaMensaje = async () => {
     try {
       const response = await fetch(
-        `https://localhost:7240/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
+        `${BASE_URL}/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
         {
           method: "GET",
           headers: {
@@ -67,7 +68,7 @@ export default function DetalleSeguimiento({
   const HandleCreateMensaje = async () => {
     try {
       const response = await fetch(
-        `https://localhost:7240/CreateMensaje?ChatId=${SeguimientoSeleccionado.idChat}&EmisorId=${idUsuario}&Contenido=${mensajeEnviado}`,
+        `${BASE_URL}/CreateMensaje?ChatId=${SeguimientoSeleccionado.idChat}&EmisorId=${idUsuario}&Contenido=${mensajeEnviado}`,
         {
           method: "POST",
           headers: {
@@ -94,7 +95,7 @@ export default function DetalleSeguimiento({
     const obtenerListaMensaje = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
+            `${BASE_URL}/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
             {
               method: "GET",
               headers: {
@@ -124,7 +125,7 @@ export default function DetalleSeguimiento({
     const obtenerListaMensaje = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7240/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
+          `${BASE_URL}/ListarMensajesChatId?ChatId=${SeguimientoSeleccionado.idChat}`,
           {
             method: "GET",
             headers: {
@@ -184,7 +185,7 @@ export default function DetalleSeguimiento({
 
   const handleFinalizarChat = async() =>{
     const response = await fetch(
-      `https://localhost:7240/FinalizarChatCliente?idChat=${SeguimientoSeleccionado.idChat}`,
+      `${BASE_URL}/FinalizarChatCliente?idChat=${SeguimientoSeleccionado.idChat}`,
       {
         method: "PUT",
         headers: {

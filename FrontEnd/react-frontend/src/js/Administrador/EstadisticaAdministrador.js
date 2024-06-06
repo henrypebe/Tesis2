@@ -1,6 +1,7 @@
 import { Check } from '@mui/icons-material';
 import { Box, Button, Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { BASE_URL } from "../../config";
 
 export default function EstadisticaAdministrador({handleChangePedidoSeleccionado}) {
     const [isCheckedCompletado, setIsCheckedCompletados] = useState(false);
@@ -73,7 +74,7 @@ export default function EstadisticaAdministrador({handleChangePedidoSeleccionado
       const obtenerListaPedidos = async () => {
           try {
             const response = await fetch(
-              `https://localhost:7240/ListarPedidosAdministrador?completados=${isCheckedCompletado}&pendientes=${isCheckedPendiente}`,
+              `${BASE_URL}/ListarPedidosAdministrador?completados=${isCheckedCompletado}&pendientes=${isCheckedPendiente}`,
               {
                 method: "GET",
                 headers: {
@@ -100,7 +101,7 @@ export default function EstadisticaAdministrador({handleChangePedidoSeleccionado
       const obtenerListaPedidosReclamo = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/ListarPedidosReclamosAdministrador`,
+            `${BASE_URL}/ListarPedidosReclamosAdministrador`,
             {
               method: "GET",
               headers: {

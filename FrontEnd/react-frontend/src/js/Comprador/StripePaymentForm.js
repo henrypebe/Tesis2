@@ -8,6 +8,7 @@ import Web3 from 'web3';
 import CancelIcon from "@mui/icons-material/Cancel";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EcommerceContract from '../../Blockchain/build/contracts/Ecommerce.json';
+import { BASE_URL } from "../../config";
 const { add  } = require('date-fns');
 
 const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProductos, setConteoCarritoCompra, setMostrarMetodoPago,
@@ -110,7 +111,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
     formData.append('stock', producto.stockMaximo);
     // formData.append('FechaEnvio', fechaISO);
     const response = await fetch(
-        `https://localhost:7240/CreatePedidoXProducto`,
+        `${BASE_URL}/CreatePedidoXProducto`,
         {
             method: "POST",
             body: formData
@@ -153,7 +154,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
       formData.append('DireccionEntrega', InformacionUsuario.direccion);
 
       const response = await fetch(
-          `https://localhost:7240/CreatePedido`,
+          `${BASE_URL}/CreatePedido`,
           {
           method: "POST",
           body: formData
@@ -210,7 +211,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
             .send({ from: account, gas: 5000000 });
         const transactionId = txReceipt.transactionHash.toString();
         await fetch(
-            `https://localhost:7240/IngresarHashBlockchain?hash=${transactionId}`,
+            `${BASE_URL}/IngresarHashBlockchain?hash=${transactionId}`,
             {
                 method: "POST",
                 headers: {
@@ -307,7 +308,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
 
       if(esFraude !== "" && esFraude === "No Fraude"){
         await fetch(
-          `https://localhost:7240/ActualizarEstadoPedido?idPedido=${idPedido}&valor=${1}`,
+          `${BASE_URL}/ActualizarEstadoPedido?idPedido=${idPedido}&valor=${1}`,
           {
               method: "PUT",
               headers: {
@@ -329,7 +330,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
         formData.append('IdUsuario', InformacionUsuario.idUsuario);
 
         const response = await fetch(
-          'https://localhost:7240/ProcesarPago',
+          `${BASE_URL}/ProcesarPago`,
           {
             method: 'POST',
             body: formData
@@ -338,7 +339,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
 
         if (response.ok) {
           const response = await fetch(
-            `https://localhost:7240/EditarMetodoPago?idPedido=${idPedido}&token=${paymentMethod.id}`,
+            `${BASE_URL}/EditarMetodoPago?idPedido=${idPedido}&token=${paymentMethod.id}`,
             {
               method: 'PUT',
               headers: {
@@ -360,7 +361,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
         }
       }else{
         await fetch(
-          `https://localhost:7240/EnviarCorreo?idUsuario=${idUsuario}`,
+          `${BASE_URL}/EnviarCorreo?idUsuario=${idUsuario}`,
           {
               method: "POST",
               headers: {
@@ -383,7 +384,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
       handleProducto(event);
     }else{
       const response2 = await fetch(
-        `https://localhost:7240/InformacionIdUsuario?idUsuario=${idUsuario}`,
+        `${BASE_URL}/InformacionIdUsuario?idUsuario=${idUsuario}`,
         {
           method: 'GET',
           headers: {
@@ -427,7 +428,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
       formData.append('Correo',InformacionUsuario.correo);
 
       const response = await fetch(
-          `https://localhost:7240/GuardarMetodoPago`,
+          `${BASE_URL}/GuardarMetodoPago`,
           {
               method: "POST",
               body: formData
@@ -449,7 +450,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
   useEffect(() => {
     const handle = async() =>{
       const response2 = await fetch(
-        `https://localhost:7240/InformacionIdUsuario?idUsuario=${idUsuario}`,
+        `${BASE_URL}/InformacionIdUsuario?idUsuario=${idUsuario}`,
         {
           method: 'GET',
           headers: {
@@ -466,7 +467,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
 
   const obtenerTokenPorIdUsuario = async (idUsuario) => {
     try {
-        const response = await fetch(`https://localhost:7240/TokenIdUsuario?id=${idUsuario}`);
+        const response = await fetch(`${BASE_URL}/TokenIdUsuario?id=${idUsuario}`);
 
         if (response.ok) {
             const token = await response.text();
@@ -486,7 +487,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
     obtenerTokenPorIdUsuario(idUsuario).then(async token => {
         if(token === TokenVerificar){
             await fetch(
-                `https://localhost:7240/ActualizarEstadoPedido?idPedido=${PedidoSeleccionado}&valor=${1}`,
+                `${BASE_URL}/ActualizarEstadoPedido?idPedido=${PedidoSeleccionado}&valor=${1}`,
                 {
                     method: "PUT",
                     headers: {
@@ -505,7 +506,7 @@ const StripePaymentForm = ({productos, conteoCarritoCompra, idUsuario, setProduc
             formData.append('Opcion', 1);
             try {
                 const response = await fetch(
-                    `https://localhost:7240/ProcesarPago`,
+                    `${BASE_URL}/ProcesarPago`,
                     {
                     method: "POST",
                     body: formData

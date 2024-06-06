@@ -10,6 +10,7 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import MoneyOffIcon from '@mui/icons-material/MoneyOff';
+import { BASE_URL } from "../../config";
 
 export default function InicioComprador({onMostrarInicioChange, onMostrarPedidosChange, setMostrarProductos,
   setMostrarSeguimiento, setMostrarEstadistica, setMostrarMetodoPago, setMostrarReclamo, idUsuario}) {
@@ -48,7 +49,7 @@ export default function InicioComprador({onMostrarInicioChange, onMostrarPedidos
     const handleInformacionInicioComprador = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7240/InicioComprador?idUsuario=${idUsuario}`,
+          `${BASE_URL}/InicioComprador?idUsuario=${idUsuario}`,
           {
             method: "GET",
             headers: {

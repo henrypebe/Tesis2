@@ -1,6 +1,7 @@
 import { Box, Button, Divider, IconButton, Modal, TextField, Typography } from '@mui/material';
 import React from 'react';
 import CancelIcon from "@mui/icons-material/Cancel";
+import { BASE_URL } from "../../config";
 
 export default function DetalleProductoAdministrador({setMostrarGestionAprobacion, setMostrarProductoDetalle, ProductoSeleccionado}) {
     const [open, setOpen] = React.useState(false);
@@ -21,7 +22,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
 
     const handleCambioDatos = async() =>{
         const response = await fetch(
-            `https://localhost:7240/CambioEstadoAprobaciónProducto?idProducto=${ProductoSeleccionado.idProducto}&EstadoPuesto=${EstadoSeleccionado}&MotivoRechazo=${MotivoRechazo}`,
+            `${BASE_URL}/CambioEstadoAprobaciónProducto?idProducto=${ProductoSeleccionado.idProducto}&EstadoPuesto=${EstadoSeleccionado}&MotivoRechazo=${MotivoRechazo}`,
             {
               method: "PUT",
               headers: {
@@ -41,7 +42,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
 
     const handleCambioDatosAprobado = async(estado) =>{
         const response = await fetch(
-            `https://localhost:7240/CambioEstadoAprobaciónProducto?idProducto=${ProductoSeleccionado.idProducto}&EstadoPuesto=${estado}&MotivoRechazo=${"?"}`,
+            `${BASE_URL}/CambioEstadoAprobaciónProducto?idProducto=${ProductoSeleccionado.idProducto}&EstadoPuesto=${estado}&MotivoRechazo=${"?"}`,
             {
               method: "PUT",
               headers: {

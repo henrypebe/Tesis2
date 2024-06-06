@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
+import { BASE_URL } from "../../config";
 
 const columnsPendiente = [
   { id: 'fechaEntregado', label: 'Fecha entregado', minWidth: 80, maxWidth: 100},
@@ -54,7 +55,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
     const handleActualizarFecha = async () => {
       try {
         await fetch(
-          `https://localhost:7240/ActualizarFechasPedidos`,
+          `${BASE_URL}/ActualizarFechasPedidos`,
           {
             method: "PUT",
             headers: {
@@ -74,7 +75,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
           const fechaISO = BusquedaFecha != null && !fechaHabilitada? fecha.toISOString(): "0001-01-01T00:00:00.000Z";
 
           const response = await fetch(
-            `https://localhost:7240/ListarPedidosCompletadosPorFecha?idUsuario=${idUsuario}&FechaFiltro=${fechaISO}`,
+            `${BASE_URL}/ListarPedidosCompletadosPorFecha?idUsuario=${idUsuario}&FechaFiltro=${fechaISO}`,
             {
               method: "GET",
               headers: {

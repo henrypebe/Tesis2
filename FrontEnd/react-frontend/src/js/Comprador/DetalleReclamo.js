@@ -2,14 +2,15 @@ import React from 'react';
 import { Box, Typography, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, setDetalleReclamo, setReclamoSeleccionado}) {
     
-    console.log(ReclamoSeleccionado[0]);
+    // console.log(ReclamoSeleccionado[0]);
 
     const HandleReclamar = async(reclamo) =>{
         const response = await fetch(
-        `https://localhost:7240/EditarReclamoPedido?idPedidoXProducto=${reclamo.idPedidoXProducto}`,
+        `${BASE_URL}/EditarReclamoPedido?idPedidoXProducto=${reclamo.idPedidoXProducto}`,
         {
             method: "PUT",
             headers: {
@@ -27,7 +28,7 @@ export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, 
     const handleListarReclamo = async() =>{
         try {
           const response = await fetch(
-            `https://localhost:7240/InformacionPedidoReclamo?IdPedido=${ReclamoSeleccionado[0].idPedido}`,
+            `${BASE_URL}/InformacionPedidoReclamo?IdPedido=${ReclamoSeleccionado[0].idPedido}`,
             {
               method: "GET",
               headers: {
@@ -76,7 +77,7 @@ export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, 
 
     const handleRealizarReclamoPedido = async() => {
         const response = await fetch(
-            `https://localhost:7240/RealizarReclamoPedido?idPedido=${ReclamoSeleccionado[0].idPedido}`,
+            `${BASE_URL}/RealizarReclamoPedido?idPedido=${ReclamoSeleccionado[0].idPedido}`,
             {
                 method: "PUT",
                 headers: {

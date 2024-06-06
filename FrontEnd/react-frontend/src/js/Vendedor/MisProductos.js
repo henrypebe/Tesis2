@@ -6,6 +6,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProductoMayorDem from './ProductoMayorDem';
+import { BASE_URL } from "../../config";
 
 export default function MisProductos({setMostrarMisProductos, setMostrarDetalleProducto, setOpcionEditarProducto, setProductoInformacion, setMostrarEditarProducto,
     informacionTienda, setOpcionSeleccionado}) {
@@ -48,7 +49,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
     const handleEliminarProducto = async() =>{
         console.log(productoSeleccionado);
         const response = await 
-            fetch(`https://localhost:7240/EliminarProducto?idProducto=${productoSeleccionado.idProducto}`, {
+            fetch(`${BASE_URL}/EliminarProducto?idProducto=${productoSeleccionado.idProducto}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -66,7 +67,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
     const obtenerListaProducto = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/ListasProductos?idTienda=${idTienda}&busqueda=${Busqueda === ""? "nada" : Busqueda}`,
+            `${BASE_URL}/ListasProductos?idTienda=${idTienda}&busqueda=${Busqueda === ""? "nada" : Busqueda}`,
             {
               method: "GET",
               headers: {
@@ -94,7 +95,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
         const obtenerListaProducto = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ListasProductos?idTienda=${idTienda}&busqueda=${Busqueda === ""? "nada" : Busqueda}`,
+                `${BASE_URL}/ListasProductos?idTienda=${idTienda}&busqueda=${Busqueda === ""? "nada" : Busqueda}`,
                 {
                   method: "GET",
                   headers: {

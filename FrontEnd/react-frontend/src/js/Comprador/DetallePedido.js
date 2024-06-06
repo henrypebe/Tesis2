@@ -3,9 +3,10 @@ import React, { useEffect } from 'react';
 import CancelIcon from "@mui/icons-material/Cancel";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 export default function DetallePedido({setMostrarDetallePedido, setMostrarPedidos, setMostrarSeguimiento, PedidoSeleccionado, idUsuario, opcionPedidoDetalle}) {
-    console.log(PedidoSeleccionado);
+    // console.log(PedidoSeleccionado);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [FinalizarCliente, setFinalizarCliente] = React.useState();
@@ -18,7 +19,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
         const handlePedidoCompleteList = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ObtenerInformacionChat?IdPedido=${PedidoSeleccionado.idPedido}`,
+                `${BASE_URL}/ObtenerInformacionChat?IdPedido=${PedidoSeleccionado.idPedido}`,
                 {
                   method: "GET",
                   headers: {
@@ -67,7 +68,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
     const handleSinEntregaPedido = async () => {
         try {
             const realizarReclamoResponse = await fetch(
-                `https://localhost:7240/RealizarReclamoPedido?idPedido=${PedidoSeleccionado.idPedido}`,
+                `${BASE_URL}/RealizarReclamoPedido?idPedido=${PedidoSeleccionado.idPedido}`,
                 {
                     method: "PUT",
                     headers: {
@@ -81,7 +82,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
             }
     
             const actualizarConfirmacionResponse = await fetch(
-                `https://localhost:7240/ActualizarConfirmacionPedido?idPedido=${PedidoSeleccionado.idPedido}`,
+                `${BASE_URL}/ActualizarConfirmacionPedido?idPedido=${PedidoSeleccionado.idPedido}`,
                 {
                     method: "PUT",
                     headers: {
@@ -102,7 +103,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
 
     const handleConfirmacionPedido = async () =>{
         const response = await fetch(
-            `https://localhost:7240/ActualizarConfirmacionPedido?idPedido=${PedidoSeleccionado.idPedido}`,
+            `${BASE_URL}/ActualizarConfirmacionPedido?idPedido=${PedidoSeleccionado.idPedido}`,
             {
               method: "PUT",
               headers: {
@@ -119,7 +120,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
 
         if(!producto.tieneSeguimiento){
             const response = await fetch(
-                `https://localhost:7240/EditarSeguimientoPedido?idPedidoXProducto=${producto.idPedidoXProducto}&idUsuario=${idUsuario}&idTienda=${producto.idTienda}`,
+                `${BASE_URL}/EditarSeguimientoPedido?idPedidoXProducto=${producto.idPedidoXProducto}&idUsuario=${idUsuario}&idTienda=${producto.idTienda}`,
                 {
                   method: "PUT",
                   headers: {
@@ -425,7 +426,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                     }}
                     onClick={() => {handleConfirmacionPedido()}}
                     >
-                        Confirmación
+                        Confirmación de la entrega
                     </Button>
 
                     <Button

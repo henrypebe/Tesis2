@@ -1,7 +1,8 @@
 import CryptoJS from 'crypto-js';
+import { BASE_URL } from "../../config";
 
 export const getSecretKey = async () => {
-    const response = await fetch('https://localhost:7240/KeyEncript');
+    const response = await fetch(`${BASE_URL}/KeyEncript`);
     if (response.ok) {
         return response.text();
     } else {

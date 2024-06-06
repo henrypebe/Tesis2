@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import CardProducto from './CardProducto';
 import SearchIcon from '@mui/icons-material/Search';
 import Pagination from '@mui/material/Pagination';
+import { BASE_URL } from "../../config";
 
 export default function ProductoListComprador({HandleChangeProductoSeleccionado}) {
     const [productosList, setProductosList] = React.useState(null);
@@ -17,7 +18,7 @@ export default function ProductoListComprador({HandleChangeProductoSeleccionado}
     const obtenerListaProducto = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/ListasProductosGeneral?busqueda=${Busqueda === ""? "nada" : Busqueda}`,
+            `${BASE_URL}/ListasProductosGeneral?busqueda=${Busqueda === ""? "nada" : Busqueda}`,
             {
               method: "GET",
               headers: {

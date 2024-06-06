@@ -1,6 +1,7 @@
 import { Box, Typography, Pagination } from '@mui/material'
 import React, { useEffect } from 'react'
-import CardSeguimientoVendedor from './CardSeguimientoVendedor'
+import CardSeguimientoVendedor from './CardSeguimientoVendedor';
+import { BASE_URL } from "../../config";
 
 export default function SeguimientoVendedor({informacionTienda, HandleChangeSeguimientoSeleccionado}) {
   const [ListaSeguimiento, setListaSeguimiento] = React.useState();
@@ -9,7 +10,7 @@ export default function SeguimientoVendedor({informacionTienda, HandleChangeSegu
     const obtenerListaSeguimiento = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/VisualizarSeguimientoPorTienda?idTienda=${informacionTienda.idTienda}`,
+            `${BASE_URL}/VisualizarSeguimientoPorTienda?idTienda=${informacionTienda.idTienda}`,
             {
               method: "GET",
               headers: {

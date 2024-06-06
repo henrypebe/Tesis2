@@ -17,6 +17,7 @@ import EstadisticaVendedor from './EstadisticaVendedor';
 import { useParams } from 'react-router-dom';
 import HistorialProducto from './HistorialProducto';
 import GestionVendedor from './GestionVendedor';
+import { BASE_URL } from "../../config";
 
 export default function MenuVendedor() {
     const [mostrarInicio, setMostrarInicio] = useState(true);
@@ -50,7 +51,7 @@ export default function MenuVendedor() {
       const obtenerInformacionTienda = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/InformacionTienda?idUsuario=${idUsuario}`,
+            `${BASE_URL}/InformacionTienda?idUsuario=${idUsuario}`,
             {
               method: "GET",
               headers: {
@@ -76,7 +77,7 @@ export default function MenuVendedor() {
       const obtenerVendedorRol = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/InformacionRolVendedor?idUsuario=${idUsuario}`,
+            `${BASE_URL}/InformacionRolVendedor?idUsuario=${idUsuario}`,
             {
               method: "GET",
               headers: {

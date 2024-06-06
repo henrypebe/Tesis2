@@ -2,6 +2,7 @@ import { Box, Pagination, TextField, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import CardProducto from './CardProducto';
+import { BASE_URL } from "../../config";
 
 export default function ProductoPorTiendaComprador({TiendaSeleccionado, HandleChangeProductoSeleccionado}) {
     const [ListaProducto, setListaProducto] = React.useState(null);
@@ -10,7 +11,7 @@ export default function ProductoPorTiendaComprador({TiendaSeleccionado, HandleCh
         const obtenerListaTienda = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ListarProductosPorTienda?idTienda=${TiendaSeleccionado}&busqueda=${Busqueda===''?'nada':Busqueda}`,
+                `${BASE_URL}/ListarProductosPorTienda?idTienda=${TiendaSeleccionado}&busqueda=${Busqueda===''?'nada':Busqueda}`,
                 {
                   method: "GET",
                   headers: {

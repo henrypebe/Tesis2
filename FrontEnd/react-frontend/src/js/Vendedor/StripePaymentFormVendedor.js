@@ -4,6 +4,7 @@ import './StripePaymentFormVendedor.css';
 import { Box, Button, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from "../../config";
 
 const StripePaymentFormVendedor = ({handleChangeAgregar, idUsuario}) => {
   const stripe = useStripe();
@@ -11,7 +12,7 @@ const StripePaymentFormVendedor = ({handleChangeAgregar, idUsuario}) => {
   const [InformacionUsuario, setInformacionUsuario] = React.useState();
   const handleSubmit = async (event) => {
     const response2 = await fetch(
-      `https://localhost:7240/InformacionIdUsuario?idUsuario=${idUsuario}`,
+      `${BASE_URL}/InformacionIdUsuario?idUsuario=${idUsuario}`,
       {
         method: 'GET',
         headers: {
@@ -54,7 +55,7 @@ const StripePaymentFormVendedor = ({handleChangeAgregar, idUsuario}) => {
     formData.append('Correo',InformacionUsuario.correo);
 
     const response = await fetch(
-        `https://localhost:7240/GuardarMetodoPago`,
+        `${BASE_URL}/GuardarMetodoPago`,
         {
             method: "POST",
             body: formData

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Checkbox, Button } from '@mui/material'
 import { useParams } from 'react-router-dom';
+import { BASE_URL } from "../../config";
 
 export default function RolVendedorDeter({onLoginVendedor}) {
   const { idUsuario } = useParams();
@@ -12,7 +13,7 @@ export default function RolVendedorDeter({onLoginVendedor}) {
 
   const handleCreateUser = async () => {
     try {
-        const response = await fetch(`https://localhost:7240/EditarRolVendedorUsuario?idUsuario=${idUsuario}&esAsistenteVendedor=${esVendedorAsistente}`, {
+        const response = await fetch(`${BASE_URL}/EditarRolVendedorUsuario?idUsuario=${idUsuario}&esAsistenteVendedor=${esVendedorAsistente}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

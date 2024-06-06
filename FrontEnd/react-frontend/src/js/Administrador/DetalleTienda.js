@@ -1,6 +1,7 @@
 import { Box, Button, Divider, IconButton, Modal, TextField, Typography } from '@mui/material'
 import React from 'react';
 import CancelIcon from "@mui/icons-material/Cancel";
+import { BASE_URL } from "../../config";
 
 export default function DetalleTienda({setMostrarGestionAprobacionTienda, setMostrarDetalleTienda, TiendaSeleccionado}) {
     const handleChange = () =>{
@@ -34,7 +35,7 @@ export default function DetalleTienda({setMostrarGestionAprobacionTienda, setMos
 
     const handleCambioDatos = async() =>{
         const response = await fetch(
-            `https://localhost:7240/AprobaciónTienda?idTienda=${TiendaSeleccionado.idTienda}&Estado=${EstadoSeleccionado}&MotivoRechazo=${MotivoRechazo}`,
+            `${BASE_URL}/AprobaciónTienda?idTienda=${TiendaSeleccionado.idTienda}&Estado=${EstadoSeleccionado}&MotivoRechazo=${MotivoRechazo}`,
             {
               method: "PUT",
               headers: {
@@ -54,7 +55,7 @@ export default function DetalleTienda({setMostrarGestionAprobacionTienda, setMos
 
     const handleCambioDatosAprobado = async(estado) =>{
         const response = await fetch(
-            `https://localhost:7240/AprobaciónTienda?idTienda=${TiendaSeleccionado.idTienda}&Estado=${estado}&MotivoRechazo=${MotivoRechazo}`,
+            `${BASE_URL}/AprobaciónTienda?idTienda=${TiendaSeleccionado.idTienda}&Estado=${estado}&MotivoRechazo=${MotivoRechazo}`,
             {
               method: "PUT",
               headers: {

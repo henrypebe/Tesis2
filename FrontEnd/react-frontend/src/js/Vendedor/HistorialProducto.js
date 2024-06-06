@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Button, Pagination, Typography } from '@mui/material'
 import LineaDetalleProductoVisualizar from './LineaDetalleProductoVisualizar';
+import { BASE_URL } from "../../config";
 
 export default function HistorialProducto({setHistoriaProducto, setMostrarDetalleProducto, productoInformacion, setOpcionSeleccionado}) {
 
@@ -15,7 +16,7 @@ export default function HistorialProducto({setHistoriaProducto, setMostrarDetall
         const handleInformacionInicioVendedor = async () => {
           try {
             const response = await fetch(
-              `https://localhost:7240/ListarHistorialCambiosProducto?idProducto=${productoInformacion?productoInformacion.idProducto:0}`,
+              `${BASE_URL}/ListarHistorialCambiosProducto?idProducto=${productoInformacion?productoInformacion.idProducto:0}`,
               {
                 method: "GET",
                 headers: {

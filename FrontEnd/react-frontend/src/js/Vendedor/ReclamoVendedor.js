@@ -1,6 +1,7 @@
 import { Box, Typography, Pagination } from '@mui/material'
 import React, { useEffect } from 'react';
 import CardReclamoVendedor from './CardReclamoVendedor';
+import { BASE_URL } from "../../config";
 
 export default function ReclamoVendedor({informacionTienda}) {
   const [ListaProductoReclamo, setListaProductoReclamo] = React.useState();
@@ -9,7 +10,7 @@ export default function ReclamoVendedor({informacionTienda}) {
     const obtenerListaProductoReclamo = async () => {
         try {
           const response = await fetch(
-            `https://localhost:7240/ListarProductoReclamos?idTienda=${informacionTienda.idTienda}`,
+            `${BASE_URL}/ListarProductoReclamos?idTienda=${informacionTienda.idTienda}`,
             {
               method: "GET",
               headers: {

@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import MarkChatReadIcon from '@mui/icons-material/MarkChatRead';
 import MarkUnreadChatAltIcon from '@mui/icons-material/MarkUnreadChatAlt';
 import CardEstadisticaCompra from './CardEstadisticaCompra';
+import { BASE_URL } from "../../config";
 
 export default function EstadisticaComprador({idUsuario}) {
     const [Estadistica, setEstadistica] = React.useState();
@@ -11,7 +12,7 @@ export default function EstadisticaComprador({idUsuario}) {
         const obtenerListaSeguimiento = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/EstadisticaComprador?idUsuario=${idUsuario}`,
+                `${BASE_URL}/EstadisticaComprador?idUsuario=${idUsuario}`,
                 {
                   method: "GET",
                   headers: {

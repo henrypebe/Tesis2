@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Box, Button, Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { BASE_URL } from "../../config";
 
 export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda}) {
     const [pageCompleto, setPageCompleto] = React.useState(0);
@@ -45,7 +46,7 @@ export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda
       const handleActualizarFecha = async () => {
         try {
           await fetch(
-            `https://localhost:7240/ActualizarFechasPedidos`,
+            `${BASE_URL}/ActualizarFechasPedidos`,
             {
               method: "PUT",
               headers: {
@@ -65,7 +66,7 @@ export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda
             const fechaISO = BusquedaFecha != null && !fechaHabilitada? fecha.toISOString(): "0001-01-01T00:00:00.000Z";
   
             const response = await fetch(
-              `https://localhost:7240/ListarVentasCompletadosPorFecha?idTienda=${informacionTienda.idTienda}&FechaFiltro=${fechaISO}`,
+              `${BASE_URL}/ListarVentasCompletadosPorFecha?idTienda=${informacionTienda.idTienda}&FechaFiltro=${fechaISO}`,
               {
                 method: "GET",
                 headers: {

@@ -1,6 +1,7 @@
 import { Box, Pagination, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import CardGestionAprobacionTienda from './CardGestionAprobacionTienda';
+import { BASE_URL } from "../../config";
 
 export default function GestionAprobacionTienda({handleChangeTiendaSeleccionado}) {
     const [ListaTiendaSeleccionado, setListaTiendaSeleccionado] = React.useState(null);
@@ -8,7 +9,7 @@ export default function GestionAprobacionTienda({handleChangeTiendaSeleccionado}
         const obtenerListaProducto = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ListarTiendaGestion`,
+                `${BASE_URL}/ListarTiendaGestion`,
                 {
                   method: "GET",
                   headers: {

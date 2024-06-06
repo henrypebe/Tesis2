@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import CardTiendaPresentacion from './CardTiendaPresentacion';
 import SearchIcon from '@mui/icons-material/Search';
 import CardProductoPresentacion from './CardProductoPresentacion';
+import { BASE_URL } from "../../config";
 
 export default function ProductosPresentacion() {
     const [Busqueda, setBusqueda] = useState("");
@@ -23,7 +24,7 @@ export default function ProductosPresentacion() {
         const obtenerListaProducto = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ListasProductosGeneral?busqueda=${Busqueda === ""? "nada" : Busqueda}`,
+                `${BASE_URL}/ListasProductosGeneral?busqueda=${Busqueda === ""? "nada" : Busqueda}`,
                 {
                   method: "GET",
                   headers: {
@@ -58,7 +59,7 @@ export default function ProductosPresentacion() {
         const obtenerListaProducto = async () => {
             try {
               const response = await fetch(
-                `https://localhost:7240/ListarTiendaGeneral?busquedaTienda=${"nada"}`,
+                `${BASE_URL}/ListarTiendaGeneral?busquedaTienda=${"nada"}`,
                 {
                   method: "GET",
                   headers: {
