@@ -185,6 +185,86 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpPut]
+        [Route("/UpdateOrCreateTallas")]
+        public async Task<ActionResult> UpdateOrCreateTallas([FromForm] int idProducto, [FromForm] bool sBoolean, [FromForm] bool mBoolean, [FromForm] bool lBoolean,
+            [FromForm] bool xlBoolean, [FromForm] bool xxlBoolean)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string checkQuery = @"SELECT COUNT(*) FROM TallaVestimenta WHERE IdProducto = @IdProducto";
+                    MySqlCommand checkCommand = new MySqlCommand(checkQuery, connection);
+                    checkCommand.Parameters.AddWithValue("@IdProducto", idProducto);
+
+                    int count = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+
+                    if (count > 0)
+                    {
+                        string updateQuery = @"UPDATE TallaVestimenta 
+                                       SET SBoolean = @SBoolean, MBoolean = @MBoolean, LBoolean = @LBoolean, 
+                                           XLBoolean = @XLBoolean, XXLBoolean = @XXLBoolean
+                                       WHERE IdProducto = @IdProducto";
+
+                        MySqlCommand updateCommand = new MySqlCommand(updateQuery, connection);
+                        updateCommand.Parameters.AddWithValue("@IdProducto", idProducto);
+                        updateCommand.Parameters.AddWithValue("@SBoolean", sBoolean);
+                        updateCommand.Parameters.AddWithValue("@MBoolean", mBoolean);
+                        updateCommand.Parameters.AddWithValue("@LBoolean", lBoolean);
+                        updateCommand.Parameters.AddWithValue("@XLBoolean", xlBoolean);
+                        updateCommand.Parameters.AddWithValue("@XXLBoolean", xxlBoolean);
+
+                        int rowsAffected = await updateCommand.ExecuteNonQueryAsync();
+
+                        await connection.CloseAsync();
+
+                        if (rowsAffected > 0)
+                        {
+                            return Ok("Tallas actualizadas exitosamente.");
+                        }
+                        else
+                        {
+                            return NotFound("No se encontraron tallas para actualizar.");
+                        }
+                    }
+                    else
+                    {
+                        string insertQuery = @"INSERT INTO TallaVestimenta (IdProducto, SBoolean, MBoolean, LBoolean, XLBoolean, XXLBoolean)
+                                       VALUES (@IdProducto, @SBoolean, @MBoolean, @LBoolean, @XLBoolean, @XXLBoolean)";
+
+                        MySqlCommand insertCommand = new MySqlCommand(insertQuery, connection);
+                        insertCommand.Parameters.AddWithValue("@IdProducto", idProducto);
+                        insertCommand.Parameters.AddWithValue("@SBoolean", sBoolean);
+                        insertCommand.Parameters.AddWithValue("@MBoolean", mBoolean);
+                        insertCommand.Parameters.AddWithValue("@LBoolean", lBoolean);
+                        insertCommand.Parameters.AddWithValue("@XLBoolean", xlBoolean);
+                        insertCommand.Parameters.AddWithValue("@XXLBoolean", xxlBoolean);
+
+                        int rowsInserted = await insertCommand.ExecuteNonQueryAsync();
+
+                        await connection.CloseAsync();
+
+                        if (rowsInserted > 0)
+                        {
+                            return Ok("Tallas creadas exitosamente.");
+                        }
+                        else
+                        {
+                            return BadRequest("Error al crear las tallas.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpPut]
         [Route("/EditarProducto")]
         public async Task<ActionResult<int>> EditarProducto([FromForm] int idProducto, [FromForm] string nombre, [FromForm] double precio, [FromForm] int cantidad, [FromForm] IFormFile image,
         [FromForm] string descripcion, [FromForm] double cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] double costoEnvio,
@@ -286,7 +366,7 @@ namespace API_Tesis.Controllers
                         else
                         {
                             connection.Close();
-                            return BadRequest("No se hizo ningún cambio");
+                            return Ok("No se hizo ningún cambio");
                         }
                     }
                     else

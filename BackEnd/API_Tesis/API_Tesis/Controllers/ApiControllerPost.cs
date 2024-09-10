@@ -425,8 +425,9 @@ namespace API_Tesis.Controllers
         }
         [HttpPost]
         [Route("/CreateProducto")]
-        public async Task<ActionResult<int>> CrearProducto([FromForm] string nombre, [FromForm] double precio, [FromForm] int cantidad, [FromForm] IFormFile image, [FromForm] string descripcion, [FromForm] string cantidadOferta,
-            [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] string idTienda, [FromForm] double costoEnvio, [FromForm] string tiempoEnvio)
+        public async Task<ActionResult<int>> CrearProducto([FromForm] string nombre, [FromForm] double precio, [FromForm] int cantidad, [FromForm] IFormFile image, [FromForm] string descripcion,
+            [FromForm] double cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] string idTienda, [FromForm] double costoEnvio,
+            [FromForm] string tiempoEnvio, [FromForm] string tallaSeleccionada)
         {
             try
             {
@@ -436,8 +437,35 @@ namespace API_Tesis.Controllers
                     descripcion = descripcion.Replace('_', ' ');
                     nombre = nombre.Replace('_', ' ');
                     cantidadGarantia = cantidadGarantia.Replace('_', ' ');
-                    connection.Open();
+                    await connection.OpenAsync();
 
+                    // Verificación previa de existencia del producto
+                    if (tipoProducto == "Vestimenta")
+                    {
+                        string checkQuery = @"SELECT COUNT(*) FROM Producto p
+                                      JOIN TallaVestimenta t ON p.IdProducto = t.IdProducto
+                                      WHERE p.Nombre = @Nombre AND p.TipoProducto = @TipoProducto 
+                                      AND ((@TallaSeleccionada = 'Short (S)' AND t.SBoolean = TRUE) OR
+                                           (@TallaSeleccionada = 'Medium (M)' AND t.MBoolean = TRUE) OR
+                                           (@TallaSeleccionada = 'Large (L)' AND t.LBoolean = TRUE) OR
+                                           (@TallaSeleccionada = 'XL (Extra Large)' AND t.XLBoolean = TRUE) OR
+                                           (@TallaSeleccionada = 'XXL (Extra Extra Large)' AND t.XXLBoolean = TRUE))
+                                      AND p.TiendaID = @TiendaID";
+
+                        MySqlCommand checkCommand = new MySqlCommand(checkQuery, connection);
+                        checkCommand.Parameters.AddWithValue("@Nombre", nombre);
+                        checkCommand.Parameters.AddWithValue("@TipoProducto", tipoProducto);
+                        checkCommand.Parameters.AddWithValue("@TiendaID", idTienda);
+                        checkCommand.Parameters.AddWithValue("@TallaSeleccionada", tallaSeleccionada);
+
+                        int existingCount = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+                        if (existingCount > 0)
+                        {
+                            return BadRequest("Ya existe un producto con el mismo nombre, tipo Vestimenta y talla en esta tienda.");
+                        }
+                    }
+
+                    // Conversión de la imagen a bytes
                     byte[] imageBytes;
                     using (var ms = new MemoryStream())
                     {
@@ -445,10 +473,13 @@ namespace API_Tesis.Controllers
                         imageBytes = ms.ToArray();
                     }
 
-                    string query = @"INSERT INTO Producto (Nombre, Precio, Stock, Descripcion, CantidadOferta, CantidadGarantia, EstadoAprobacion, TipoProducto, TiendaID, Estado, Foto, FechaCreacion, CostoEnvio,
-                     CantidadVentas, TiempoEnvio) VALUES (@Nombre, @Precio, @Stock, @Descripcion, @CantidadOferta, @CantidadGarantia, @EstadoAprobacion, @TipoProducto, @TiendaID, @Estado, @Foto, @FechaCreacion, 
-                     @CostoEnvio, @CantidadVentas, @TiempoEnvio);
-                     SELECT LAST_INSERT_ID();";
+                    // Inserción del nuevo producto
+                    string query = @"INSERT INTO Producto (Nombre, Precio, Stock, Descripcion, CantidadOferta, CantidadGarantia, EstadoAprobacion, TipoProducto, TiendaID, Estado, 
+                             Foto, FechaCreacion, CostoEnvio, CantidadVentas, TiempoEnvio) 
+                             VALUES (@Nombre, @Precio, @Stock, @Descripcion, @CantidadOferta, @CantidadGarantia, @EstadoAprobacion, @TipoProducto, @TiendaID, 
+                             @Estado, @Foto, @FechaCreacion, @CostoEnvio, @CantidadVentas, @TiempoEnvio);
+                             SELECT LAST_INSERT_ID();";
+
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Nombre", nombre);
                     command.Parameters.AddWithValue("@Precio", precio);
@@ -467,18 +498,55 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@Estado", 1);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 
-                    await connection.CloseAsync();
-                    await connection.OpenAsync();
-                    query = @"INSERT INTO HistorialCambiosProducto (FechaHora, Descripcion, ProductoID) VALUES (@FechaHora, @Descripcion, @idGenerado)";
+                    // Inserción en el historial de cambios
+                    query = @"INSERT INTO HistorialCambiosProducto (FechaHora, Descripcion, ProductoID) 
+                      VALUES (@FechaHora, @Descripcion, @idGenerado)";
                     command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@FechaHora", DateTime.Now);
                     command.Parameters.AddWithValue("@Descripcion", "Se realizó la creación del producto");
                     command.Parameters.AddWithValue("@idGenerado", idGenerado);
-                    await command.ExecuteScalarAsync();
-                    await connection.CloseAsync();
+                    await command.ExecuteNonQueryAsync();
 
                     return Ok(idGenerado);
-                    //return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpPost]
+        [Route("/RegisterTallas")]
+        public async Task<ActionResult> RegistrarTallas([FromForm] int idProducto, [FromForm] string talla)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    bool sBoolean = talla == "Short (S)";
+                    bool mBoolean = talla == "Medium (M)";
+                    bool lBoolean = talla == "Large (L)";
+                    bool xlBoolean = talla == "XL (Extra Large)";
+                    bool xxlBoolean = talla == "XXL (Extra Extra Large)";
+
+                    string query = @"INSERT INTO TallaVestimenta (IdProducto, SBoolean, MBoolean, LBoolean, XLBoolean, XXLBoolean)
+                             VALUES (@IdProducto, @SBoolean, @MBoolean, @LBoolean, @XLBoolean, @XXLBoolean);";
+
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@IdProducto", idProducto);
+                    command.Parameters.AddWithValue("@SBoolean", sBoolean);
+                    command.Parameters.AddWithValue("@MBoolean", mBoolean);
+                    command.Parameters.AddWithValue("@LBoolean", lBoolean);
+                    command.Parameters.AddWithValue("@XLBoolean", xlBoolean);
+                    command.Parameters.AddWithValue("@XXLBoolean", xxlBoolean);
+
+                    await command.ExecuteNonQueryAsync();
+                    await connection.CloseAsync();
+
+                    return Ok("Tallas registradas exitosamente.");
                 }
             }
             catch (Exception ex)

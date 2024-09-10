@@ -1597,11 +1597,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\henry\\OneDrive\\Desktop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\API_Tesis.csproj",
+      "projectUniqueName": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\API_Tesis.csproj",
       "projectName": "API_Tesis",
-      "projectPath": "C:\\Users\\henry\\OneDrive\\Desktop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\API_Tesis.csproj",
+      "projectPath": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\API_Tesis.csproj",
       "packagesPath": "C:\\Users\\henry\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\henry\\OneDrive\\Desktop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\obj\\",
+      "outputPath": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\henry\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -1672,7 +1672,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.304\\RuntimeIdentifierGraph.json"
       }
     }
   }

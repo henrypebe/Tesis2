@@ -2,6 +2,8 @@
 using API_Tesis.Datos;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
+using System.Data.SqlTypes;
+using System;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
@@ -45,7 +47,7 @@ namespace API_Tesis.Controllers
                                 Precio = reader.GetDouble("Precio"),
                                 Stock = reader.GetInt32("Stock"),
                                 FechaCreacion = reader.GetDateTime("FechaCreacion"),
-                                Descripcion = reader.GetString("Descripcion"),
+                                Descripcion = reader.GetString("Descripcion") != "NE"? reader.GetString("Descripcion"): "Sin Descripción",
                                 CantidadOferta = reader.GetDouble("CantidadOferta"),
                                 CostoEnvio = reader.GetDouble("CostoEnvio"),
                                 CantidadGarantia = reader.GetString("CantidadGarantia"),
@@ -336,6 +338,56 @@ namespace API_Tesis.Controllers
             return Ok(productos);
         }
         [HttpGet]
+        [Route("/GetTallasPorProducto")]
+        public async Task<ActionResult> GetTallasPorProducto(int idProducto)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"SELECT IdTalla, IdProducto, SBoolean, MBoolean, LBoolean, XLBoolean, XXLBoolean 
+                             FROM TallaVestimenta 
+                             WHERE IdProducto = @IdProducto";
+
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@IdProducto", idProducto);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (reader.HasRows)
+                        {
+                            DatoTallaVestimenta datoTallaVestimenta = new DatoTallaVestimenta();
+
+                            while (await reader.ReadAsync())
+                            {
+                                datoTallaVestimenta.IdTallaVestimenta = reader.GetInt32("IdTalla");
+                                datoTallaVestimenta.IdProducto = reader.GetInt32("IdProducto");
+                                datoTallaVestimenta.S = reader.GetBoolean("SBoolean");
+                                datoTallaVestimenta.M = reader.GetBoolean("MBoolean");
+                                datoTallaVestimenta.L = reader.GetBoolean("LBoolean");
+                                datoTallaVestimenta.XL = reader.GetBoolean("XLBoolean");
+                                datoTallaVestimenta.XXL = reader.GetBoolean("XXLBoolean");
+                            }
+
+                            return Ok(datoTallaVestimenta);
+                        }
+                        else
+                        {
+                            return NotFound("No se encontraron tallas para el producto especificado.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/ListasProductos")]
         public ActionResult<IEnumerable<Producto>> GetProductos(int idTienda, string busqueda)
         {
@@ -376,7 +428,7 @@ namespace API_Tesis.Controllers
                                 Nombre = nombreProducto,
                                 Precio = reader.GetDouble("Precio"),
                                 Stock = reader.GetInt32("Stock"),
-                                Descripcion = descripcionProducto,
+                                Descripcion = descripcionProducto=="NE"? "":descripcionProducto,
                                 CantidadOferta = reader.GetDouble("CantidadOferta"),
                                 CostoEnvio = CostoEnvio,
                                 FechaEnvio = FechaEnvio,

@@ -12,6 +12,7 @@ DROP TABLE Tienda;
 DROP TABLE MetodoPago;
 DROP TABLE Usuario;
 DROP TABLE blockchain;
+DROP TABLE TallaVestimenta;
 
 CREATE TABLE Usuario (
     IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -192,6 +193,17 @@ CREATE TABLE LlavesSTRIPE(
     ClaveStripeSecreto text
 );
 
+CREATE TABLE TallaVestimenta (
+    IdTalla INT AUTO_INCREMENT PRIMARY KEY,
+    IdProducto INT NOT NULL,
+    SBoolean BOOLEAN DEFAULT FALSE,
+    MBoolean BOOLEAN DEFAULT FALSE,
+    LBoolean BOOLEAN DEFAULT FALSE,
+    XLBoolean BOOLEAN DEFAULT FALSE,
+    XXLBoolean BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (IdProducto) REFERENCES Producto(IdProducto) ON DELETE CASCADE
+);
+
 /*************************************************/
 DROP TABLE PRUEBA;
 CREATE TABLE PRUEBA (
@@ -230,10 +242,12 @@ SELECT * FROM PedidoXProducto;
 SELECT * FROM Mensajes;
 SELECT * FROM CorreoEmisor;
 SELECT * FROM Producto;
+SELECT * FROM HistorialCambiosProducto;
 SELECT * FROM Pedidos;
 SELECT * FROM PedidoXProducto;
 SELECT * FROM Chat;
 SELECT * FROM MetodoPago;
+SELECT * FROM TallaVestimenta;
 SELECT * FROM Usuario WHERE Estado = 1;
 
 ALTER TABLE Tienda MODIFY COLUMN Estado INT;
@@ -249,15 +263,3 @@ ALTER TABLE MetodoPago DROP COLUMN Cuenta;
 ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
-
-SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
-p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, pp.ProductoID, pp.Cantidad, pr.Precio, 
-pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto, pp.TieneReclamo,
-u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho, pr.CantidadOferta,
-p.CostoEnvio
-FROM Pedidos p
-INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
-INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
-WHERE p.UsuarioID = 3 AND p.Estado <> 3;
