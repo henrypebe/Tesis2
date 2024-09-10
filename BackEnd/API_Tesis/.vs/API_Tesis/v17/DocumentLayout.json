@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\controllers\\apicontrollerput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\controllers\\apicontrollerput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\controllers\\apicontrollerget.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\controllers\\apicontrollerget.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\controllers\\apicontrollerpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\controllers\\apicontrollerpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\controllers\\apicontrollerput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\controllers\\apicontrollerput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\datos\\datotallavestimenta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -42,8 +42,48 @@
       "DocumentGroups": [
         {
           "DockedWidth": 214,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ApiControllerGet.cs",
+              "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerGet.cs",
+              "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerGet.cs",
+              "ToolTip": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerGet.cs",
+              "RelativeToolTip": "API_Tesis\\Controllers\\ApiControllerGet.cs",
+              "ViewState": "AQIAAEoBAAAAAAAAAAAwwFQBAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-11T19:42:20.567Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ApiControllerPost.cs",
+              "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPost.cs",
+              "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerPost.cs",
+              "ToolTip": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPost.cs",
+              "RelativeToolTip": "API_Tesis\\Controllers\\ApiControllerPost.cs",
+              "ViewState": "AQIAAPIBAAAAAAAAAAAuwAYCAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-09T19:47:55.402Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ApiControllerPut.cs",
+              "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPut.cs",
+              "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerPut.cs",
+              "ToolTip": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPut.cs",
+              "RelativeToolTip": "API_Tesis\\Controllers\\ApiControllerPut.cs",
+              "ViewState": "AQIAALUAAAAAAAAAAAAmwOkAAAAVAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-09T21:12:49.111Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -74,48 +114,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ApiControllerGet.cs",
-              "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerGet.cs",
-              "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerGet.cs",
-              "ToolTip": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerGet.cs",
-              "RelativeToolTip": "API_Tesis\\Controllers\\ApiControllerGet.cs",
-              "ViewState": "AQIAAF0BAAAAAAAAAAAqwIQBAAAJAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-11T19:42:20.567Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ApiControllerPost.cs",
-              "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPost.cs",
-              "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerPost.cs",
-              "ToolTip": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPost.cs",
-              "RelativeToolTip": "API_Tesis\\Controllers\\ApiControllerPost.cs",
-              "ViewState": "AQIAAKgBAAAAAAAAAAAqwLEBAAAQAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T19:47:55.402Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ApiControllerPut.cs",
-              "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPut.cs",
-              "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerPut.cs",
-              "ToolTip": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPut.cs",
-              "RelativeToolTip": "API_Tesis\\Controllers\\ApiControllerPut.cs",
-              "ViewState": "AQIAALUAAAAAAAAAAAAmwOkAAAAVAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T21:12:49.111Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 3,
               "Title": "DatoTallaVestimenta.cs",
               "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Datos\\DatoTallaVestimenta.cs",
@@ -124,8 +122,7 @@
               "RelativeToolTip": "API_Tesis\\Datos\\DatoTallaVestimenta.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAWAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T20:51:07.63Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-09T20:51:07.63Z"
             },
             {
               "$type": "Document",
@@ -137,8 +134,7 @@
               "RelativeToolTip": "API_Tesis\\Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAAgAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-11T20:10:22.538Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-11T20:10:22.538Z"
             },
             {
               "$type": "Document",

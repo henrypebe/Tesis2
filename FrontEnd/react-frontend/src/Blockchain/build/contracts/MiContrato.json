@@ -291,7 +291,7 @@
   "sourceMap": "60:463:1:-:0;;;262:112;;;;;;;;;-1:-1:-1;363:3:1;350:10;:16;60:463;;;;;;",
   "deployedSourceMap": "60:463:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;143:25;;;;;;;;;160::2;;;148:2;133:18;143:25:1;;;;;;;438:82;;;;;;:::i;:::-;493:10;:19;438:82;;;196:180:2;255:6;308:2;296:9;287:7;283:23;279:32;276:52;;;324:1;321;314:12;276:52;-1:-1:-1;347:23:2;;196:180;-1:-1:-1;196:180:2:o",
   "source": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n\r\ncontract MiContrato {\r\n    // Esta variable será almacenada en la blockchain\r\n    uint256 public miVariable;\r\n\r\n    // Constructor del contrato que se ejecuta una vez en el momento del despliegue\r\n    constructor() {\r\n        // Inicializa la variable con un valor inicial de 100\r\n        miVariable = 100;\r\n    }\r\n\r\n    // Función para actualizar el valor de miVariable\r\n    function setVariable(uint256 _valor) public {\r\n        miVariable = _valor;\r\n    }\r\n}",
-  "sourcePath": "C:\\Users\\henry\\OneDrive\\Desktop\\10mo Ciclo\\Tesis 2\\Tesis2\\FrontEnd\\react-frontend\\src\\Blockchain\\contracts\\MiContrato.sol",
+  "sourcePath": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\FrontEnd\\react-frontend\\src\\Blockchain\\contracts\\MiContrato.sol",
   "ast": {
     "absolutePath": "project:/contracts/MiContrato.sol",
     "exportedSymbols": {
@@ -558,12 +558,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x20843dc21b2d115e48306ABC51c4928022979378",
-      "transactionHash": "0xbf25e1fab2bda77d75e621142af6d1dc6c404ca2ccf526faef26ad03455f03ef"
+      "address": "0x413D6DE8f95Ed0d39d71A7aB5b1a6610C62585c0",
+      "transactionHash": "0xcba0fe0929db278472c709e436f79e14c8beb57fb7eda413058b7b15c5623e1a"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-07-12T21:32:05.093Z",
+  "updatedAt": "2024-09-10T04:13:43.341Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

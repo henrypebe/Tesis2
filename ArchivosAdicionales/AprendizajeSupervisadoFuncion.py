@@ -19,7 +19,7 @@ def entrenar_y_guardar_pipeline(pipeline, X_train, y_train, pipeline_file):
     
     # Guardar el modelo en un archivo
     with open(pipeline_file, 'wb') as file:
-        pickle.dump(pipeline, file)
+        pickle.dump((pipeline, X_train, y_train), file)
 
 def cargar_pipeline_y_predecir(datos_directos, pipeline_file):
     # Cargar los datos directos y preprocesarlos
@@ -150,50 +150,52 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     plt.legend(loc="best")
     return plt
 
-pipeline_file = "pipeline.pkl"
-
-# Cargar y preprocesar los datos
+# # Cargar y preprocesar los datos
 # ruta_archivo = os.path.abspath("ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt")
-
-archivos = [
-    "ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt",
-    "ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt",
-    "ArchivosAdicionales/datos_pedidos_fraude_Esc3.txt",
-]
 # df = cargar_datos(ruta_archivo)
-dfs = []
-for archivo in archivos:
-    df_temp = cargar_datos(archivo)
-    dfs.append(df_temp)
-df = pd.concat(dfs, ignore_index=True)
 
-df = preprocesar_datos(df)
 
-# # Separar datos en características (X) y etiquetas (y)
-# features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto']
-features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Anho', 
-            'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
-X = df[features]
-y = df['Fraude']
 
-# Dividir datos en conjunto de entrenamiento y prueba
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+pipeline_file = "pipelineEsc2.pkl"
 
-# # Crear y entrenar el modelo
-pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
-pipeline.fit(X_train, y_train)
+# archivos = [
+#     "ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt",
+# ]
+# dfs = []
+# for archivo in archivos:
+#     df_temp = cargar_datos(archivo)
+#     dfs.append(df_temp)
+# df = pd.concat(dfs, ignore_index=True)
 
-# pipeline2 = make_pipeline(StandardScaler(), DecisionTreeClassifier())
-# pipeline2.fit(X_train, y_train)
+# df = preprocesar_datos(df)
 
-# pipeline3 = make_pipeline(StandardScaler(), GradientBoostingClassifier())
-# pipeline3.fit(X_train, y_train)
-    
-# Guardar el modelo en un archivo
+# # # Separar datos en características (X) y etiquetas (y)
+# # features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto']
+# features = ['ID', 'Direccion', 'CantidadCambioEntrega', 'Precio', 'Cuenta', 'CantidaCambioCuenta', 'Cantidad_Productos', 'Tipo_Producto', 'Anho', 
+#             'Mes', 'Dia', 'Hora', 'Minuto', 'Segundo']
+# X = df[features]
+# y = df['Fraude']
+
+# # Dividir datos en conjunto de entrenamiento y prueba
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# # # Crear y entrenar el modelo
+# pipeline = make_pipeline(StandardScaler(), RandomForestClassifier())
+# pipeline.fit(X_train, y_train)
+
+# # # Guardar el modelo en un archivo
 # with open(pipeline_file, 'wb') as file:
 #     pickle.dump((pipeline, X_train, y_train), file)
-    
-    
+
+
+
+
+
+# # # pipeline2 = make_pipeline(StandardScaler(), DecisionTreeClassifier())
+# # # pipeline2.fit(X_train, y_train)
+
+# # # pipeline3 = make_pipeline(StandardScaler(), GradientBoostingClassifier())
+# # # pipeline3.fit(X_train, y_train)
 
 # entrenar_y_guardar_pipeline(pipeline, X_train, y_train, pipeline_file)
 
@@ -201,9 +203,9 @@ pipeline.fit(X_train, y_train)
 # evaluar_modelo(pipeline2, X_test, y_test)
 # evaluar_modelo(pipeline3, X_test, y_test)
 
-title = "Learning Curves (Random Forest)"
-plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
-plt.show()
+# title = "Learning Curves (Random Forest)"
+# plot_learning_curve(pipeline, title, X_train, y_train, cv=5, n_jobs=-1)
+# plt.show()
 
 def cargar_datos_2(datos):
     datos_procesados = []
@@ -248,11 +250,11 @@ datos_directos = [
     "Fecha de Creación del Pedido: 2024-05-26 23:29:20",
     "Lugar de Entrega: Direccion 1",
     "Cantidad de cambios de lugar de entrega durante el ultimo mes: 1",
-    "Costo total del Pedido: 21",
+    "Costo total del Pedido: 45",
     "Método de Pago (Número de Cuenta Encriptado): pm_1P7KAtG77lj0glGvxvqiL2c6",
     "Numeros de cambios del método de pago: 1",
     "Cantidad de Productos en el Pedido: 1",
     "Tipo de Producto (con mayor valor): Juguetes"
 ]
 
-# cargar_pipeline_y_predecir(datos_directos, pipeline_file)
+cargar_pipeline_y_predecir(datos_directos, pipeline_file)

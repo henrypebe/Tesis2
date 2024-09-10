@@ -4,8 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <_PublishTargetUrl>C:\Users\henry\OneDrive\Desktop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Release\net6.0\publish\</_PublishTargetUrl>
-    <History>True|2024-06-06T04:55:29.4827643Z||;True|2024-06-05T23:54:10.7215545-05:00||;True|2024-06-05T23:46:46.6040233-05:00||;</History>
+    <_PublishTargetUrl>C:\Users\henry\OneDrive\Desktop\Laptop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Release\net6.0\publish\</_PublishTargetUrl>
+    <History>True|2024-09-10T04:09:04.3467291Z||;True|2024-06-05T23:55:29.4827643-05:00||;True|2024-06-05T23:54:10.7215545-05:00||;True|2024-06-05T23:46:46.6040233-05:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>
