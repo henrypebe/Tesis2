@@ -24,11 +24,12 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
     return (
     <Box
       sx={{
-        marginTop: "10px",
+        marginTop: "20px",
         border: "2px solid black",
         borderRadius: "6px",
         width: "98.5%",
         padding: "10px",
+        marginBottom:"20px"
       }}
     >
       <Box sx={{ display: "flex", flexDirection: "row", alignItems:"center" }}>

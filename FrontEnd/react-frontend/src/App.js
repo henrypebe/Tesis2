@@ -45,7 +45,6 @@ function App() {
     localStorage.setItem("isLoggedInVendedor", true);
     window.location.href = `/MenuVendedor/${idUsuario}`;
   };
-  //Hola
   return (
     <BrowserRouter>
       <ToastContainer />

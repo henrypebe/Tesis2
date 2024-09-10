@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../../css/Login/LoginPage.css";
-import { Box, Button, Link, TextField, Typography } from "@mui/material";
+import { Box, Button, Link, TextField, Typography, CircularProgress } from "@mui/material";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SHA256 } from 'crypto-js';
@@ -9,8 +9,11 @@ import { BASE_URL } from "../../config";
 export default function LoginPage() {
   const [emailType, setEmailType] = useState("");
   const [contrasenha, setContrasenha] = useState("");
+  const [loading, setLoading] = useState(false); // Estado de carga
 
   const handleLoginSistema = async () => {
+    if (loading) return; // Evita múltiples clics
+    setLoading(true); // Inicia la carga
     try {
       if(emailType !== '' || contrasenha !== ''){
         const hashedPassword = SHA256(contrasenha).toString();
@@ -22,21 +25,27 @@ export default function LoginPage() {
         });
         if (response.ok) {
           const idUsuario = parseInt(await response.text());
-          if(idUsuario !== -1) window.location.href = `/TokenPantalla/${idUsuario}`;
-          else toast.error('Error al ingresar los datos, verifique nuevamente.');
+          if(idUsuario !== -1) {
+            window.location.href = `/TokenPantalla/${idUsuario}`;
+          } else {
+            toast.error('Error al ingresar los datos, verifique nuevamente.');
+          }
         } else {
           if (response.status === 400) {
             const errorMessage = await response.text();
             toast.error(errorMessage);
           } else {
-              toast.error('Error al ingresar los datos, verifique nuevamente.');
+            toast.error('Error al ingresar los datos, verifique nuevamente.');
           }
         }
-      }else{
+      } else {
         toast.error('Debe ingresar todos los datos solicitados.');
       }
     } catch (error) {
       console.error("Error al enviar el correo electrónico:", error);
+      toast.error('Ocurrió un error al intentar iniciar sesión.');
+    } finally {
+      setLoading(false); // Finaliza la carga
     }
   };
 
@@ -109,8 +118,9 @@ export default function LoginPage() {
             "&:hover": { backgroundColor: "#1C2536" },
           }}
           onClick={handleLoginSistema}
+          disabled={loading} // Deshabilita el botón durante la carga
         >
-          Iniciar Sesión
+          {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Iniciar Sesión"}
         </Button>
       </Box>
     </div>

@@ -156,7 +156,7 @@ export default function ProductosPresentacion() {
                 <CardProductoPresentacion producto={producto}/>
               ))}
             </Box>
-            <Box sx={{ display:"flex", justifyContent:"center"}}>
+            <Box sx={{ display:"flex", justifyContent:"center", marginTop:"14px"}}>
                 <Pagination count={Math.ceil(productosList ? productosList.length / rowsPerPage2 : 0)} page={currentPage2 + 1} onChange={handleChangePage2}/>
             </Box>
           </>

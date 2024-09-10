@@ -126,7 +126,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
       }, [idTienda, Busqueda]);
 
     const [currentPage, setCurrentPage] = React.useState(0);
-    const rowsPerPage = 5;
+    const rowsPerPage = 4;
     const handleChangePage = (event, newPage) => {
         setCurrentPage(newPage - 1);
     };
@@ -171,7 +171,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                 <Box sx={{height:"82%"}}>
                     {productosList && productosList.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((producto, index) => {
                         const isFirstElement = index === 0;
-                        return isFirstElement ? 
+                        return isFirstElement && currentPage===0 && Busqueda === "" ? 
                         (
                             <ProductoMayorDem productoPrimero={producto} handleOpenModal={handleOpenModal}
                               setMostrarMisProductos={setMostrarMisProductos} setMostrarDetalleProducto={setMostrarDetalleProducto}
@@ -194,7 +194,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                         );
                     })}
                 </Box>
-                <Box sx={{ display:"flex", justifyContent:"center"}}>
+                <Box sx={{ display:"flex", justifyContent:"center", marginTop:"6px"}}>
                     <Pagination count={Math.ceil(productosList.length / rowsPerPage)} page={currentPage + 1} onChange={handleChangePage}/>
                 </Box>
             </>

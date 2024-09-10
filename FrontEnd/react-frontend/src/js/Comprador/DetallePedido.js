@@ -407,7 +407,10 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                     </Typography>
                     {PedidoSeleccionado.productosLista.map((producto, index) => (
                         <ul key={index} style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-                            <li style={{fontSize:"23px"}}>{producto.nombreProducto}</li>
+                            <li style={{fontSize:"23px", marginBottom:"10px", width:"100%"}}>
+                                <span style={{ display: 'inline-block', minWidth: "15%", maxWidth: "15%" }}>{producto.nombreProducto}</span>
+                                <span> - cantidad: {producto.cantidad}</span>
+                            </li>
                         </ul>
                     ))}
                 </Box>

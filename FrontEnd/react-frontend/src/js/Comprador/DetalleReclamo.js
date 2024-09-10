@@ -237,7 +237,7 @@ export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, 
                                 )
                                 :
                                 (
-                                    <Button variant="contained" sx={{width:"100%", backgroundColor:"#850E0E", '&:hover':{backgroundColor:"#850E0E"}}}
+                                    <Button variant="contained" sx={{width:"100%", backgroundColor:"#86882D", '&:hover':{backgroundColor:"#86882D"}}}
                                     onClick={()=>{HandleReclamar(producto);}}
                                     >
                                         Realizar reclamo

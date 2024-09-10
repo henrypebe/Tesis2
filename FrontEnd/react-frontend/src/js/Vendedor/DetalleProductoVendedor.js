@@ -2,6 +2,7 @@ import { Box, Button, Divider, IconButton, Modal, Typography } from '@mui/materi
 import React, { useEffect } from 'react';
 import HistoryIcon from '@mui/icons-material/History';
 import CancelIcon from "@mui/icons-material/Cancel";
+import { BASE_URL } from '../../config';
 
 export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto, productoInformacion, handleChangeHistoria,
     OpcionSeleccionado}) {
@@ -23,6 +24,45 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
     useEffect(() => {
         if(productoInformacion && productoInformacion.estadoAprobacion === "Rechazado" && OpcionSeleccionado !== 1) setOpen(true);
     }, [productoInformacion, OpcionSeleccionado]);
+
+    const [selectedSize, setSelectedSize] = React.useState("");
+    useEffect(() => {
+        const handleInformacionInicioVendedor = async () => {
+          try {
+            const response = await fetch(
+              `${BASE_URL}/GetTallasPorProducto?idProducto=${productoInformacion.idProducto}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+      
+            if (response.ok) {
+              const talla = await response.json();
+              let tallaSeleccionada = "";
+              if (talla.s) tallaSeleccionada = "Short (S)";
+              else if (talla.m) tallaSeleccionada = "Medium (M)";
+              else if (talla.l) tallaSeleccionada = "Large (L)";
+              else if (talla.xl) tallaSeleccionada = "XL (Extra Large)";
+              else if (talla.xxl) tallaSeleccionada = "XXL (Extra Extra Large)";
+              setSelectedSize(tallaSeleccionada);
+    
+            } else if (response.status === 404) {
+              throw new Error("Talla del producto no encontrado");
+            } else {
+              throw new Error("Error al obtener la Talla del producto");
+            }
+          } catch (error) {
+            console.error("Error al obtener la Talla del producto", error);
+            throw new Error("Error al obtener la Talla del producto");
+          }
+        };
+        if(productoInformacion && productoInformacion.idProducto && productoInformacion.tipoProducto === "Vestimenta"){
+          handleInformacionInicioVendedor();
+        }
+      }, [productoInformacion]);
 
     const style = {
         position: "absolute",
@@ -84,7 +124,8 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        {productoInformacion && productoInformacion.nombre}
+                        {productoInformacion && productoInformacion.nombre} 
+                        {productoInformacion && productoInformacion.tipoProducto==="Vestimenta"?` - ${selectedSize}`:""}
                     </Typography>
                     <Typography
                         sx={{
@@ -159,7 +200,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
             height:"31%"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"90%"}}>Descripción del producto:</Typography>
             <Typography sx={{height:"50%", marginTop:"10px", fontSize:"20px"}}>
-                {productoInformacion && productoInformacion.descripcion}
+                {productoInformacion && productoInformacion.descripcion? productoInformacion.descripcion: "No tiene descripción"}
             </Typography>
         </Box>
 

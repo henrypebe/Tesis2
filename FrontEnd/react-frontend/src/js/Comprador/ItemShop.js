@@ -55,7 +55,7 @@ export default function ItemShop({producto, onCantidadChange, conteoCarritoCompr
         }}
       >
         <Typography sx={{ fontSize: "25px" }}>
-          {producto.nombreProducto} - {producto.tipoProducto}
+          {producto.nombreProducto} - {producto.tipoProducto} {producto.talla !== ""? `- Talla ${producto.talla}` : ""}
         </Typography>
         <Box sx={{display:"flex", flexDirection:"row"}}>
           <Typography sx={{ fontSize: "25px", marginRight:"10px"}}>S/. {producto.precio.toFixed(2)}</Typography>

@@ -155,7 +155,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     const stripePromise = loadStripe(llavePublica);
     const [currentPage, setCurrentPage] = useState(0);
     const [selectedMethodId, setSelectedMethodId] = useState(1);
-    const rowsPerPage = selectedMethodId === null? 1: 3;
+    const rowsPerPage = selectedMethodId === null? 1: 6;
     const handleChangePage = (event, newPage) => {
         setCurrentPage(newPage - 1);
     };

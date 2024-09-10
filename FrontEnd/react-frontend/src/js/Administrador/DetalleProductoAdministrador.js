@@ -1,5 +1,5 @@
 import { Box, Button, Divider, IconButton, Modal, TextField, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import CancelIcon from "@mui/icons-material/Cancel";
 import { BASE_URL } from "../../config";
 
@@ -19,6 +19,45 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
     const handleSubirEstadoProducto = async (estado) =>{
         handleOpen(estado);
     }
+
+    const [selectedSize, setSelectedSize] = React.useState("");
+    useEffect(() => {
+        const handleInformacionInicioVendedor = async () => {
+          try {
+            const response = await fetch(
+              `${BASE_URL}/GetTallasPorProducto?idProducto=${ProductoSeleccionado.idProducto}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+      
+            if (response.ok) {
+              const talla = await response.json();
+              let tallaSeleccionada = "";
+              if (talla.s) tallaSeleccionada = "Short (S)";
+              else if (talla.m) tallaSeleccionada = "Medium (M)";
+              else if (talla.l) tallaSeleccionada = "Large (L)";
+              else if (talla.xl) tallaSeleccionada = "XL (Extra Large)";
+              else if (talla.xxl) tallaSeleccionada = "XXL (Extra Extra Large)";
+              setSelectedSize(tallaSeleccionada);
+    
+            } else if (response.status === 404) {
+              throw new Error("Talla del producto no encontrado");
+            } else {
+              throw new Error("Error al obtener la Talla del producto");
+            }
+          } catch (error) {
+            console.error("Error al obtener la Talla del producto", error);
+            throw new Error("Error al obtener la Talla del producto");
+          }
+        };
+        if(ProductoSeleccionado && ProductoSeleccionado.idProducto && ProductoSeleccionado.tipoProducto === "Vestimenta"){
+          handleInformacionInicioVendedor();
+        }
+      }, [ProductoSeleccionado]);
 
     const handleCambioDatos = async() =>{
         const response = await fetch(
@@ -146,6 +185,15 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                             S/. {ProductoSeleccionado.costoEnvio.toFixed(2)}
                         </Typography>
                     </Box>
+
+                    <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px", width:"100%"}}>
+                        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"70%"}}>
+                            Talla de la vestimenta:
+                        </Typography>
+                        <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
+                            {selectedSize}
+                        </Typography>
+                    </Box>
                 </Box>
 
                 <Divider
@@ -170,7 +218,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
             </Box>
         </Box>
 
-        <Box sx={{border:"2px solid black", borderRadius:"6px", padding:"10px", width:"60%", height:"40%", marginBottom:"10px"}}>
+        <Box sx={{border:"2px solid black", borderRadius:"6px", padding:"10px", width:"60%", height:"38%", marginBottom:"10px"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", width:"90%", marginBottom:"10px"}}>
                 Descripción del producto:
             </Typography>
