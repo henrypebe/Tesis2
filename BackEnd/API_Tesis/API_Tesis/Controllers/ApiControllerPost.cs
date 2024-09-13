@@ -427,7 +427,7 @@ namespace API_Tesis.Controllers
         [Route("/CreateProducto")]
         public async Task<ActionResult<int>> CrearProducto([FromForm] string nombre, [FromForm] double precio, [FromForm] int cantidad, [FromForm] IFormFile image, [FromForm] string descripcion,
             [FromForm] double cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] string idTienda, [FromForm] double costoEnvio,
-            [FromForm] string tiempoEnvio, [FromForm] string tallaSeleccionada)
+            [FromForm] string tiempoEnvio, [FromForm] string tallaSeleccionada, [FromForm] string colorSeleccionado)
         {
             try
             {
@@ -475,9 +475,9 @@ namespace API_Tesis.Controllers
 
                     // Inserción del nuevo producto
                     string query = @"INSERT INTO Producto (Nombre, Precio, Stock, Descripcion, CantidadOferta, CantidadGarantia, EstadoAprobacion, TipoProducto, TiendaID, Estado, 
-                             Foto, FechaCreacion, CostoEnvio, CantidadVentas, TiempoEnvio) 
+                             Foto, FechaCreacion, CostoEnvio, CantidadVentas, TiempoEnvio, Color) 
                              VALUES (@Nombre, @Precio, @Stock, @Descripcion, @CantidadOferta, @CantidadGarantia, @EstadoAprobacion, @TipoProducto, @TiendaID, 
-                             @Estado, @Foto, @FechaCreacion, @CostoEnvio, @CantidadVentas, @TiempoEnvio);
+                             @Estado, @Foto, @FechaCreacion, @CostoEnvio, @CantidadVentas, @TiempoEnvio, @Color);
                              SELECT LAST_INSERT_ID();";
 
                     MySqlCommand command = new MySqlCommand(query, connection);
@@ -495,6 +495,7 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@CostoEnvio", costoEnvio);
                     command.Parameters.AddWithValue("@CantidadVentas", 0);
                     command.Parameters.AddWithValue("@TiempoEnvio", tiempoEnvio);
+                    command.Parameters.AddWithValue("@Color", colorSeleccionado == ""? "NA" : colorSeleccionado);
                     command.Parameters.AddWithValue("@Estado", 1);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 

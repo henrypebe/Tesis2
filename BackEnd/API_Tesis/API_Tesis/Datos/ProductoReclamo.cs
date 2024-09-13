@@ -10,5 +10,7 @@
         public string NombreCliente { get; set; }
         public string ApellidoCliente { get; set; }
         public int CantidadProducto { get; set; }
+        public string Color { get; set; }
+        public string Talla { get; set; }
     }
 }

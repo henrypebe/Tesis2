@@ -2,7 +2,6 @@ import { Box, Button, Divider, IconButton, Modal, Typography } from '@mui/materi
 import React, { useEffect } from 'react';
 import HistoryIcon from '@mui/icons-material/History';
 import CancelIcon from "@mui/icons-material/Cancel";
-import { BASE_URL } from '../../config';
 
 export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto, productoInformacion, handleChangeHistoria,
     OpcionSeleccionado}) {
@@ -24,45 +23,6 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
     useEffect(() => {
         if(productoInformacion && productoInformacion.estadoAprobacion === "Rechazado" && OpcionSeleccionado !== 1) setOpen(true);
     }, [productoInformacion, OpcionSeleccionado]);
-
-    const [selectedSize, setSelectedSize] = React.useState("");
-    useEffect(() => {
-        const handleInformacionInicioVendedor = async () => {
-          try {
-            const response = await fetch(
-              `${BASE_URL}/GetTallasPorProducto?idProducto=${productoInformacion.idProducto}`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-      
-            if (response.ok) {
-              const talla = await response.json();
-              let tallaSeleccionada = "";
-              if (talla.s) tallaSeleccionada = "Short (S)";
-              else if (talla.m) tallaSeleccionada = "Medium (M)";
-              else if (talla.l) tallaSeleccionada = "Large (L)";
-              else if (talla.xl) tallaSeleccionada = "XL (Extra Large)";
-              else if (talla.xxl) tallaSeleccionada = "XXL (Extra Extra Large)";
-              setSelectedSize(tallaSeleccionada);
-    
-            } else if (response.status === 404) {
-              throw new Error("Talla del producto no encontrado");
-            } else {
-              throw new Error("Error al obtener la Talla del producto");
-            }
-          } catch (error) {
-            console.error("Error al obtener la Talla del producto", error);
-            throw new Error("Error al obtener la Talla del producto");
-          }
-        };
-        if(productoInformacion && productoInformacion.idProducto && productoInformacion.tipoProducto === "Vestimenta"){
-          handleInformacionInicioVendedor();
-        }
-      }, [productoInformacion]);
 
     const style = {
         position: "absolute",
@@ -125,7 +85,7 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                         }}
                         >
                         {productoInformacion && productoInformacion.nombre} 
-                        {productoInformacion && productoInformacion.tipoProducto==="Vestimenta"?` - ${selectedSize}`:""}
+                        {productoInformacion && productoInformacion.tipoProducto==="Vestimenta"?` - ${productoInformacion.talla} - ${productoInformacion.color}`:""}
                     </Typography>
                     <Typography
                         sx={{
@@ -134,8 +94,9 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             fontSize: "24px",
                             width: "100%",
                         }}
-                        >
-                        Fecha de creación: {productoInformacion && new Date(productoInformacion.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} {productoInformacion && new Date(productoInformacion.fechaCreacion).toLocaleTimeString()}
+                    >
+                        Fecha de creación: {productoInformacion && new Date(productoInformacion.fechaCreacion).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}{" "}
+                        {productoInformacion && new Date(productoInformacion.fechaCreacion).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true })}
                     </Typography>
                     <Typography
                         sx={{

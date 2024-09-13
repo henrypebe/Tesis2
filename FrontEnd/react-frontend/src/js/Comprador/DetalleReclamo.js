@@ -222,7 +222,10 @@ export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, 
                     {ReclamoSeleccionado[0] && ReclamoSeleccionado[0].productosLista.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((producto) => {
                     return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={producto.idProducto} sx={{border:"2px solid black"}}>
-                            <TableCell sx={{minWidth:"250px", maxWidth:"250px", fontSize:"16px"}}>{producto.nombreProducto}</TableCell>
+                            <TableCell sx={{minWidth:"250px", maxWidth:"250px", fontSize:"16px"}}>
+                                {producto.nombreProducto} {producto.talla !== ""? `- ${producto.talla}`: ""} 
+                                {producto.color !== "NA"? `- ${producto.color}`: ""}
+                            </TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.nombreTienda}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidad}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {producto.precio.toFixed(2)}</TableCell>

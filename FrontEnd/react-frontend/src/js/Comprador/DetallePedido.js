@@ -256,7 +256,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
         <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px"}}>
             <Box sx={{width:"40%", display:"flex", flexDirection:"row"}}>
                 <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"71%"}}>
-                    Costo del pedido (sin envío):
+                    Costo del pedido (sin costo de envío):
                 </Typography>
                 <Typography sx={{color:"black", fontSize:"24px"}}>
                     S/. {PedidoSeleccionado.total.toFixed(2)}
@@ -264,7 +264,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
             </Box>
             <Box sx={{width:"28%", display:"flex", flexDirection:"row"}}>
                 <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"65%"}}>
-                    Costo de entrega:
+                    Costo de envío:
                 </Typography>
                 <Typography sx={{color:"black", fontSize:"24px"}}>
                     S/. {PedidoSeleccionado.costoEnvio.toFixed(2)}
@@ -309,7 +309,11 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                     {PedidoSeleccionado && PedidoSeleccionado.productosLista.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((producto) => {
                     return (
                         <TableRow hover role="checkbox" tabIndex={-1} key={producto.idProducto} sx={{border:"2px solid black"}}>
-                            <TableCell sx={{minWidth:"250px", maxWidth:"250px", fontSize:"16px"}}>{producto.nombreProducto}</TableCell>
+                            <TableCell sx={{minWidth:"250px", maxWidth:"250px", fontSize:"16px"}}>
+                                {producto.nombreProducto}{' '}
+                                {producto.tipoProducto === 'Vestimenta' ? producto.talla : ''}{' '}
+                                {producto.color !== 'NA' ? producto.color : ''}
+                            </TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.nombreTienda}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidad}</TableCell>
                             <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {producto.precio.toFixed(2)}</TableCell>

@@ -39,7 +39,7 @@ export default function CardGestionAprobacion({ producto, handleChangeProductoSe
             width: "100%",
           }}
         >
-          {producto.nombre}
+          {producto.nombre} {producto.talla !== ""? `- ${producto.talla}`: ""} {producto.color !== "NA"? `- ${producto.color}`: ""}
         </Typography>
         <Typography
           sx={{

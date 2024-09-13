@@ -20,5 +20,7 @@
         public string TiendaFoto { get; set; }
         public string Imagen { get; set; }
         public int CantidadVentas { get; set; }
+        public string Color { get; set; }
+        public string Talla { get; set; }
     }
 }

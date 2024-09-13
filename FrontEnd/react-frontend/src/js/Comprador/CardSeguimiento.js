@@ -47,7 +47,8 @@ export default function CardSeguimiento({HandleChangeSeguimientoSeleccionado, se
             width: "100%",
           }}
         >
-          ID Pedido {seguimiento.idPedido.toFixed(0).padStart(2, '0')} - {seguimiento.nombreProducto}
+          ID Pedido {seguimiento.idPedido.toFixed(0).padStart(2, '0')} - {seguimiento.nombreProducto} {seguimiento.talla !== ""? `- ${seguimiento.talla}`: ""} 
+          {seguimiento.color !== "NA"? `- ${seguimiento.color}`: ""}
         </Typography>
         <Typography
           sx={{

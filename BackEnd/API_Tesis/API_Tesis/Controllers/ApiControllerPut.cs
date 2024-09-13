@@ -267,8 +267,8 @@ namespace API_Tesis.Controllers
         [HttpPut]
         [Route("/EditarProducto")]
         public async Task<ActionResult<int>> EditarProducto([FromForm] int idProducto, [FromForm] string nombre, [FromForm] double precio, [FromForm] int cantidad, [FromForm] IFormFile image,
-        [FromForm] string descripcion, [FromForm] double cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] double costoEnvio,
-        [FromForm] string tiempoEnvio)
+            [FromForm] string descripcion, [FromForm] double cantidadOferta, [FromForm] string cantidadGarantia, [FromForm] string tipoProducto, [FromForm] double costoEnvio,
+            [FromForm] string tiempoEnvio, [FromForm] string idTienda, [FromForm] string tallaSeleccionada, [FromForm] string colorSeleccionado)
         {
             try
             {
@@ -276,6 +276,34 @@ namespace API_Tesis.Controllers
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
+
+                    if (tipoProducto == "Vestimenta")
+                    {
+                        string checkQuery = @"SELECT COUNT(*) FROM Producto p
+                          JOIN TallaVestimenta t ON p.IdProducto = t.IdProducto
+                          WHERE p.Nombre = @Nombre AND p.TipoProducto = @TipoProducto 
+                          AND p.IdProducto != @IdProducto
+                          AND ((@TallaSeleccionada = 'Short (S)' AND t.SBoolean = TRUE) OR
+                               (@TallaSeleccionada = 'Medium (M)' AND t.MBoolean = TRUE) OR
+                               (@TallaSeleccionada = 'Large (L)' AND t.LBoolean = TRUE) OR
+                               (@TallaSeleccionada = 'XL (Extra Large)' AND t.XLBoolean = TRUE) OR
+                               (@TallaSeleccionada = 'XXL (Extra Extra Large)' AND t.XXLBoolean = TRUE))
+                          AND p.TiendaID = @TiendaID";
+
+                        MySqlCommand checkCommand = new MySqlCommand(checkQuery, connection);
+                        checkCommand.Parameters.AddWithValue("@Nombre", nombre);
+                        checkCommand.Parameters.AddWithValue("@TipoProducto", tipoProducto);
+                        checkCommand.Parameters.AddWithValue("@TiendaID", idTienda);
+                        checkCommand.Parameters.AddWithValue("@TallaSeleccionada", tallaSeleccionada);
+                        checkCommand.Parameters.AddWithValue("@IdProducto", idProducto);
+
+                        int existingCount = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+                        if (existingCount > 0)
+                        {
+                            return BadRequest("Ya existe un producto con el mismo nombre, tipo Vestimenta y talla en esta tienda.");
+                        }
+                    }
+
                     byte[] imageBytes = null;
                     if (image != null)
                     {
@@ -285,15 +313,19 @@ namespace API_Tesis.Controllers
                             imageBytes = memoryStream.ToArray();
                         }
                     }
-                    string selectQuery = "SELECT Nombre, Precio, Descripcion, CantidadOferta, CantidadGarantia, TipoProducto, Foto, Stock, CostoEnvio, TiempoEnvio " +
+
+                    // Verificar cambios en Producto
+                    string selectQuery = "SELECT Nombre, Precio, Descripcion, CantidadOferta, CantidadGarantia, TipoProducto, Foto, Stock, CostoEnvio, TiempoEnvio, Color " +
                         "FROM Producto WHERE IdProducto = @IdProducto AND Estado = 1";
                     MySqlCommand selectCommand = new MySqlCommand(selectQuery, connection);
                     selectCommand.Parameters.AddWithValue("@IdProducto", idProducto);
                     MySqlDataReader reader = await selectCommand.ExecuteReaderAsync();
+                    List<string> changes = new List<string>();
+                    bool isTallaChanged = false;
+
                     if (reader.Read())
                     {
-                        List<string> changes = new List<string>();
-
+                        // Comparar y detectar cambios en los atributos del producto
                         if (reader.GetString("Nombre") != nombre)
                             changes.Add($"Nombre: '{reader.GetString("Nombre")}' a '{nombre}'");
 
@@ -321,14 +353,62 @@ namespace API_Tesis.Controllers
                         if (reader.GetString("TiempoEnvio") != tiempoEnvio)
                             changes.Add($"TiempoEnvio: '{reader.GetString("TiempoEnvio")}' a '{tiempoEnvio}'");
 
+                        if (reader.GetString("Color") != colorSeleccionado)
+                            changes.Add($"Color: '{reader.GetString("Color")}' a '{colorSeleccionado}'");
+
                         reader.Close();
+
+                        // Verificar cambios en TallaVestimenta
+                        string selectTallaQuery = "SELECT SBoolean, MBoolean, LBoolean, XLBoolean, XXLBoolean FROM TallaVestimenta WHERE IdProducto = @IdProducto";
+                        MySqlCommand selectTallaCommand = new MySqlCommand(selectTallaQuery, connection);
+                        selectTallaCommand.Parameters.AddWithValue("@IdProducto", idProducto);
+                        MySqlDataReader tallaReader = await selectTallaCommand.ExecuteReaderAsync();
+
+                        if (tallaReader.Read())
+                        {
+                            bool currentS = tallaReader.GetBoolean("SBoolean");
+                            bool currentM = tallaReader.GetBoolean("MBoolean");
+                            bool currentL = tallaReader.GetBoolean("LBoolean");
+                            bool currentXL = tallaReader.GetBoolean("XLBoolean");
+                            bool currentXXL = tallaReader.GetBoolean("XXLBoolean");
+
+                            tallaReader.Close();
+
+                            bool newS = tallaSeleccionada == "Short (S)";
+                            bool newM = tallaSeleccionada == "Medium (M)";
+                            bool newL = tallaSeleccionada == "Large (L)";
+                            bool newXL = tallaSeleccionada == "XL (Extra Large)";
+                            bool newXXL = tallaSeleccionada == "XXL (Extra Extra Large)";
+
+                            if (currentS != newS || currentM != newM || currentL != newL || currentXL != newXL || currentXXL != newXXL)
+                            {
+                                isTallaChanged = true;
+                                changes.Add($"Talla cambiada a '{tallaSeleccionada}'");
+
+                                // Actualizar la tabla TallaVestimenta
+                                string updateTallaQuery = "UPDATE TallaVestimenta SET SBoolean = @S, MBoolean = @M, LBoolean = @L, XLBoolean = @XL, " +
+                                    "XXLBoolean = @XXL WHERE IdProducto = @IdProducto";
+                                MySqlCommand updateTallaCommand = new MySqlCommand(updateTallaQuery, connection);
+                                updateTallaCommand.Parameters.AddWithValue("@IdProducto", idProducto);
+                                updateTallaCommand.Parameters.AddWithValue("@S", newS);
+                                updateTallaCommand.Parameters.AddWithValue("@M", newM);
+                                updateTallaCommand.Parameters.AddWithValue("@L", newL);
+                                updateTallaCommand.Parameters.AddWithValue("@XL", newXL);
+                                updateTallaCommand.Parameters.AddWithValue("@XXL", newXXL);
+                                await updateTallaCommand.ExecuteNonQueryAsync();
+                            }
+                        }
+                        else
+                        {
+                            tallaReader.Close();
+                        }
 
                         if (changes.Any())
                         {
-                            string changeDescription = "Se realizaron cambios en los siguientes atributos: " + string.Join(", ", changes);
+                            string changeDescription = "Se realizaron cambios en los atributos: " + string.Join(", ", changes);
                             string updateQuery = "UPDATE Producto SET Nombre = @Nombre, Precio = @Precio, Descripcion = @Descripcion, CantidadOferta = @CantidadOferta," +
                                 "CantidadGarantia = @CantidadGarantia, TipoProducto = @TipoProducto, Foto = @Foto, Stock = @Stock, EstadoAprobacion = @EstadoAprobacion, " +
-                                "CostoEnvio = @CostoEnvio, TiempoEnvio = @TiempoEnvio WHERE IdProducto = @IdProducto AND Estado = 1";
+                                "CostoEnvio = @CostoEnvio, TiempoEnvio = @TiempoEnvio, Color = @Color WHERE IdProducto = @IdProducto AND Estado = 1";
                             MySqlCommand command = new MySqlCommand(updateQuery, connection);
                             command.Parameters.AddWithValue("@IdProducto", idProducto);
                             command.Parameters.AddWithValue("@Nombre", nombre);
@@ -342,6 +422,7 @@ namespace API_Tesis.Controllers
                             command.Parameters.AddWithValue("@EstadoAprobacion", "Pendiente");
                             command.Parameters.AddWithValue("@CostoEnvio", costoEnvio);
                             command.Parameters.AddWithValue("@TiempoEnvio", tiempoEnvio);
+                            command.Parameters.AddWithValue("@Color", colorSeleccionado);
                             int rowsAffected = await command.ExecuteNonQueryAsync();
 
                             if (rowsAffected > 0)

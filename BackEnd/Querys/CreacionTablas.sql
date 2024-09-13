@@ -81,6 +81,7 @@ CREATE TABLE Producto (
     CantidadVentas INT,
     MotivoRechazo TEXT,
     TiendaID INT NOT NULL,
+    Color TEXT,
     FOREIGN KEY (TiendaID) REFERENCES Tienda(IdTienda),
     Estado boolean
 );
@@ -250,12 +251,19 @@ SELECT * FROM MetodoPago;
 SELECT * FROM TallaVestimenta;
 SELECT * FROM Usuario WHERE Estado = 1;
 
+SET SQL_SAFE_UPDATES = 0;
+UPDATE Producto 
+SET Color = 'NA' 
+WHERE Color IS NULL;
+SET SQL_SAFE_UPDATES = 1;
+
+
 ALTER TABLE Tienda MODIFY COLUMN Estado INT;
 ALTER TABLE Usuario MODIFY COLUMN Foto LONGBLOB;
 ALTER TABLE PedidoXProducto MODIFY COLUMN FechaEnvio Datetime;
 ALTER TABLE Tienda CHANGE COLUMN Distrito Provincia TEXT;
 ALTER TABLE Tienda ADD MotivoRechazo TEXT;
-ALTER TABLE Producto ADD TiempoEnvio TEXT;
+ALTER TABLE Producto ADD Color TEXT;
 ALTER TABLE Pedidos ADD FechaCreacion Datetime;
 ALTER TABLE Pedidos ADD TieneSeguimiento boolean;
 ALTER TABLE Mensajes ADD EsTienda boolean;

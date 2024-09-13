@@ -4,6 +4,8 @@ import { BASE_URL } from "../../config";
 
 export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedor, setMostrarnDetalleSeguimiento, SeguimientoSeleccionado,
     informacionTienda}) {
+    
+    // console.log(SeguimientoSeleccionado);
     const [ListaMensaje, setListaMensaje] = useState();
     const [mensajeEnviado, setMensajeEnviado] = useState('');
     
@@ -147,7 +149,8 @@ export default function DetalleSeguimientoVendedor({setMostrarSeguimientoVendedo
                         width: "100%",
                     }}
                 >
-                Pedidos - {SeguimientoSeleccionado.nombreProducto}
+                Pedidos - {SeguimientoSeleccionado.nombreProducto} {SeguimientoSeleccionado.talla !== ""? `- ${SeguimientoSeleccionado.talla}`: ""} 
+                {SeguimientoSeleccionado.color !== "NA"? `- ${SeguimientoSeleccionado.color}`: ""}
                 </Typography>
                 <Button
                     variant="contained"

@@ -7,10 +7,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../../config";
+import DetalleVestimenta from "./DetalleVestimenta";
 
 export default function EditarProducto({
   setMostrarMisProductos,
@@ -30,6 +31,9 @@ export default function EditarProducto({
   );
   const [PrecioProducto, setPrecioProducto] = React.useState(
     opcionEditarProducto === 0 ? productoInformacion.precio : ""
+  );
+  const [ColorProducto, setColorProducto] = React.useState(
+    opcionEditarProducto === 0 ? productoInformacion.color : ""
   );
   const [CantidadProducto, setCantidadProducto] = React.useState(
     opcionEditarProducto === 0 ? productoInformacion.stock : ""
@@ -72,45 +76,9 @@ export default function EditarProducto({
     opcionEditarProducto === 0 ? productoInformacion.imagen : ""
   );
 
-  const [selectedSize, setSelectedSize] = React.useState("");
-
-  useEffect(() => {
-    const handleInformacionInicioVendedor = async () => {
-      try {
-        const response = await fetch(
-          `${BASE_URL}/GetTallasPorProducto?idProducto=${productoInformacion.idProducto}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-  
-        if (response.ok) {
-          const talla = await response.json();
-          let tallaSeleccionada = "";
-          if (talla.s) tallaSeleccionada = "Short (S)";
-          else if (talla.m) tallaSeleccionada = "Medium (M)";
-          else if (talla.l) tallaSeleccionada = "Large (L)";
-          else if (talla.xl) tallaSeleccionada = "XL (Extra Large)";
-          else if (talla.xxl) tallaSeleccionada = "XXL (Extra Extra Large)";
-          setSelectedSize(tallaSeleccionada);
-
-        } else if (response.status === 404) {
-          throw new Error("Talla del producto no encontrado");
-        } else {
-          throw new Error("Error al obtener la Talla del producto");
-        }
-      } catch (error) {
-        console.error("Error al obtener la Talla del producto", error);
-        throw new Error("Error al obtener la Talla del producto");
-      }
-    };
-    if(productoInformacion && productoInformacion.idProducto && productoInformacion.tipoProducto === "Vestimenta"){
-      handleInformacionInicioVendedor();
-    }
-  }, [productoInformacion]);
+  const [selectedSize, setSelectedSize] = React.useState(
+    opcionEditarProducto === 0 ? productoInformacion.talla : ""
+  );
 
   const handleSizeChange = (event) => {
     setSelectedSize(event.target.value);
@@ -182,6 +150,12 @@ export default function EditarProducto({
         formData.append("tipoProducto", TipoProducto);
         formData.append("costoEnvio", CostoEnvio);
         formData.append("tiempoEnvio", cantidadEnvioTotal);
+        formData.append(
+          "idTienda",
+          informacionTienda.idTienda.toString() || ""
+        );
+        formData.append("tallaSeleccionada", selectedSize || "");
+        formData.append("colorSeleccionado", ColorProducto || "");
 
         const response = await fetch(`${BASE_URL}/EditarProducto`, {
           method: "PUT",
@@ -209,15 +183,9 @@ export default function EditarProducto({
 
           toast.success("Producto editado correctamente", { autoClose: 2000 });
           handleChange();
-        } else if (response.status === 404) {
-          throw new Error("Producto no encontrado");
         } else {
-          if (response.status === 400) {
-            const errorMessage = await response.text();
-            toast.warning(errorMessage);
-          } else {
-            toast.error("Error al ingresar los datos, verifique nuevamente.");
-          }
+          const errorMessage = await response.text();
+          toast.error(errorMessage, { autoClose: 2000 });
         }
       } catch (error) {
         console.error("Error al Editar el producto", error);
@@ -253,6 +221,7 @@ export default function EditarProducto({
         formData.append("costoEnvio", parseFloat(CostoEnvio) || 0);
         formData.append("tiempoEnvio", cantidadEnvioTotal.toString() || "");
         formData.append("tallaSeleccionada", selectedSize || "");
+        formData.append("colorSeleccionado", ColorProducto || "");
 
         const response = await fetch(`${BASE_URL}/CreateProducto`, {
           method: "POST",
@@ -539,20 +508,17 @@ export default function EditarProducto({
                         sx={{ height: "40px" }}
                     >
                         <MenuItem value={"Electrodomesticos"}>
-                        Electrodomesticos
+                          Electrodomesticos
                         </MenuItem>
                         <MenuItem value={"Vestimenta"}>Vestimenta</MenuItem>
                         <MenuItem value={"Muebles"}>Muebles</MenuItem>
                         <MenuItem value={"Limpieza"}>Limpieza</MenuItem>
                         <MenuItem value={"Tecnologia"}>Tecnologia</MenuItem>
                         <MenuItem value={"Libros/Articulos"}>
-                        Libros/Articulos
+                          Libros/Articulos
                         </MenuItem>
                         <MenuItem value={"Herramientas"}>Herramientas</MenuItem>
                         <MenuItem value={"Belleza/Salud"}>Belleza/Salud</MenuItem>
-                        <MenuItem value={"Joyeria/Accesorios"}>
-                        Joyeria/Accesorios
-                        </MenuItem>
                         <MenuItem value={"Decoracion"}>Decoracion</MenuItem>
                         <MenuItem value={"Juguetes"}>Juguetes</MenuItem>
                     </Select>
@@ -560,69 +526,8 @@ export default function EditarProducto({
                 </Box>
 
                 {TipoProducto === "Vestimenta" && (
-                    <Box
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            width: "50%",
-                            marginLeft:"10px"
-                        }}
-                    >
-                        <Typography
-                            sx={{
-                                color: "black",
-                                fontSize: "24px",
-                                width: "100%",
-                            }}
-                            >
-                            Tallas disponibles:
-                        </Typography>
-                        <FormControl
-                        fullWidth
-                        sx={{
-                            backgroundColor: "#fff",
-                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                            '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: '#ddd',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: '#1976d2',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#1976d2',
-                                borderWidth: '2px',
-                            },
-                            },
-                        }}
-                        >
-                            <Select
-                                labelId="size-select-label"
-                                id="size-select"
-                                disabled={productoInformacion && productoInformacion.idProducto}
-                                value={selectedSize}
-                                onChange={handleSizeChange}
-                                label="Talla"
-                                displayEmpty
-                                sx={{
-                                padding: "8px 12px",
-                                height: "42px",
-                                '& .MuiSelect-select': {
-                                    padding: "8px 14px",
-                                },
-                                }}
-                            >
-                                <MenuItem value="" disabled>
-                                Selecciona una talla
-                                </MenuItem>
-                                {["Short (S)", "Medium (M)", "Large (L)", "XL (Extra Large)", "XXL (Extra Extra Large)"].map((size) => (
-                                <MenuItem key={size} value={size}>
-                                    {size}
-                                </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Box>
+                    <DetalleVestimenta productoInformacion={productoInformacion} opcionEditarProducto={opcionEditarProducto} selectedSize={selectedSize}
+                    handleSizeChange={handleSizeChange} ColorProducto={ColorProducto} setColorProducto={setColorProducto}/>
                 )}
             </Box>
 

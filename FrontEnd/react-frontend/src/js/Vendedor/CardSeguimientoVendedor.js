@@ -54,7 +54,8 @@ export default function CardSeguimientoVendedor({HandleChangeSeguimientoSeleccio
                 width: "100%",
             }}
             >
-            <b>Producto:</b> {seguimiento.nombreProducto}
+            <b>Producto:</b> {seguimiento.nombreProducto} {seguimiento.talla !== ""? `- ${seguimiento.talla}`: ""} 
+            {seguimiento.color !== "NA"? `- ${seguimiento.color}`: ""}
             </Typography>
             <Typography
             sx={{

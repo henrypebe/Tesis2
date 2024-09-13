@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function DetalleVenta({setMostrarVentas, setMostrarDetalleVenta, setMostrarSeguimientoVendedor, VentaSeleccionada, informacionTienda}) {
 
-    console.log(VentaSeleccionada);
+    // console.log(VentaSeleccionada);
 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -119,32 +119,52 @@ export default function DetalleVenta({setMostrarVentas, setMostrarDetalleVenta, 
                     </TableHead>
 
                     <TableBody>
-                        {VentaSeleccionada && VentaSeleccionada.productosLista.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((producto) => {
-                        return (
-                            <TableRow hover role="checkbox" tabIndex={-1} key={producto.idProducto} sx={{border:"2px solid black"}}>
-                                <TableCell sx={{minWidth:"250px", maxWidth:"250px", fontSize:"16px"}}>{producto.nombreProducto}</TableCell>
-                                <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidad}</TableCell>
-                                <TableCell sx={{textAlign:"center", fontSize:"16px"}}>S/. {producto.precio.toFixed(2)}</TableCell>
-                                <TableCell sx={{textAlign:"center", fontSize:"16px"}}>{producto.cantidadOferta}%</TableCell>
-                                <TableCell sx={{textAlign:"center", fontSize:"16px"}}>
-                                    S/. {(producto.precio * producto.cantidad - (producto.precio * producto.cantidad*producto.cantidadOferta/100)).toFixed(2)}
-                                </TableCell>
-                                <TableCell sx={{textAlign:"center", width:"20%"}}>
-                                    {producto.tieneSeguimiento?
-                                    (
-                                        <Button variant="contained" sx={{width:"100%", backgroundColor:"#1C2536", '&:hover':{backgroundColor:"#1C2536"}}}
-                                        onClick={() => {handleSeguimiento(producto)}}
-                                        >
-                                            Visualizar Seguimiento
-                                        </Button>
-                                    )
-                                    :
-                                    (
-                                        <Box sx={{fontSize:"16.5px"}}>No se tiene seguimiento</Box>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        );
+                        {VentaSeleccionada &&
+                            VentaSeleccionada.productosLista
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((producto) => {
+                            const selectedSize = producto.talla;
+
+                            return (
+                                <TableRow hover role="checkbox" tabIndex={-1} key={producto.idProducto} sx={{ border: '2px solid black' }}>
+                                    <TableCell sx={{ minWidth: '250px', maxWidth: '250px', fontSize: '16px' }}>
+                                        {producto.nombreProducto}{' '}
+                                        {producto.tipoProducto === 'Vestimenta' ? selectedSize : ''}{' '}
+                                        {producto.color !== 'NA' ? producto.color : ''}
+                                    </TableCell>
+                                    <TableCell sx={{ textAlign: 'center', fontSize: '16px' }}>{producto.cantidad}</TableCell>
+                                    <TableCell sx={{ textAlign: 'center', fontSize: '16px' }}>
+                                        S/. {producto.precio.toFixed(2)}
+                                    </TableCell>
+                                    <TableCell sx={{ textAlign: 'center', fontSize: '16px' }}>{producto.cantidadOferta}%</TableCell>
+                                    <TableCell sx={{ textAlign: 'center', fontSize: '16px' }}>
+                                        S/.{' '}
+                                        {(
+                                            producto.precio * producto.cantidad -
+                                            (producto.precio * producto.cantidad * producto.cantidadOferta) / 100
+                                        ).toFixed(2)}
+                                    </TableCell>
+                                    <TableCell sx={{ textAlign: 'center', width: '20%' }}>
+                                        {producto.tieneSeguimiento ? (
+                                            <Button
+                                                variant="contained"
+                                                sx={{
+                                                    width: '100%',
+                                                    backgroundColor: '#1C2536',
+                                                    '&:hover': { backgroundColor: '#1C2536' },
+                                                }}
+                                                onClick={() => {
+                                                    handleSeguimiento(producto);
+                                                }}
+                                            >
+                                                Visualizar Seguimiento
+                                            </Button>
+                                        ) : (
+                                            <Box sx={{ fontSize: '16.5px' }}>No se tiene seguimiento</Box>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            );
                         })}
                     </TableBody>
                     </Table>

@@ -12,7 +12,7 @@ using System.Text;
 namespace API_Tesis.Controllers
 {
     [ApiController]
-    public class ApiControllerGet: ControllerBase
+    public class ApiControllerGet : ControllerBase
     {
         private readonly BDMysql _context;
         private readonly IConfiguration _configuration;
@@ -31,7 +31,11 @@ namespace API_Tesis.Controllers
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "SELECT * FROM Producto WHERE Estado = 1 AND EstadoAprobacion = @EstadoAprobacion";
+                string query = @"
+                SELECT p.*, tv.SBoolean, tv.MBoolean, tv.LBoolean, tv.XLBoolean, tv.XXLBoolean 
+                FROM Producto p
+                LEFT JOIN TallaVestimenta tv ON p.IdProducto = tv.IdProducto
+                WHERE p.Estado = 1 AND p.EstadoAprobacion = @EstadoAprobacion";
 
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
@@ -40,6 +44,13 @@ namespace API_Tesis.Controllers
                     {
                         while (reader.Read())
                         {
+                            string tallaSeleccionada = "";
+                            if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                             Producto producto = new Producto
                             {
                                 IdProducto = reader.GetInt32("IdProducto"),
@@ -47,7 +58,7 @@ namespace API_Tesis.Controllers
                                 Precio = reader.GetDouble("Precio"),
                                 Stock = reader.GetInt32("Stock"),
                                 FechaCreacion = reader.GetDateTime("FechaCreacion"),
-                                Descripcion = reader.GetString("Descripcion") != "NE"? reader.GetString("Descripcion"): "Sin Descripción",
+                                Descripcion = reader.GetString("Descripcion") != "NE" ? reader.GetString("Descripcion") : "Sin Descripción",
                                 CantidadOferta = reader.GetDouble("CantidadOferta"),
                                 CostoEnvio = reader.GetDouble("CostoEnvio"),
                                 CantidadGarantia = reader.GetString("CantidadGarantia"),
@@ -55,7 +66,9 @@ namespace API_Tesis.Controllers
                                 TipoProducto = reader.GetString("TipoProducto"),
                                 TiendaId = reader.GetInt32("TiendaId"),
                                 Imagen = ConvertirBytesAImagen(reader["Foto"] as byte[]),
-                                CantidadVentas = reader.GetInt32("CantidadVentas")
+                                CantidadVentas = reader.GetInt32("CantidadVentas"),
+                                Color = reader.GetString("Color"),
+                                Talla = tallaSeleccionada
                             };
                             productos.Add(producto);
                         }
@@ -280,11 +293,17 @@ namespace API_Tesis.Controllers
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = @"SELECT p.*, t.Nombre AS NombreTienda, t.Foto AS FotoTienda 
-                        FROM Producto p 
-                        INNER JOIN Tienda t ON p.TiendaID = t.IdTienda 
-                        WHERE p.Estado = 1 AND p.EstadoAprobacion <> 'Pendiente' AND p.EstadoAprobacion <> 'Rechazado' AND Stock >= 1
-                        AND t.Estado = 1";
+                string query = @"
+                    SELECT p.*, t.Nombre AS NombreTienda, t.Foto AS FotoTienda, 
+                           tv.SBoolean, tv.MBoolean, tv.LBoolean, tv.XLBoolean, tv.XXLBoolean
+                    FROM Producto p 
+                    INNER JOIN Tienda t ON p.TiendaID = t.IdTienda 
+                    LEFT JOIN TallaVestimenta tv ON p.IdProducto = tv.IdProducto
+                    WHERE p.Estado = 1 
+                    AND p.EstadoAprobacion <> 'Pendiente' 
+                    AND p.EstadoAprobacion <> 'Rechazado' 
+                    AND p.Stock >= 1 
+                    AND t.Estado = 1";
 
                 if (busqueda != "nada")
                 {
@@ -304,9 +323,17 @@ namespace API_Tesis.Controllers
                     {
                         while (reader.Read())
                         {
+                            string tallaSeleccionada = "";
+                            if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                             string nombreProducto = reader.GetString("Nombre").Replace("_", " ");
                             string descripcionProducto = reader.GetString("Descripcion").Replace("_", " ");
                             string FechaEnvio = reader.IsDBNull(reader.GetOrdinal("TiempoEnvio")) ? "" : reader.GetString("TiempoEnvio");
+
                             Producto producto = new Producto
                             {
                                 IdProducto = reader.GetInt32("IdProducto"),
@@ -327,6 +354,8 @@ namespace API_Tesis.Controllers
                                 Imagen = ConvertirBytesAImagen(reader["Foto"] as byte[]),
                                 CantidadVentas = reader.GetInt32("CantidadVentas"),
                                 FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                Color = reader.GetString("Color"),
+                                Talla = tallaSeleccionada
                             };
                             productos.Add(producto);
                         }
@@ -397,14 +426,18 @@ namespace API_Tesis.Controllers
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "SELECT * FROM Producto WHERE Estado = 1 AND TiendaID = @TiendaID";
+                string query = @"
+                    SELECT p.*, tv.SBoolean, tv.MBoolean, tv.LBoolean, tv.XLBoolean, tv.XXLBoolean 
+                    FROM Producto p
+                    LEFT JOIN TallaVestimenta tv ON p.IdProducto = tv.IdProducto
+                    WHERE p.Estado = 1 AND p.TiendaID = @TiendaID";
 
                 if (busqueda != "nada")
                 {
-                    query += " AND (Nombre LIKE @Busqueda OR TipoProducto LIKE @Busqueda OR IdProducto LIKE @Busqueda)";
+                    query += " AND (p.Nombre LIKE @Busqueda OR p.TipoProducto LIKE @Busqueda OR p.IdProducto LIKE @Busqueda)";
                 }
 
-                query += " ORDER BY CantidadVentas DESC";
+                query += " ORDER BY p.CantidadVentas DESC";
 
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
@@ -418,17 +451,25 @@ namespace API_Tesis.Controllers
                     {
                         while (reader.Read())
                         {
+                            string tallaSeleccionada = "";
+                            if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                            else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                             string nombreProducto = reader.GetString("Nombre").Replace("_", " ");
                             string descripcionProducto = reader.GetString("Descripcion").Replace("_", " ");
                             double CostoEnvio = reader.IsDBNull(reader.GetOrdinal("CostoEnvio")) ? 0 : reader.GetDouble("CostoEnvio");
                             string FechaEnvio = reader.IsDBNull(reader.GetOrdinal("TiempoEnvio")) ? "" : reader.GetString("TiempoEnvio");
+
                             Producto producto = new Producto
                             {
                                 IdProducto = reader.GetInt32("IdProducto"),
                                 Nombre = nombreProducto,
                                 Precio = reader.GetDouble("Precio"),
                                 Stock = reader.GetInt32("Stock"),
-                                Descripcion = descripcionProducto=="NE"? "":descripcionProducto,
+                                Descripcion = descripcionProducto == "NE" ? "" : descripcionProducto,
                                 CantidadOferta = reader.GetDouble("CantidadOferta"),
                                 CostoEnvio = CostoEnvio,
                                 FechaEnvio = FechaEnvio,
@@ -440,6 +481,8 @@ namespace API_Tesis.Controllers
                                 Imagen = ConvertirBytesAImagen(reader["Foto"] as byte[]),
                                 CantidadVentas = reader.GetInt32("CantidadVentas"),
                                 FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                                Color = reader.GetString("Color"),
+                                Talla = tallaSeleccionada
                             };
                             productos.Add(producto);
                         }
@@ -549,12 +592,13 @@ namespace API_Tesis.Controllers
 	                    p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, pp.ProductoID, pp.Cantidad, pr.Precio, 
                         pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto, pp.TieneReclamo,
                         u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho, u.IdUsuario as IdDuenho, pr.CantidadOferta,
-                        p.CostoEnvio
+                        p.CostoEnvio, pr.Color, tv.SBoolean, tv.MBoolean, tv.LBoolean, tv.XLBoolean, tv.XXLBoolean
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        LEFT JOIN TallaVestimenta tv ON pr.IdProducto = tv.IdProducto
                         WHERE p.UsuarioID = @IdUsuario AND p.Estado <> 3";
 
                     if (FechaFiltro != DateTime.MinValue)
@@ -562,7 +606,7 @@ namespace API_Tesis.Controllers
                         query += " AND (DATE_FORMAT(p.FechaEntrega, '%Y-%m-%d') = @FechaFiltro)";
                     }
 
-                    query += " ORDER BY p.FechaEntrega ASC";
+                    query += " ORDER BY p.FechaEntrega DESC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -577,6 +621,13 @@ namespace API_Tesis.Controllers
                             while (reader.Read())
                             {
                                 int idPedido = reader.GetInt32("IdPedido");
+                                string tallaSeleccionada = "";
+                                if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                                 Pedido pedidoExistente = pedidos.FirstOrDefault(p => p.IdPedido == idPedido);
                                 if (pedidoExistente == null)
                                 {
@@ -608,6 +659,8 @@ namespace API_Tesis.Controllers
                                     Cantidad = reader.GetInt32("Cantidad"),
                                     Precio = reader.GetDouble("Precio"),
                                     CantidadOferta = reader.GetDouble("CantidadOferta"),
+                                    Color = reader.GetString("Color"),
+                                    Talla = tallaSeleccionada,
                                     TieneSeguimiento = _tieneSeguimiento,
                                     TieneReclamo = reader.GetBoolean("TieneReclamo"),
                                 });
@@ -678,19 +731,20 @@ namespace API_Tesis.Controllers
                         SELECT p.IdPedido, p.FechaEntrega, p.FechaCreacion, p.Total, p.Estado, p.Reclamo, p.CantidadProductos, 
 	                   p.MetodoPago, t.IdTienda, t.Nombre AS NombreTienda, u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente,
 	                   pp.ProductoID, pp.Cantidad, pr.Precio, pr.Nombre as NombreProducto, pp.TieneSeguimiento, pp.IdPedidoXProducto,
-                       pr.CantidadOferta
+                       pr.CantidadOferta, pr.Color, tv.SBoolean, tv.MBoolean, tv.LBoolean, tv.XLBoolean, tv.XXLBoolean
                        FROM Pedidos p 
                        INNER JOIN PedidoXProducto pp ON p.IdPedido = pp.PedidoID
                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
-                       WHERE pr.TiendaID = @IdTienda
-                       ORDER BY p.FechaEntrega ASC";
+                       LEFT JOIN TallaVestimenta tv ON pr.IdProducto = tv.IdProducto
+                       WHERE pr.TiendaID = @IdTienda";
 
                     if (FechaFiltro != DateTime.MinValue)
                     {
                         query += " AND DATE_FORMAT(p.FechaEntrega, '%Y-%m-%d') = @FechaFiltro";
                     }
+                    query += " ORDER BY p.FechaEntrega DESC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -705,6 +759,13 @@ namespace API_Tesis.Controllers
                             while (reader.Read())
                             {
                                 int idPedido = reader.GetInt32("IdPedido");
+                                string tallaSeleccionada = "";
+                                if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                                 Pedido pedidoExistente = pedidos.FirstOrDefault(p => p.IdPedido == idPedido);
                                 if (pedidoExistente == null)
                                 {
@@ -733,6 +794,8 @@ namespace API_Tesis.Controllers
                                     Precio = reader.GetDouble("Precio"),
                                     CantidadOferta = reader.GetDouble("CantidadOferta"),
                                     TieneSeguimiento = reader.GetBoolean("TieneSeguimiento"),
+                                    Color = reader.GetString("Color"),
+                                    Talla = tallaSeleccionada,
                                 });
                             }
                             return Ok(pedidos);
@@ -809,16 +872,17 @@ namespace API_Tesis.Controllers
                     await connection.OpenAsync();
 
                     string query = @"
-                        SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreCliente,u.Apellido AS ApellidoCliente, c.IdChat, pr.Nombre AS NombreProducto,
-                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, p.FechaCreacion, c.FinalizarCliente,
-                        p.IdPedido
+                        SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente, c.IdChat, pr.Nombre AS NombreProducto,
+                               pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, p.FechaCreacion, c.FinalizarCliente,
+                               p.IdPedido, pr.Color, tv.SBoolean, tv.MBoolean, tv.LBoolean, tv.XLBoolean, tv.XXLBoolean
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                         INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
                         INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
-                        WHERE c.TiendaID = @TiendaID AND pp.TieneSeguimiento=true
+                        LEFT JOIN TallaVestimenta tv ON pr.IdProducto = tv.IdProducto
+                        WHERE c.TiendaID = @TiendaID AND pp.TieneSeguimiento = true
                         ORDER BY c.FinalizarCliente ASC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -832,6 +896,14 @@ namespace API_Tesis.Controllers
                                 Seguimiento seguimientoExistente = seguimientos.FirstOrDefault(p => p.IdChat == idChat);
                                 if (seguimientoExistente == null)
                                 {
+                                    // Determinar la talla seleccionada
+                                    string tallaSeleccionada = "";
+                                    if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                                    else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                                    else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                                    else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                                    else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                                     seguimientoExistente = new Seguimiento
                                     {
                                         IdChat = idChat,
@@ -846,6 +918,8 @@ namespace API_Tesis.Controllers
                                         FechaCreacion = reader.GetDateTime("FechaCreacion"),
                                         TieneReclamo = reader.GetBoolean("TieneReclamo"),
                                         FinalizarCliente = reader.GetBoolean("FinalizarCliente"),
+                                        Color = reader.GetString("Color"),
+                                        Talla = tallaSeleccionada
                                     };
 
                                     seguimientos.Add(seguimientoExistente);
@@ -875,13 +949,15 @@ namespace API_Tesis.Controllers
 
                     string query = @"
                         SELECT t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho,u.Apellido AS ApellidoDuenho, c.IdChat, pr.Nombre AS NombreProducto,
-                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, c.FinalizarCliente, p.IdPedido
+                        pr.Foto AS FotoProducto, p.Estado AS EstadoPedido, pp.IdPedidoXProducto, pp.TieneReclamo, c.FinalizarCliente, p.IdPedido,
+                        pr.Color, tv.SBoolean, tv.MBoolean, tv.LBoolean, tv.XLBoolean, tv.XXLBoolean
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                         INNER JOIN Chat c ON c.PedidoXProductoID = pp.IdPedidoXProducto
                         INNER JOIN Producto pr ON pp.ProductoID = pr.IdProducto
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        LEFT JOIN TallaVestimenta tv ON pr.IdProducto = tv.IdProducto
                         WHERE p.UsuarioID = @IdUsuario ORDER BY c.FinalizarCliente ASC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -892,6 +968,13 @@ namespace API_Tesis.Controllers
                             while (reader.Read())
                             {
                                 int idChat = reader.GetInt32("IdChat");
+                                string tallaSeleccionada = "";
+                                if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                                 Seguimiento seguimientoExistente = seguimientos.FirstOrDefault(p => p.IdChat == idChat);
                                 if (seguimientoExistente == null)
                                 {
@@ -908,6 +991,8 @@ namespace API_Tesis.Controllers
                                         EstadoPedido = reader.GetInt32("EstadoPedido"),
                                         TieneReclamo = reader.GetBoolean("TieneReclamo"),
                                         FinalizarCliente = reader.GetBoolean("FinalizarCliente"),
+                                        Color = reader.GetString("Color"),
+                                        Talla = tallaSeleccionada,
                                     };
 
                                     seguimientos.Add(seguimientoExistente);
@@ -992,12 +1077,13 @@ namespace API_Tesis.Controllers
                         pr.IdProducto, pr.Nombre AS NombreProducto, pp.Cantidad AS CantidadProducto,
                         pr.Precio, pp.TieneReclamo, t.Nombre AS NombreTienda, pp.IdPedidoXProducto,
                         pp.ProductoID, t.Nombre AS NombreTienda, u.Nombre AS NombreDuenho, u.Apellido AS ApellidoDuenho,
-                        p.Reclamo AS ReclamoPedido
+                        p.Reclamo AS ReclamoPedido, pr.Color, tv.SBoolean, tv.MBoolean, tv.LBoolean, tv.XLBoolean, tv.XXLBoolean
                         FROM Pedidos p
                         INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                         INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
+                        LEFT JOIN TallaVestimenta tv ON pr.IdProducto = tv.IdProducto
                         WHERE p.IdPedido = @IdPedido";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -1008,6 +1094,13 @@ namespace API_Tesis.Controllers
                             while (reader.Read())
                             {
                                 int idPedido = reader.GetInt32("IdPedido");
+                                string tallaSeleccionada = "";
+                                if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                                else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                                 Pedido pedidoExistente = listaPedidos.FirstOrDefault(p => p.IdPedido == idPedido);
                                 if (pedidoExistente == null)
                                 {
@@ -1035,6 +1128,8 @@ namespace API_Tesis.Controllers
                                     Cantidad = reader.GetInt32("CantidadProducto"),
                                     Precio = reader.GetDouble("Precio"),
                                     TieneReclamo = reader.GetBoolean("TieneReclamo"),
+                                    Color = reader.GetString("Color"),
+                                    Talla = tallaSeleccionada,
                                 });
                             }
                             return Ok(listaPedidos);
@@ -1400,15 +1495,17 @@ namespace API_Tesis.Controllers
                     await connection.OpenAsync();
 
                     string query = @"
-                        SELECT pp.ProductoID, pr.Nombre AS NombreProducto, pr.Foto AS FotoProducto,
-                        u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente, pp.Cantidad AS CantidadProducto, pp.IdPedidoXProducto,
-                        pp.PedidoID
-                        FROM PedidoXProducto pp
-                        INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
-                        INNER JOIN Pedidos p ON p.IdPedido = pp.PedidoID
-                        INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
-                        INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
-                        WHERE t.IdTienda = @IdTienda AND pp.TieneReclamo = true";
+                    SELECT pp.ProductoID, pr.Nombre AS NombreProducto, pr.Foto AS FotoProducto,
+                           u.Nombre AS NombreCliente, u.Apellido AS ApellidoCliente, pp.Cantidad AS CantidadProducto, 
+                           pp.IdPedidoXProducto, pp.PedidoID, pr.Color, tv.SBoolean, tv.MBoolean, tv.LBoolean, 
+                           tv.XLBoolean, tv.XXLBoolean
+                    FROM PedidoXProducto pp
+                    INNER JOIN Producto pr ON pr.IdProducto = pp.ProductoID
+                    INNER JOIN Pedidos p ON p.IdPedido = pp.PedidoID
+                    INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
+                    INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
+                    LEFT JOIN TallaVestimenta tv ON pr.IdProducto = tv.IdProducto
+                    WHERE t.IdTienda = @IdTienda AND pp.TieneReclamo = true";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -1421,6 +1518,13 @@ namespace API_Tesis.Controllers
                                 ProductoReclamo productoReclamo = ProductosReclamos.FirstOrDefault(p => p.IdPedidoXProducto == IdPedidoXProducto);
                                 if (productoReclamo == null)
                                 {
+                                    string tallaSeleccionada = "";
+                                    if (!reader.IsDBNull(reader.GetOrdinal("SBoolean")) && reader.GetBoolean("SBoolean")) tallaSeleccionada = "Short (S)";
+                                    else if (!reader.IsDBNull(reader.GetOrdinal("MBoolean")) && reader.GetBoolean("MBoolean")) tallaSeleccionada = "Medium (M)";
+                                    else if (!reader.IsDBNull(reader.GetOrdinal("LBoolean")) && reader.GetBoolean("LBoolean")) tallaSeleccionada = "Large (L)";
+                                    else if (!reader.IsDBNull(reader.GetOrdinal("XLBoolean")) && reader.GetBoolean("XLBoolean")) tallaSeleccionada = "XL (Extra Large)";
+                                    else if (!reader.IsDBNull(reader.GetOrdinal("XXLBoolean")) && reader.GetBoolean("XXLBoolean")) tallaSeleccionada = "XXL (Extra Extra Large)";
+
                                     productoReclamo = new ProductoReclamo
                                     {
                                         IdPedidoXProducto = IdPedidoXProducto,
@@ -1430,7 +1534,9 @@ namespace API_Tesis.Controllers
                                         NombreProducto = reader.GetString("NombreProducto"),
                                         NombreCliente = reader.GetString("NombreCliente"),
                                         ApellidoCliente = reader.GetString("ApellidoCliente"),
-                                        CantidadProducto = reader.GetInt32("CantidadProducto")
+                                        CantidadProducto = reader.GetInt32("CantidadProducto"),
+                                        Color = reader.GetString("Color"),
+                                        Talla = tallaSeleccionada
                                     };
 
                                     ProductosReclamos.Add(productoReclamo);

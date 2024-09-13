@@ -1,48 +1,6 @@
 import { Box, Button, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
-import { BASE_URL } from '../../config';
 
 export default function CardProducto({HandleChangeProductoSeleccionado, producto}) {
-    
-    const [selectedSize, setSelectedSize] = React.useState("");
-    useEffect(() => {
-        const handleInformacionInicioVendedor = async () => {
-          try {
-            const response = await fetch(
-              `${BASE_URL}/GetTallasPorProducto?idProducto=${producto.idProducto}`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-      
-            if (response.ok) {
-              const talla = await response.json();
-              let tallaSeleccionada = "";
-              if (talla.s) tallaSeleccionada = "Short (S)";
-              else if (talla.m) tallaSeleccionada = "Medium (M)";
-              else if (talla.l) tallaSeleccionada = "Large (L)";
-              else if (talla.xl) tallaSeleccionada = "XL (Extra Large)";
-              else if (talla.xxl) tallaSeleccionada = "XXL (Extra Extra Large)";
-              setSelectedSize(tallaSeleccionada);
-    
-            } else if (response.status === 404) {
-              throw new Error("Talla del producto no encontrado");
-            } else {
-              throw new Error("Error al obtener la Talla del producto");
-            }
-          } catch (error) {
-            console.error("Error al obtener la Talla del producto", error);
-            throw new Error("Error al obtener la Talla del producto");
-          }
-        };
-        if(producto && producto.idProducto && producto.tipoProducto === "Vestimenta"){
-          handleInformacionInicioVendedor();
-        }
-      }, [producto]);
-    
     return (
     <Button sx={{color:"black", padding:"0px", marginRight:"15px", marginBottom:"10px", '&:hover': {backgroundColor:"white"}}}
     onClick={() => {HandleChangeProductoSeleccionado(producto);}}
@@ -58,7 +16,7 @@ export default function CardProducto({HandleChangeProductoSeleccionado, producto
 
             <Box sx={{height:"40px", display:"flex", alignItems:"center"}}>
                 <Typography sx={{fontSize:"15px"}}>
-                    <b>{producto.nombre} {producto.tipoProducto === "Vestimenta"? ` - ${selectedSize}`:""}</b>
+                    <b>{producto.nombre} {producto.tipoProducto === "Vestimenta"? ` - ${producto.talla} - ${producto.color}`:""}</b>
                 </Typography>
             </Box>
 

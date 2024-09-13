@@ -43,7 +43,8 @@ export default function CardReclamoVendedor({reclamo}) {
             width: "100%",
           }}
         >
-          Producto: {reclamo.nombreProducto}
+          Producto: {reclamo.nombreProducto} {reclamo.talla !== ""? `- ${reclamo.talla}`: ""} 
+          {reclamo.color !== "NA"? `- ${reclamo.color}`: ""}
         </Typography>
         <Typography
           sx={{

@@ -1,5 +1,5 @@
 import { Box, Button, Divider, IconButton, Modal, TextField, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import CancelIcon from "@mui/icons-material/Cancel";
 import { BASE_URL } from "../../config";
 
@@ -19,45 +19,6 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
     const handleSubirEstadoProducto = async (estado) =>{
         handleOpen(estado);
     }
-
-    const [selectedSize, setSelectedSize] = React.useState("");
-    useEffect(() => {
-        const handleInformacionInicioVendedor = async () => {
-          try {
-            const response = await fetch(
-              `${BASE_URL}/GetTallasPorProducto?idProducto=${ProductoSeleccionado.idProducto}`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-      
-            if (response.ok) {
-              const talla = await response.json();
-              let tallaSeleccionada = "";
-              if (talla.s) tallaSeleccionada = "Short (S)";
-              else if (talla.m) tallaSeleccionada = "Medium (M)";
-              else if (talla.l) tallaSeleccionada = "Large (L)";
-              else if (talla.xl) tallaSeleccionada = "XL (Extra Large)";
-              else if (talla.xxl) tallaSeleccionada = "XXL (Extra Extra Large)";
-              setSelectedSize(tallaSeleccionada);
-    
-            } else if (response.status === 404) {
-              throw new Error("Talla del producto no encontrado");
-            } else {
-              throw new Error("Error al obtener la Talla del producto");
-            }
-          } catch (error) {
-            console.error("Error al obtener la Talla del producto", error);
-            throw new Error("Error al obtener la Talla del producto");
-          }
-        };
-        if(ProductoSeleccionado && ProductoSeleccionado.idProducto && ProductoSeleccionado.tipoProducto === "Vestimenta"){
-          handleInformacionInicioVendedor();
-        }
-      }, [ProductoSeleccionado]);
 
     const handleCambioDatos = async() =>{
         const response = await fetch(
@@ -186,14 +147,28 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
                         </Typography>
                     </Box>
 
-                    <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px", width:"100%"}}>
-                        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"70%"}}>
-                            Talla de la vestimenta:
-                        </Typography>
-                        <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
-                            {selectedSize}
-                        </Typography>
-                    </Box>
+                    {ProductoSeleccionado.tipoProducto === "Vestimenta"? (
+                        <Box sx={{display:"flex", flexDirection:"row", marginBottom:"10px"}}>
+                            <Box sx={{display:"flex", flexDirection:"row", width:"60%", marginRight:"10px", alignItems:"center"}}>
+                                <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>
+                                    Talla de la vestimenta:
+                                </Typography>
+                                <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
+                                    {ProductoSeleccionado.talla}
+                                </Typography>
+                            </Box>
+                            <Box sx={{display:"flex", flexDirection:"row", width:"40%", alignItems:"center"}}>
+                                <Typography sx={{color:"black", fontWeight:"bold", fontSize:"20px", width:"60%"}}>
+                                    Color:
+                                </Typography>
+                                <Typography sx={{color:"black", fontSize:"20px", width:"40%"}}>
+                                    {ProductoSeleccionado.color}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    ): 
+                        (<></>)
+                    }
                 </Box>
 
                 <Divider

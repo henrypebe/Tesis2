@@ -8,4 +8,5 @@ import sys
 # subprocess.check_call([sys.executable, "-m", "pip", "install", "seaborn"])
 # subprocess.check_call([sys.executable, "-m", "pip", "install", "microsoft.data.analysis"])
 # subprocess.check_call([sys.executable, "-m", "pip", "install", "flask"])
-subprocess.check_call([sys.executable, "-m", "pip", "install", "flask-cors"])
+# subprocess.check_call([sys.executable, "-m", "pip", "install", "flask-cors"])
+subprocess.check_call([sys.executable, "-m", "pip", "install", "imbalanced-learn"])

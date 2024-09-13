@@ -16,5 +16,7 @@
         public DateTime FechaCreacion { get; set; }
         public bool TieneReclamo { get; set; }
         public bool FinalizarCliente { get; set; }
+        public string Color { get; set; }
+        public string Talla { get; set; }
     }
 }

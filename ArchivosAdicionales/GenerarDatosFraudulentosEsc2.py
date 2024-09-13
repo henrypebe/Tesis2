@@ -15,9 +15,9 @@ FECHAS_FESTIVAS = [
     (7, 28),  # 28/07
     (7, 27),  # 27/07
     (7, 29),  # 29/07
-    (2, 14),   # 14/02
-    (2, 13),   # 13/02
-    (2, 15),   # 15/02
+    (2, 14),  # 14/02
+    (2, 13),  # 13/02
+    (2, 15),  # 15/02
 ]
 
 def encriptar_numero_cuenta(numero_cuenta):
@@ -65,11 +65,11 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
     historial_cambios_direccion = {}
     cambios_mes_actual = 1
     historial_compras = {}
-    cantidad_productos= 0
-    idUsuario=0
-    tipo_producto_mayoria=""
+    cantidad_productos = 0
+    idUsuario = 0
+    tipo_producto_mayoria = ""
     rangos_cantidad_productos = {nombre: (random.randint(1, 10), random.randint(30, 60)) for nombre in nombres_compradores}
-    rangos_cantidad_precio = {nombre: (random.randint(6, 25), random.randint(50, 300)) for nombre in nombres_compradores}
+    rangos_cantidad_precio = {nombre: (random.randint(6, 25), random.randint(50, 250)) for nombre in nombres_compradores}
     
     with open("ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt", "w") as archivo:
         for _ in range(num_pedidos):
@@ -89,26 +89,24 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
             num_cambios_metodo_pago = cambios_metodo_pago.get(nombre_apellido, 1)
             cantidad_productos = random.randint(min_cantidad, max_cantidad)
 
+            # Inicialización del tipo de fraude
+            tipo_fraude = 'No_Fraude'
+
+            # Si se determina que habrá un fraude
             if random.random() < 0.05:
-                tipo_fraude = random.choice(['cambio_direccion', 'volumen_inusual','monto_inusual'])
+                # tipo_fraude = 'monto_inusual'
+                tipo_fraude = random.choice(['cambio_direccion', 'volumen_inusual', 'monto_inusual'])
 
                 if tipo_fraude == 'cambio_direccion':
-                    if(fecha_creacion_pedido is None):
+                    if fecha_creacion_pedido is None:
                         fecha_creacion_pedido = fecha_hora_generar(nombre_apellido, historial_compras)
-                    if(costo_pedido == 0):
+                    if costo_pedido == 0:
                         costo_pedido = random.randint(min_cantidadPrecio, max_cantidadPrecio)
-                    if(tipo_producto_mayoria == ""):
+                    if tipo_producto_mayoria == "":
                         tipo_producto_mayoria = random.choice(['Electrodomésticos', 'Vestimenta', 'Muebles', 'Limpieza', 'Tecnología',
-                                               'Libros/Artículos', 'Herramientas', 'Belleza/Salud', 'Joyeria/Accesorios', 'Decoración', 'Juguetes'])
+                                                               'Libros/Artículos', 'Herramientas', 'Belleza/Salud', 'Joyeria/Accesorios', 'Decoración', 'Juguetes'])
                     direcciones_entrega[nombres_compradores.index(nombre_apellido)] = fake.address()
                     historial_cliente = historial_cambios_direccion.get(nombre_apellido, [])
-                    historial_cliente.append(datetime.now())
-                    historial_cliente.append(datetime.now())
-                    historial_cliente.append(datetime.now())
-                    historial_cliente.append(datetime.now())
-                    historial_cliente.append(datetime.now())
-                    historial_cliente.append(datetime.now())
-                    historial_cliente.append(datetime.now())
                     historial_cliente.append(datetime.now())
                     historial_cambios_direccion[nombre_apellido] = historial_cliente
                     cambios_mes_actual = sum(1 for fecha in historial_cliente if fecha >= datetime.now() - timedelta(days=30))
@@ -124,34 +122,36 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
                 elif tipo_fraude == 'monto_inusual':
                     if fecha_creacion_pedido is None:
                         fecha_creacion_pedido = fecha_hora_generar(nombre_apellido, historial_compras)
-                    if costo_pedido == 0:
-                        costo_pedido = random.randint(min_cantidadPrecio, max_cantidadPrecio)
 
+                    # Se define un costo anómalo
                     costo_pedido = random.choice([random.randint(1, int(min_cantidadPrecio * 0.5)), int(max_cantidadPrecio * random.choice([1.2, 1.4]))])
 
             else:
+                # Generación de un pedido sin fraude
                 fecha_creacion_pedido = fecha_hora_generar(nombre_apellido, historial_compras)
-                
                 costo_pedido = random.randint(min_cantidadPrecio, max_cantidadPrecio)
                 cantidad_productos = random.randint(min_cantidad, max_cantidad)
                 tipo_producto_mayoria = random.choice(['Electrodomésticos', 'Vestimenta', 'Muebles', 'Limpieza', 'Tecnología',
-                                               'Libros/Artículos', 'Herramientas', 'Belleza/Salud', 'Joyeria/Accesorios', 'Decoración', 'Juguetes'])
-                tipo_fraude = 'No_Fraude'
-                
+                                                       'Libros/Artículos', 'Herramientas', 'Belleza/Salud', 'Joyeria/Accesorios', 'Decoración', 'Juguetes'])
+
+                # Verificación adicional de precios inusuales
+                if costo_pedido < min_cantidadPrecio or costo_pedido > max_cantidadPrecio:
+                    tipo_fraude = 'monto_inusual'
+                    
+                # Verificaciones adicionales de fraude (cambios dirección, método de pago)
                 historial_cliente = historial_cambios_direccion.get(nombre_apellido, [])
                 cambios_mes_actual = sum(1 for fecha in historial_cliente if fecha >= datetime.now() - timedelta(days=30))
                 if cambios_mes_actual > 6 and tipo_fraude == 'No_Fraude':
                     tipo_fraude = 'cambio_direccion'
                 
                 if random.random() < 0.2:
-                    num_cambios_metodo_pago = cambios_metodo_pago.get(nombre_apellido, 1)
                     num_cambios_metodo_pago += 1
                     cambios_metodo_pago[nombre_apellido] = num_cambios_metodo_pago
                     if num_cambios_metodo_pago > 5 and tipo_fraude == 'No_Fraude':
                         tipo_fraude = 'cambio_metodo_pago'
+                
                 if random.random() < 0.2:
                     direcciones_entrega[nombres_compradores.index(nombre_apellido)] = fake.address()
-                    historial_cliente = historial_cambios_direccion.get(nombre_apellido, [])
                     historial_cliente.append(datetime.now())
                     historial_cambios_direccion[nombre_apellido] = historial_cliente
                     cambios_mes_actual = sum(1 for fecha in historial_cliente if fecha >= datetime.now() - timedelta(days=30))
@@ -170,21 +170,22 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
             archivo.write("Nombre y Apellido del Comprador: {}\n".format(nombre_apellido))
             archivo.write("Fecha de Creación del Pedido: {}\n".format(fecha_creacion_pedido))
             archivo.write("Lugar de Entrega: {}\n".format(direccion_entrega))
-            archivo.write("Cantidad de cambios de lugar de entrega durante el ultimo mes: {}\n".format(cambios_mes_actual))
+            archivo.write("Cantidad de cambios de lugar de entrega durante el último mes: {}\n".format(cambios_mes_actual))
             archivo.write("Costo total del Pedido: {}\n".format(costo_pedido))
             archivo.write("Método de Pago (Número de Cuenta Encriptado): {}\n".format(numero_cuenta))
-            archivo.write("Numeros de cambios del método de pago: {}\n".format(cambios_metodo_pago.get(nombre_apellido, 0)))
+            archivo.write("Números de cambios del método de pago: {}\n".format(cambios_metodo_pago.get(nombre_apellido, 0)))
             archivo.write("Cantidad de Productos en el Pedido: {}\n".format(cantidad_productos))
             archivo.write("Tipo de Producto (con mayor valor): {}\n".format(tipo_producto_mayoria))
             archivo.write("Tipo de Fraude: {}\n".format(tipo_fraude))
             archivo.write("\n")
-            if(tipo_fraude == "cambio_direccion"):
+
+            # Reset de los contadores y registros
+            if tipo_fraude == "cambio_direccion":
                 historial_cambios_direccion[nombre_apellido] = []
                 cambios_mes_actual = 1
             num_cambios_metodo_pago = cambios_metodo_pago.get(nombre_apellido, 1)
-            if(num_cambios_metodo_pago>5):
+            if num_cambios_metodo_pago > 5:
                 cambios_metodo_pago[nombre_apellido] = 1
-
 
 def generar_id_para_nombre(nombre, id_generados):
     if nombre in id_generados:

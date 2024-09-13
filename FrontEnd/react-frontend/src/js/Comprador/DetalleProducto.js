@@ -1,9 +1,8 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { BASE_URL } from "../../config";
 
 export default function DetalleProducto({
   setMostrarDetalleProducto,
@@ -18,45 +17,6 @@ export default function DetalleProducto({
   productos
 }) {
   // console.log(ProductoSeleccionado);
-
-  const [selectedSize, setSelectedSize] = React.useState("");
-    useEffect(() => {
-        const handleInformacionInicioVendedor = async () => {
-          try {
-            const response = await fetch(
-              `${BASE_URL}/GetTallasPorProducto?idProducto=${ProductoSeleccionado.idProducto}`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-      
-            if (response.ok) {
-              const talla = await response.json();
-              let tallaSeleccionada = "";
-              if (talla.s) tallaSeleccionada = "Short (S)";
-              else if (talla.m) tallaSeleccionada = "Medium (M)";
-              else if (talla.l) tallaSeleccionada = "Large (L)";
-              else if (talla.xl) tallaSeleccionada = "XL (Extra Large)";
-              else if (talla.xxl) tallaSeleccionada = "XXL (Extra Extra Large)";
-              setSelectedSize(tallaSeleccionada);
-    
-            } else if (response.status === 404) {
-              throw new Error("Talla del producto no encontrado");
-            } else {
-              throw new Error("Error al obtener la Talla del producto");
-            }
-          } catch (error) {
-            console.error("Error al obtener la Talla del producto", error);
-            throw new Error("Error al obtener la Talla del producto");
-          }
-        };
-        if(ProductoSeleccionado && ProductoSeleccionado.idProducto && ProductoSeleccionado.tipoProducto === "Vestimenta"){
-          handleInformacionInicioVendedor();
-        }
-      }, [ProductoSeleccionado]);
 
   const handleChange = () => {
     setMostrarDetalleProducto(false);
@@ -76,7 +36,7 @@ export default function DetalleProducto({
       fechaEnvio: ProductoSeleccionado.fechaEnvio,
       costoEnvio: ProductoSeleccionado.costoEnvio,
       opcionSeparado: 0,
-      talla: selectedSize
+      talla: ProductoSeleccionado.talla
     };
 
     setProductos([...productos, nuevoProducto]);
@@ -132,7 +92,7 @@ export default function DetalleProducto({
         cantidadOferta: ProductoSeleccionado.cantidadOferta,
         costoEnvio: ProductoSeleccionado.costoEnvio,
         opcionSeparado: 0,
-        talla: selectedSize
+        talla: ProductoSeleccionado.talla
       };
 
       setProductos([...productos, nuevoProducto]);
@@ -302,7 +262,7 @@ export default function DetalleProducto({
               marginTop: "5px",
             }}
           >
-            {ProductoSeleccionado.nombre} {ProductoSeleccionado.tipoProducto === "Vestimenta"? ` - ${selectedSize}`:""}
+            {ProductoSeleccionado.nombre} {ProductoSeleccionado.tipoProducto === "Vestimenta"? ` - ${ProductoSeleccionado.talla} - ${ProductoSeleccionado.color}`:""}
           </Typography>
           {ProductoSeleccionado.cantidadOferta > 0 ? (
             <Box
