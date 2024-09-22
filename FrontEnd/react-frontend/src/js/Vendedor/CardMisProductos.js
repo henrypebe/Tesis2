@@ -58,7 +58,8 @@ export default function CardMisProductos({producto, setMostrarMisProductos, setM
               width: "100%",
             }}
           >
-            {producto.nombre} {producto.tipoProducto === "Vestimenta"? `- ${producto.talla} - ${producto.color}`:""}
+            {producto.nombre} {producto.tipoProducto === "Vestimenta"? `- Talla: ${producto.talla}`:""}
+            {producto && producto.color === "NA"? "" : ` - Color: ${producto.color}`}
           </Typography>
           <Typography
             sx={{

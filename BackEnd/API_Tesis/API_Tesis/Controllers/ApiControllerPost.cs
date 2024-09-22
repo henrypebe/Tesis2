@@ -456,7 +456,7 @@ namespace API_Tesis.Controllers
                         checkCommand.Parameters.AddWithValue("@Nombre", nombre);
                         checkCommand.Parameters.AddWithValue("@TipoProducto", tipoProducto);
                         checkCommand.Parameters.AddWithValue("@TiendaID", idTienda);
-                        checkCommand.Parameters.AddWithValue("@TallaSeleccionada", tallaSeleccionada);
+                        checkCommand.Parameters.AddWithValue("@TallaSeleccionada", tallaSeleccionada == "NA"? "": tallaSeleccionada);
 
                         int existingCount = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
                         if (existingCount > 0)
@@ -495,7 +495,7 @@ namespace API_Tesis.Controllers
                     command.Parameters.AddWithValue("@CostoEnvio", costoEnvio);
                     command.Parameters.AddWithValue("@CantidadVentas", 0);
                     command.Parameters.AddWithValue("@TiempoEnvio", tiempoEnvio);
-                    command.Parameters.AddWithValue("@Color", colorSeleccionado == ""? "NA" : colorSeleccionado);
+                    command.Parameters.AddWithValue("@Color", colorSeleccionado);
                     command.Parameters.AddWithValue("@Estado", 1);
                     int idGenerado = Convert.ToInt32(await command.ExecuteScalarAsync());
 

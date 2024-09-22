@@ -294,7 +294,7 @@ namespace API_Tesis.Controllers
                         checkCommand.Parameters.AddWithValue("@Nombre", nombre);
                         checkCommand.Parameters.AddWithValue("@TipoProducto", tipoProducto);
                         checkCommand.Parameters.AddWithValue("@TiendaID", idTienda);
-                        checkCommand.Parameters.AddWithValue("@TallaSeleccionada", tallaSeleccionada);
+                        checkCommand.Parameters.AddWithValue("@TallaSeleccionada", tallaSeleccionada == "NA"? "": tallaSeleccionada);
                         checkCommand.Parameters.AddWithValue("@IdProducto", idProducto);
 
                         int existingCount = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());

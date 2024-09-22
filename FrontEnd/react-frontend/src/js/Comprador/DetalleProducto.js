@@ -262,7 +262,9 @@ export default function DetalleProducto({
               marginTop: "5px",
             }}
           >
-            {ProductoSeleccionado.nombre} {ProductoSeleccionado.tipoProducto === "Vestimenta"? ` - ${ProductoSeleccionado.talla} - ${ProductoSeleccionado.color}`:""}
+            {ProductoSeleccionado.nombre} 
+            {ProductoSeleccionado.tipoProducto === "Vestimenta"? ` - Talla: ${ProductoSeleccionado.talla}`:""}
+            {ProductoSeleccionado && ProductoSeleccionado.color === "NA"? "" : ` - Color: ${ProductoSeleccionado.color}`}
           </Typography>
           {ProductoSeleccionado.cantidadOferta > 0 ? (
             <Box

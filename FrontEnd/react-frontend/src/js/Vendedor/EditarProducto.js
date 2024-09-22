@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   FormControl,
   MenuItem,
   Select,
@@ -80,6 +81,15 @@ export default function EditarProducto({
     opcionEditarProducto === 0 ? productoInformacion.talla : ""
   );
 
+  const [isColorEnabled, setIsColorEnabled] = React.useState(false);
+
+  const handleColorCheckboxChange = (event) => {
+    setIsColorEnabled(event.target.checked);
+    if (!event.target.checked) {
+      setColorProducto("");
+    }
+  };
+
   const handleSizeChange = (event) => {
     setSelectedSize(event.target.value);
   };
@@ -154,8 +164,8 @@ export default function EditarProducto({
           "idTienda",
           informacionTienda.idTienda.toString() || ""
         );
-        formData.append("tallaSeleccionada", selectedSize || "");
-        formData.append("colorSeleccionado", ColorProducto || "");
+        formData.append("tallaSeleccionada", selectedSize || "NA");
+        formData.append("colorSeleccionado", ColorProducto || "NA");
 
         const response = await fetch(`${BASE_URL}/EditarProducto`, {
           method: "PUT",
@@ -220,8 +230,8 @@ export default function EditarProducto({
         );
         formData.append("costoEnvio", parseFloat(CostoEnvio) || 0);
         formData.append("tiempoEnvio", cantidadEnvioTotal.toString() || "");
-        formData.append("tallaSeleccionada", selectedSize || "");
-        formData.append("colorSeleccionado", ColorProducto || "");
+        formData.append("tallaSeleccionada", selectedSize || "NA");
+        formData.append("colorSeleccionado", ColorProducto || "NA");
 
         const response = await fetch(`${BASE_URL}/CreateProducto`, {
           method: "POST",
@@ -524,11 +534,83 @@ export default function EditarProducto({
                     </Select>
                     </FormControl>
                 </Box>
+                
+                <Box sx={{display: "flex",flexDirection: "row", width: "50%", marginLeft: TipoProducto === "Vestimenta"?"10px":"10px"}}>
+                  
+                  {TipoProducto === "Vestimenta" && (
+                    <DetalleVestimenta selectedSize={selectedSize}
+                    handleSizeChange={handleSizeChange}/>
+                  )}
 
-                {TipoProducto === "Vestimenta" && (
-                    <DetalleVestimenta productoInformacion={productoInformacion} opcionEditarProducto={opcionEditarProducto} selectedSize={selectedSize}
-                    handleSizeChange={handleSizeChange} ColorProducto={ColorProducto} setColorProducto={setColorProducto}/>
-                )}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginLeft: "10px",
+                      width: TipoProducto === "Vestimenta"? "50%": "100%",
+                    }}
+                  >
+                    <Box sx={{display:"flex", flexDirection:"row", marginBottom:"-7px"}}>
+                      <Typography
+                        sx={{
+                          color: "black",
+                          fontSize: "24px",
+                          width: "100%",
+                        }}
+                      >
+                        Color:
+                      </Typography>
+                      <Checkbox
+                        checked={isColorEnabled}
+                        onChange={handleColorCheckboxChange}
+                        color="primary"
+                      />
+                    </Box>
+
+                    <FormControl
+                      fullWidth
+                      sx={{
+                        backgroundColor: "#fff",
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: "#ddd",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#1976d2",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#1976d2",
+                            borderWidth: "2px",
+                          },
+                        },
+                      }}
+                    >
+                      <TextField
+                        disabled={!isColorEnabled}
+                        sx={{
+                          height: 40,
+                          backgroundColor: !isColorEnabled ? "#f0f0f0" : "#fff", // Fondo más claro si está deshabilitado
+                          "& .MuiInputBase-root": {
+                            height: "100%",
+                            opacity: !isColorEnabled ? 0.5 : 1, // Reduce opacidad cuando está deshabilitado
+                            "& fieldset": {
+                              borderColor: !isColorEnabled ? "#ccc" : "#ddd", // Borde más claro cuando está deshabilitado
+                            },
+                            "&:hover fieldset": {
+                              borderColor: !isColorEnabled ? "#ccc" : "#1976d2", // Solo cambia el borde en hover si está habilitado
+                            },
+                            "&.Mui-focused fieldset": {
+                              borderColor: isColorEnabled ? "#1976d2" : "#ccc", // Borde en focus solo cuando está habilitado
+                            },
+                          },
+                        }}
+                        defaultValue={`${ColorProducto === "NA"? "":ColorProducto}`}
+                        onChange={(e) => setColorProducto(e.target.value)}
+                      />
+                    </FormControl>
+                  </Box>
+                </Box>
             </Box>
 
             <Box

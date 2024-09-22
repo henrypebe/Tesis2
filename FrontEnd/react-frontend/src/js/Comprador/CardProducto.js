@@ -16,7 +16,11 @@ export default function CardProducto({HandleChangeProductoSeleccionado, producto
 
             <Box sx={{height:"40px", display:"flex", alignItems:"center"}}>
                 <Typography sx={{fontSize:"15px"}}>
-                    <b>{producto.nombre} {producto.tipoProducto === "Vestimenta"? ` - ${producto.talla} - ${producto.color}`:""}</b>
+                    <b>
+                        {producto.nombre} 
+                        {producto.tipoProducto === "Vestimenta"? ` - Talla: ${producto.talla}`:""}
+                        {producto && producto.color === "NA"? "" : ` - Color: ${producto.color}`}
+                    </b>
                 </Typography>
             </Box>
 

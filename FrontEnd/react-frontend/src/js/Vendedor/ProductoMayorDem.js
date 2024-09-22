@@ -65,8 +65,9 @@ export default function ProductoMayorDem({productoPrimero, handleOpenModal, setM
               width: "100%",
             }}
           >
-            {productoPrimero && productoPrimero.nombre} {productoPrimero.tipoProducto === "Vestimenta"? `- ${productoPrimero.talla} 
-            - ${productoPrimero.color}`:""}
+            {productoPrimero && productoPrimero.nombre} 
+            {productoPrimero.tipoProducto === "Vestimenta"? ` - Talla: ${productoPrimero.talla}`:""}
+            {productoPrimero && productoPrimero.color === "NA"? "" : ` - Color: ${productoPrimero.color}`}
           </Typography>
           <Typography
             sx={{

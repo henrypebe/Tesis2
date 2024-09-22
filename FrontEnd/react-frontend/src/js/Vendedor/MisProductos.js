@@ -168,7 +168,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
         {productosList && productosList.length>0?
         (
             <>
-                <Box sx={{height:"82%"}}>
+                <Box sx={{maxHeight:"82%", minHeight:"82%", border:"2px solid white"}}>
                     {productosList && productosList.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage).map((producto, index) => {
                         const isFirstElement = index === 0;
                         return isFirstElement && currentPage===0 && Busqueda === "" ? 
@@ -194,7 +194,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
                         );
                     })}
                 </Box>
-                <Box sx={{ display:"flex", justifyContent:"center", marginTop:"6px"}}>
+                <Box sx={{ display:"flex", justifyContent:"center", marginTop:"12px"}}>
                     <Pagination count={Math.ceil(productosList.length / rowsPerPage)} page={currentPage + 1} onChange={handleChangePage}/>
                 </Box>
             </>

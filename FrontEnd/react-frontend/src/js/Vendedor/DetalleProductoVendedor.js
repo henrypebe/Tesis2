@@ -6,7 +6,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 export default function DetalleProductoVendedor({setMostrarMisProductos, setMostrarDetalleProducto, productoInformacion, handleChangeHistoria,
     OpcionSeleccionado}) {
 
-// console.log(productoInformacion);
+console.log(productoInformacion);
 
     const [Open, setOpen] = React.useState(false);
     const partes = productoInformacion?productoInformacion.cantidadGarantia.split("_"):"";
@@ -84,8 +84,9 @@ export default function DetalleProductoVendedor({setMostrarMisProductos, setMost
                             width: "100%",
                         }}
                         >
-                        {productoInformacion && productoInformacion.nombre} 
-                        {productoInformacion && productoInformacion.tipoProducto==="Vestimenta"?` - ${productoInformacion.talla} - ${productoInformacion.color}`:""}
+                        {productoInformacion && productoInformacion.nombre}
+                        {productoInformacion && productoInformacion.tipoProducto==="Vestimenta"?` - Talla: ${productoInformacion.talla}`:""}
+                        {productoInformacion && productoInformacion.color === "NA"? "" : ` - Color: ${productoInformacion.color}`}
                     </Typography>
                     <Typography
                         sx={{
