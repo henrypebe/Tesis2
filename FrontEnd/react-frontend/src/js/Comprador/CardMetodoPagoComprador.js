@@ -1,5 +1,5 @@
-import { Box, Button, Checkbox, Typography } from "@mui/material";
-import React from "react";
+import { Box, Button, Checkbox, CircularProgress, Typography } from "@mui/material";
+import React, { useState } from "react";
 
 export default function CardMetodoPagoComprador({
   metodo,
@@ -7,6 +7,19 @@ export default function CardMetodoPagoComprador({
   selectedMethodId,
   handleProducto
 }) {
+
+  const [loading, setLoading] = useState(false);
+  const handleClickPagar = async () => {
+    setLoading(true); 
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await handleProducto(metodo);
+    } catch (error) {
+      console.error("Error al procesar el pago", error);
+    } finally {
+      setLoading(false); 
+    }
+  };
 
   return (
     <Box
@@ -24,8 +37,8 @@ export default function CardMetodoPagoComprador({
         </Typography>
         {selectedMethodId === metodo.idMetodoPago && (
           <Button variant="contained" sx={{width:"18%", marginTop:"0px", backgroundColor:"#286C23", marginRight:"10px", '&:hover':{backgroundColor:"#286C23"}}} 
-            onClick={()=>{handleProducto(metodo);}}>
-            Pagar
+            onClick={()=>{handleClickPagar()}} disabled={loading}>
+           {loading ? <CircularProgress size={24} thickness={5} sx={{ color: "white" }}/> : "Pagar"}
           </Button>
         )}
       </Box>

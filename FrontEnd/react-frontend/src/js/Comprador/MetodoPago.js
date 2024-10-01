@@ -29,6 +29,8 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
     const [TokenSeleccionado, setTokenSeleccionado] = useState();
     const [CostoEnvioSeleccionado, setCostoEnvioSeleccionado] = useState();
 
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+        
     const [openModalSegundo, setOpenModalSegundo] = React.useState(false);
     
     const handleOpen = (idPedido, fechaResultado, totalAmount, totalDescuento, token, costoEnvio) => {
@@ -243,7 +245,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 );
                 const promises = productos.map(producto => crearPedidoXProducto(producto, idPedido));
                 await Promise.all(promises);
-                createAndVerifyTransaction(fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio, productos);
+                await createAndVerifyTransaction(fechaResultado, totalAmount, totalDescuento, metodo.token, costoEnvio, productos);
                 const formData = new FormData();
                 formData.append('token', metodo.token);
                 formData.append('Monto', totalAmount);
@@ -407,8 +409,9 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         } else {
             throw new Error("Error al crear el pedido");
         }
-    };  
+    };
     const handleProducto = async(metodo) =>{
+        setIsButtonDisabled(true);
         if((InformacionUsuario.direccion !== null || InformacionUsuario.direccion !== "") && 
         (InformacionUsuario.correoAleatorio !== null || InformacionUsuario.correoAleatorio !== "")){
             let productoMasLargo = null;
@@ -435,26 +438,25 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
             formData.append('CostoEnvio', productos[0].costoEnvio/1);
             formData.append('DireccionEntrega', InformacionUsuario.direccion);
 
-            const response = await fetch(
-                `${BASE_URL}/CreatePedido`,
-                {
-                method: "POST",
-                body: formData
+            try {
+                const response = await fetch(`${BASE_URL}/CreatePedido`, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const totalDescuento = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
+                    const idPedido = await response.json();
+                    await HandleProcesoPago(metodo, fechaResultado, totalDescuento, idPedido, productos);
+                } else if (response.status === 404) {
+                    throw new Error("Pedido no encontrado");
+                } else {
+                    throw new Error("Error al crear el pedido");
                 }
-            );
-
-            if (response.ok) {
-                // const total = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad) - (producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
-                const totalDescuento = productos.reduce((total, producto) => total + ((producto.precio * producto.cantidad * producto.cantidadOferta / 100)), 0).toFixed(3);
-                // const costoEnvio = productos[0].costoEnvio/1;
-                
-                const idPedido = await response.json();
-
-                HandleProcesoPago(metodo, fechaResultado, totalDescuento, idPedido, productos);
-            } else if (response.status === 404) {
-                throw new Error("Pedido no encontrado");
-            } else {
-                throw new Error("Error al crear el pedido");
+            } catch (error) {
+                toast.error(error.message);
+            } finally {
+                setIsButtonDisabled(false);
             }
         }else{
             toast.error('Debe de tener una dirección de entrega y un correo aleatorio para crear un pedido.');
@@ -584,6 +586,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 "&:hover": { backgroundColor: "white" },
             }}
             onClick={handleBackPedido}
+            disabled={isButtonDisabled}
             >
             Atrás
             </Button>

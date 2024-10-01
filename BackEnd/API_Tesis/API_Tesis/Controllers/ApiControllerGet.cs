@@ -716,6 +716,49 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
+        [Route("/ObtenerEstadoVendedor")]
+        public async Task<IActionResult> ObtenerEstadoVendedor(int idVendedor)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Consulta SQL para obtener el Estado del vendedor
+                    string query = @"
+                        SELECT Estado 
+                        FROM Vendedor 
+                        WHERE usuarioId = @UsuarioId";
+
+                    // Crear el comando SQL y añadir el parámetro
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@UsuarioId", idVendedor);
+
+                        // Ejecutar el comando y leer los resultados
+                        using (MySqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            if (reader.Read())
+                            {
+                                int estado = reader.GetInt32("Estado");
+                                return Ok(estado);
+                            }
+                            else
+                            {
+                                return NotFound("No se encontró el vendedor con el id proporcionado.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) 
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
         [Route("/ListarVentasCompletadosPorFecha")]
         public async Task<IActionResult> ListarVentasCompletadosPorFecha(int idTienda, DateTime FechaFiltro)
         {
@@ -2459,7 +2502,7 @@ namespace API_Tesis.Controllers
                 {
                     connection.Open();
 
-                    string query = "SELECT esAdministrador FROM Vendedor WHERE usuarioId = @usuarioId AND Estado = 1";
+                    string query = "SELECT esAdministrador FROM Vendedor WHERE usuarioId = @usuarioId AND Estado <> 4";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {

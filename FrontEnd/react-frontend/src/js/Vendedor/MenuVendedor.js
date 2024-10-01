@@ -37,6 +37,7 @@ export default function MenuVendedor() {
     const [mostrarGestionVendedor, setMostrarGestionVendedor] = useState(false);
 
     const { idUsuario } = useParams();
+    const [estadoVendedor, setEstadoVendedor] = useState();
 
     const [informacionTienda, setInformacionTienda] = useState();
     const [productoInformacion, setProductoInformacion] = useState();
@@ -48,6 +49,32 @@ export default function MenuVendedor() {
     const [OpcionSeleccionado, setOpcionSeleccionado] = useState(0);
 
     useEffect(() => {
+      const obtenerEstadoVendedor = async () => {
+        try {
+          const response = await fetch(
+            `${BASE_URL}/ObtenerEstadoVendedor?idVendedor=${idUsuario}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+    
+          if (response.ok) {
+            const estado = await response.json();
+            // console.log(estado);
+            setEstadoVendedor(estado);
+          } else if (response.status === 404) {
+            throw new Error("Estado del vendedor no encontrado");
+          } else {
+            throw new Error("Error al obtener informacion de la Estado del vendedor");
+          }
+        } catch (error) {
+          console.error("Error al obtener informacion de la Estado del vendedor", error);
+          throw new Error("Error al obtener informacion de la Estado del vendedor");
+        }
+      };
       const obtenerInformacionTienda = async () => {
         try {
           const response = await fetch(
@@ -64,14 +91,9 @@ export default function MenuVendedor() {
             const tienda = await response.json();
             // console.log(tienda);
             setInformacionTienda(tienda);
-          } else if (response.status === 404) {
-            throw new Error("Tienda no encontrado");
-          } else {
-            throw new Error("Error al obtener informacion de la tienda");
           }
         } catch (error) {
           console.error("Error al obtener informacion de la tienda", error);
-          throw new Error("Error al obtener informacion de la tienda");
         }
       };
       const obtenerVendedorRol = async () => {
@@ -89,18 +111,18 @@ export default function MenuVendedor() {
           if (response.ok) {
             const rol = await response.json();
             setEsVendedorAdministrador(rol);
-          } else if (response.status === 404) {
-            throw new Error("Tienda no encontrado");
-          } else {
-            throw new Error("Error al obtener informacion de la tienda");
           }
         } catch (error) {
           console.error("Error al obtener informacion de la tienda", error);
-          throw new Error("Error al obtener informacion de la tienda");
         }
       };
       obtenerInformacionTienda();
       obtenerVendedorRol();
+      // obtenerEstadoVendedor();
+      const interval = setInterval(() => {
+        obtenerEstadoVendedor();
+      }, 100);
+      return () => clearInterval(interval);
     }, [idUsuario]);
 
     const handleChangeHistoria = (producto) =>{
@@ -137,12 +159,15 @@ export default function MenuVendedor() {
             setMostrarnDetalleSeguimiento={setMostrarnDetalleSeguimiento} mostrarDetalleBilletera={mostrarDetalleBilletera}
             setMostrarnDetalleBilletera={setMostrarnDetalleBilletera} historialProducto={historialProducto} setHistoriaProducto={setHistoriaProducto}
             mostrarGestionVendedor={mostrarGestionVendedor} setMostrarGestionVendedor={setMostrarGestionVendedor} esVendedorAdministrador={esVendedorAdministrador}
+            estadoVendedor={estadoVendedor}
             />
 
             {mostrarInicio && <InicioVendedor setMostrarInicio={setMostrarInicio} setMostrarEstadisticaVendedor={setMostrarEstadisticaVendedor}
             setMostrarVentas={setMostrarVentas} setMostrarMisProductos={setMostrarMisProductos}
             setMostrarSeguimientoVendedor={setMostrarSeguimientoVendedor} setMostrarBilletera={setMostrarBilletera} setMostrarReclamo={setMostrarReclamo}
-            informacionTienda={informacionTienda} setMostrarGestionVendedor={setMostrarGestionVendedor} esVendedorAdministrador={esVendedorAdministrador}/>}
+            informacionTienda={informacionTienda} setMostrarGestionVendedor={setMostrarGestionVendedor} esVendedorAdministrador={esVendedorAdministrador}
+            estadoVendedor={estadoVendedor}
+            />}
 
             {mostrarVentas && <Ventas HandleChangeVentaSeleccionado={HandleChangeVentaSeleccionado} informacionTienda={informacionTienda}/>}
 

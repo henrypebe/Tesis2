@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\Users\henry\OneDrive\Desktop\Laptop\10mo Ciclo\Tesis 2\Tesis2\BackEnd\API_Tesis\API_Tesis\bin\Release\net6.0\publish\</_PublishTargetUrl>
-    <History>True|2024-09-22T00:22:59.4418609Z||;True|2024-09-21T19:22:10.7815182-05:00||;True|2024-09-13T17:23:37.4522033-05:00||;True|2024-09-13T17:19:21.9994448-05:00||;True|2024-09-09T23:09:04.3467291-05:00||;True|2024-06-05T23:55:29.4827643-05:00||;True|2024-06-05T23:54:10.7215545-05:00||;True|2024-06-05T23:46:46.6040233-05:00||;</History>
+    <History>True|2024-10-01T02:36:43.9807652Z||;True|2024-09-30T21:26:04.4299167-05:00||;True|2024-09-21T19:22:59.4418609-05:00||;True|2024-09-21T19:22:10.7815182-05:00||;True|2024-09-13T17:23:37.4522033-05:00||;True|2024-09-13T17:19:21.9994448-05:00||;True|2024-09-09T23:09:04.3467291-05:00||;True|2024-06-05T23:55:29.4827643-05:00||;True|2024-06-05T23:54:10.7215545-05:00||;True|2024-06-05T23:46:46.6040233-05:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

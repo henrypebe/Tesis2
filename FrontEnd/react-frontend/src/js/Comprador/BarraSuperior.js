@@ -84,7 +84,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
         setHistorialProductos(historial);
         setOpenModaSegundo(true);
         setOpenModaQuinto(false);
-        console.log(historial);
+        // console.log(historial);
       } else if (response.status === 404) {
         throw new Error("Seguimiento no encontrado");
       } else {
@@ -137,7 +137,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
 
       if (response.ok) {
         const tienda = await response.json();
-        console.log(tienda);
+        // console.log(tienda);
         setInformacionTienda(tienda);
         setTimeout(() => {
           setOpenModaQuinto(true);
@@ -525,7 +525,9 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
           alignContent: "center",
           marginLeft: "-1.9px",
           marginRight: "-1.9px",
-          width: "98.8%",
+          width: "98.87%",
+          marginTop:"-1.6px",
+          marginBottom:"-0.1px"
         }}
       >
         <MenuBookIcon sx={{ color: "black", marginRight: "20px", fontSize:"30px" }} />

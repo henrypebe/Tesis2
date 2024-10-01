@@ -102,7 +102,7 @@ def evaluar_modelo(modelo, X_test, y_test):
     print("F1-score:", f1)
     print("Matriz de Confusión:\n", conf_matrix)
 
-pipeline_file = "pipelineEsc2.pkl"
+pipeline_file = "pipeline.pkl"
 
 # Cargar y preprocesar los datos
 # archivos = ["ArchivosAdicionales/datos_pedidos_fraude_Esc2.txt"]
@@ -183,7 +183,7 @@ datos_directos = [
     "Fecha de Creación del Pedido: 2024-05-26 23:29:20",
     "Lugar de Entrega: Direccion 1",
     "Cantidad de cambios de lugar de entrega durante el ultimo mes: 1",
-    "Costo total del Pedido: 50000",
+    "Costo total del Pedido: 450",
     "Método de Pago (Número de Cuenta Encriptado): pm_1P7KAtG77lj0glGvxvqiL2c6",
     "Numeros de cambios del método de pago: 2",
     "Cantidad de Productos en el Pedido: 2",

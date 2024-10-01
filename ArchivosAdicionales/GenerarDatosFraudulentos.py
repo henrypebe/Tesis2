@@ -68,8 +68,8 @@ def generar_datos_aleatorios_con_fraude(num_pedidos, nombres_compradores, numero
     cantidad_productos= 0
     idUsuario=0
     tipo_producto_mayoria=""
-    rangos_cantidad_productos = {nombre: (random.randint(1, 5), random.randint(10, 20)) for nombre in nombres_compradores}
-    rangos_cantidad_precio = {nombre: (random.randint(15, 25), random.randint(120, 300)) for nombre in nombres_compradores}
+    rangos_cantidad_productos = {nombre: (random.randint(1, 5), random.randint(15, 20)) for nombre in nombres_compradores}
+    rangos_cantidad_precio = {nombre: (random.randint(15, 25), random.randint(520, 600)) for nombre in nombres_compradores}
     
     with open("ArchivosAdicionales/datos_pedidos_fraude_Esc1.txt", "w") as archivo:
         for _ in range(num_pedidos):

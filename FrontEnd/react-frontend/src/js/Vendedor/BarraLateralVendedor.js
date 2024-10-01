@@ -14,8 +14,10 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
     mostrarEstadisticaVendedor, setMostrarEstadisticaVendedor, mostrarBilletera, setMostrarBilletera, mostrarDetalleVenta,
     setMostrarDetalleVenta,mostrarDetalleProducto, setMostrarDetalleProducto, mostrarEditarProducto, setMostrarEditarProducto,
     mostrarDetalleSeguimiento, setMostrarnDetalleSeguimiento, mostrarDetalleBilletera, setMostrarnDetalleBilletera, historialProducto,
-    setHistoriaProducto, mostrarGestionVendedor, setMostrarGestionVendedor, esVendedorAdministrador}) {
-    const handleClickInicio = () => {
+    setHistoriaProducto, mostrarGestionVendedor, setMostrarGestionVendedor, esVendedorAdministrador,
+    estadoVendedor}) {
+    
+        const handleClickInicio = () => {
         setMostrarInicio(true);
         setMostrarVentas(false);
         setMostrarMisProductos(false);
@@ -143,7 +145,7 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
     }
     
     return (
-    <Box sx={{display:"flex", flexDirection:"column", maxHeight:"100%", minHeight:"100%", backgroundColor:"#D7B27B", marginTop:"-1.9px", padding:"10px",
+    <Box sx={{display:"flex", flexDirection:"column", maxHeight:"101%", minHeight:"101%", backgroundColor:"#D7B27B", marginTop:"-1.9px", padding:"10px",
     width:"230px"}}>
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
             marginBottom:"10px", backgroundColor: mostrarInicio? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
@@ -153,46 +155,56 @@ export default function BarraLateralVendedor({mostrarInicio, setMostrarInicio, m
             <Typography sx={{color:"black", fontWeight:"bold"}}>Inicio</Typography>
         </Button>
         
-        <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
-            marginBottom:"10px", backgroundColor: mostrarVentas || mostrarDetalleVenta? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
-            onClick={handleClickVenta}
-            >
-            <MonetizationOnIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold"}}>Ventas</Typography>
-        </Button>
+        {estadoVendedor === 1 && (
+            <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
+                marginBottom:"10px", backgroundColor: mostrarVentas || mostrarDetalleVenta? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+                onClick={handleClickVenta}
+                >
+                <MonetizationOnIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
+                <Typography sx={{color:"black", fontWeight:"bold"}}>Ventas</Typography>
+            </Button>
+        )}
 
-        <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
-            marginBottom:"10px", backgroundColor: mostrarMisProductos || mostrarDetalleProducto || mostrarEditarProducto || historialProducto?
-             "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
-            onClick={handleClickMisProductos}
-            >
-            <ShoppingBagIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold"}}>Mis productos</Typography>
-        </Button>
+        {estadoVendedor === 1 && (
+            <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
+                marginBottom:"10px", backgroundColor: mostrarMisProductos || mostrarDetalleProducto || mostrarEditarProducto || historialProducto?
+                 "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+                onClick={handleClickMisProductos}
+                >
+                <ShoppingBagIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
+                <Typography sx={{color:"black", fontWeight:"bold"}}>Mis productos</Typography>
+            </Button>
+        )}
 
-        <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
-            marginBottom:"10px", backgroundColor: mostrarSeguimientoVendedor || mostrarDetalleSeguimiento? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
-            onClick={handleClickSeguimiento}
-            >
-            <ChatBubbleOutlineIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold"}}>Seguimientos</Typography>
-        </Button>
+        {estadoVendedor === 1 && (
+            <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
+                marginBottom:"10px", backgroundColor: mostrarSeguimientoVendedor || mostrarDetalleSeguimiento? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+                onClick={handleClickSeguimiento}
+                >
+                <ChatBubbleOutlineIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
+                <Typography sx={{color:"black", fontWeight:"bold"}}>Seguimientos</Typography>
+            </Button>
+        )}
 
-        <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
-            marginBottom:"10px", backgroundColor: mostrarReclamo? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
-            onClick={handleClickReclamo}
-            >
-            <NewReleasesIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold"}}>Reclamo</Typography>
-        </Button>
+        {estadoVendedor === 1 && (
+            <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
+                marginBottom:"10px", backgroundColor: mostrarReclamo? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+                onClick={handleClickReclamo}
+                >
+                <NewReleasesIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
+                <Typography sx={{color:"black", fontWeight:"bold"}}>Reclamo</Typography>
+            </Button>
+        )}
 
-        <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
-            marginBottom:"10px", backgroundColor: mostrarEstadisticaVendedor? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
-            onClick={handleClickEstadisticaVendedor}
-            >
-            <SignalCellularAltIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
-            <Typography sx={{color:"black", fontWeight:"bold"}}>Estadistica</Typography>
-        </Button>
+        {estadoVendedor === 1 && (
+            <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
+                marginBottom:"10px", backgroundColor: mostrarEstadisticaVendedor? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}
+                onClick={handleClickEstadisticaVendedor}
+                >
+                <SignalCellularAltIcon sx={{color:"black", marginLeft:"-10px", marginRight:"5px"}}/>
+                <Typography sx={{color:"black", fontWeight:"bold"}}>Estadistica</Typography>
+            </Button>
+        )}
 {/* 
         <Button variant="contained" sx={{display:"flex", justifyContent:"flex-start",
             marginBottom:"10px", backgroundColor: mostrarBilletera || mostrarDetalleBilletera? "#FFFFFF":"#CACACA", '&:hover': {backgroundColor:"#CACACA"}}}

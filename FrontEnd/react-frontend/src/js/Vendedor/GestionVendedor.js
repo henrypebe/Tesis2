@@ -62,7 +62,10 @@ export default function GestionVendedor({informacionTienda}) {
             throw new Error("Error al obtener la lista de vendedores asistentes");
           }
         };
-        handleInformacionVendedorAsistente();
+        const interval = setInterval(() => {
+          handleInformacionVendedorAsistente();
+        }, 100);
+        return () => clearInterval(interval);
     }, [informacionTienda]);
 
     const [currentPage, setCurrentPage] = React.useState(0);

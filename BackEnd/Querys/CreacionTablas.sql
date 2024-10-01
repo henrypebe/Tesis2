@@ -271,3 +271,5 @@ ALTER TABLE MetodoPago DROP COLUMN Cuenta;
 ALTER TABLE MetodoPago DROP COLUMN FechaEnvio;
 ALTER TABLE Chat ADD FinalizarCliente boolean;
 ALTER TABLE PedidoXProducto ADD FechaReclamo Datetime;
+
+SELECT esAdministrador FROM Vendedor WHERE usuarioId = 5 AND Estado = 1
