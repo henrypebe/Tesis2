@@ -250,6 +250,7 @@ SELECT * FROM Chat;
 SELECT * FROM MetodoPago;
 SELECT * FROM TallaVestimenta;
 SELECT * FROM Usuario WHERE Estado = 1;
+SELECT * FROM LlavesSTRIPE;
 
 SET SQL_SAFE_UPDATES = 0;
 UPDATE Producto 

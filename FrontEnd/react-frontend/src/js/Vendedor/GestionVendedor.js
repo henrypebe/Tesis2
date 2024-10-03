@@ -103,7 +103,7 @@ export default function GestionVendedor({informacionTienda}) {
   };
 
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"88vh"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"89vh"}}>
       <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px"}}>Gestión de vendedores</Typography>
         
       <Box sx={{height:"45%"}}>

@@ -24,7 +24,7 @@ export default function ProductoComprador({setMostrarDetalleProducto, setMostrar
   }
 
   return (
-    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", height:"88vh"}}>
+    <Box sx={{padding:"20px", width:"87%", marginTop:"-1.9px", height:"89vh"}}>
       <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
         <Box sx={{display:"flex", flexDirection:"row"}}>
           <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px"}}>Productos</Typography>

@@ -49,7 +49,7 @@ export default function HistorialProducto({setHistoriaProducto, setMostrarDetall
     };
 
     return (
-    <Box sx={{padding:"20px", width:"85.65%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
+    <Box sx={{padding:"20px", width:"85.65%", marginTop:"-1.9px", minHeight:"89vh", maxHeight:"89vh"}}>
         <Box sx={{display:"flex", flexDirection:"row"}}>
             
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Historial de cambios</Typography>

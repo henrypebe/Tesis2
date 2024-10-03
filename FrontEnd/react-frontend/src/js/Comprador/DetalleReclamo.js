@@ -121,7 +121,7 @@ export default function DetalleReclamo({ReclamoSeleccionado, setMostrarReclamo, 
     }
 
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"89vh", maxHeight:"89vh"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Pedidos - {concatenarNombresTiendas(ReclamoSeleccionado[0])}</Typography>
             <Box sx={{width:"40%", display:"flex", flexDirection:"row", justifyContent:"flex-end", alignItems:"center"}}>

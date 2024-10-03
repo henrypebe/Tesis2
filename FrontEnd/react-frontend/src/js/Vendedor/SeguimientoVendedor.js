@@ -48,7 +48,7 @@ export default function SeguimientoVendedor({informacionTienda, HandleChangeSegu
   };
     
   return (
-    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", height:"88vh"}}>
+    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", height:"89vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px", marginRight:"200px"}}>Seguimientos</Typography>
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />

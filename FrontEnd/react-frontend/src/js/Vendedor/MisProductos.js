@@ -132,7 +132,7 @@ export default function MisProductos({setMostrarMisProductos, setMostrarDetalleP
     };
 
   return (
-    <Box sx={{padding:"20px", width:"87%", marginTop:"-1.9px", height:"87.8vh"}}>
+    <Box sx={{padding:"20px", width:"85.1%", marginTop:"-1.9px", height:"89vh"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"26px", marginRight:"20px"}}>Mis Productos</Typography>
             <TextField

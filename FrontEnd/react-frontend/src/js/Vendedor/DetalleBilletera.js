@@ -46,7 +46,7 @@ export default function DetalleBilletera({setMostrarBilletera, setMostrarnDetall
     const stripePromise = loadStripe(llavePublica);
 
     return (
-        <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
+        <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"89vh", maxHeight:"89vh"}}>
             <Box
                 sx={{
                 display: "flex",

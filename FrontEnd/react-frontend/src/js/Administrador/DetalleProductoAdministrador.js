@@ -75,7 +75,7 @@ export default function DetalleProductoAdministrador({setMostrarGestionAprobacio
     };
 
     return (
-    <Box sx={{padding:"20px", width:"82.5%", marginTop:"-1.9px", height:"88vh", display:"flex", flexDirection:"column", alignItems:"flex-start"}}>
+    <Box sx={{padding:"20px", width:"82.5%", marginTop:"-1.9px", height:"89vh", display:"flex", flexDirection:"column", alignItems:"flex-start"}}>
         <Box sx={{display:"flex", flexDirection:"row", width:"62%", justifyContent:"space-between"}}>    
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"52%"}}>Producto en proceso de aprobación</Typography>
 

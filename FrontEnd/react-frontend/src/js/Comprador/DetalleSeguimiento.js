@@ -210,8 +210,8 @@ export default function DetalleSeguimiento({
         padding: "20px",
         width: "85.3%",
         marginTop: "-1.9px",
-        minHeight: "88vh",
-        maxHeight: "88vh",
+        minHeight: "89vh",
+        maxHeight: "89vh",
       }}
     >
       <Box

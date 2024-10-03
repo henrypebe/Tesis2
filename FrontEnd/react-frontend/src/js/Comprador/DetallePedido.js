@@ -180,7 +180,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
     };
 
     return (
-    <Box sx={{width:"87.1%", marginTop:"-1.9px", height:"88vh", padding:"20px"}}>
+    <Box sx={{width:"87.1%", marginTop:"-1.9px", height:"89vh", padding:"20px"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"60%"}}>
                 ID Pedido {PedidoSeleccionado.idPedido.toFixed(0).padStart(2, '0')} - {concatenarNombresTiendas(PedidoSeleccionado)}

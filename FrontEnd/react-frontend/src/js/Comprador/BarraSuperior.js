@@ -524,8 +524,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
           border: "2px solid white",
           alignContent: "center",
           marginLeft: "-1.9px",
-          marginRight: "-1.9px",
-          width: "98.87%",
+          marginRight: "0px",
+          width: "99.02%",
           marginTop:"-1.6px",
           marginBottom:"-0.1px"
         }}

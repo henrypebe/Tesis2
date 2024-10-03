@@ -168,7 +168,7 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{padding:"20px", width:"86.7%", marginTop:"-1.9px", height:"88vh"}}>
+      <Box sx={{padding:"20px", width:"86.7%", marginTop:"-1.9px", height:"89vh"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", marginTop:"-12px"}}>
           <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", marginRight:"40px"}}>Pedidos</Typography>
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"60%"}}>

@@ -44,7 +44,7 @@ export default function SeguimientoComprador({HandleChangeSeguimientoSeleccionad
   };
 
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"89vh", maxHeight:"89vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", width:"100%"}}>Seguimientos</Typography>
 
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />

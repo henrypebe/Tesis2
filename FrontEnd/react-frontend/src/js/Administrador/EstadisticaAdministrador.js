@@ -128,7 +128,7 @@ export default function EstadisticaAdministrador({handleChangePedidoSeleccionado
     }, [isCheckedCompletado, isCheckedPendiente]);
 
     return (
-    <Box sx={{padding:"20px", width:"80.37%", marginTop:"-1.9px", height:"88vh"}}>
+    <Box sx={{padding:"20px", width:"80.37%", marginTop:"-1.9px", height:"89vh"}}>
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px"}}>Estadistica</Typography>
         
         <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"10px"}} />

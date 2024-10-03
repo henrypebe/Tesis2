@@ -357,7 +357,12 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                 InformacionUsuario.direccion
                 )
                 .send({ from: account, gas: 5000000 });
+            
             const transactionId = txReceipt.transactionHash.toString();
+
+            const lastTransactionPosition = await contractInstance.methods
+                .getLastTransactionPosition()
+                .call();
 
             for (const producto of productos) {
                 await contractInstance.methods
@@ -368,7 +373,8 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
                         producto.precio,
                         producto.cantidad,
                         producto.tiendaNombre,
-                        (producto.precio*producto.cantidad*producto.cantidadOferta)/100
+                        (producto.precio*producto.cantidad*producto.cantidadOferta)/100,
+                        lastTransactionPosition
                     )
                     .send({ from: account, gas: 5000000 });
             }
@@ -554,7 +560,7 @@ export default function MetodoPago({setMostrarMetodoPago, setMostrarProductos, p
         });
     }
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"89vh", maxHeight:"89vh"}}>
         <Box
             sx={{
             display: "flex",

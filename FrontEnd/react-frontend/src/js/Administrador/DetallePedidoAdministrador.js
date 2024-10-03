@@ -44,7 +44,7 @@ export default function DetallePedidoAdministrador({setMostrarEstadistica, setMo
         return nombresTiendasConcatenados;
     }
     return (
-        <Box sx={{padding:"20px", width:"80.37%", marginTop:"-1.9px", height:"88vh"}}>
+        <Box sx={{padding:"20px", width:"80.37%", marginTop:"-1.9px", height:"89vh"}}>
             <Box sx={{display:"flex", flexDirection:"row"}}>
                 
                 <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"90%"}}>Pedidos ID {PedidoSeleccionado.idPedido} - Tienda</Typography>

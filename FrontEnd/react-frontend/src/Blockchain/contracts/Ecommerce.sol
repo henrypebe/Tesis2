@@ -5,6 +5,7 @@ contract Ecommerce {
     
     struct Product {
         string idTransaction;
+        uint positionTransaction;
         uint idProduct;
         string Name;
         uint Price;
@@ -23,6 +24,7 @@ contract Ecommerce {
         string paymentMethod;
         uint shippingCost;
         string deliveryAddress;
+        uint posicion;
     }
 
     mapping(uint => Transaction) public transactions;
@@ -52,7 +54,8 @@ contract Ecommerce {
             productCount: _productCount,
             paymentMethod: _paymentMethod,
             shippingCost: _shippingCost,
-            deliveryAddress: _deliveryAddress
+            deliveryAddress: _deliveryAddress,
+            posicion: transactionCount + 1 
         });
         emit TransactionCreated(transactionCount);
         transactionCount++;
@@ -65,10 +68,12 @@ contract Ecommerce {
         uint _priceProduct,
         uint _count,
         string memory _nameShop,
-        uint _discount
+        uint _discount,
+        uint positionTransaction
     ) public {
         products[transactionProductCount] = Product({
             idTransaction: _idTransaction,
+            positionTransaction: positionTransaction,
             idProduct: _idProduct,
             Name: _nameProduct,
             Price: _priceProduct,
@@ -80,6 +85,14 @@ contract Ecommerce {
         transactionProductCount++;
     }
 
+    function getLastTransactionPosition() public view returns (uint) {
+        // Verificamos que haya al menos una transacción creada
+        require(transactionCount > 0, "No hay transacciones creadas.");
+    
+        // Retornamos la posicion de la última transacción
+        return transactions[transactionCount - 1].posicion;
+    }
+
     function getTransaction(uint _transactionId) public view returns (
         string memory customerName,
         uint deliveryDate,
@@ -89,7 +102,8 @@ contract Ecommerce {
         uint productCount,
         string memory paymentMethod,
         uint shippingCost,
-        string memory deliveryAddress
+        string memory deliveryAddress,
+        uint posicionTransacion
     ) {
         Transaction storage transaction = transactions[_transactionId];
         return (
@@ -101,12 +115,14 @@ contract Ecommerce {
             transaction.productCount,
             transaction.paymentMethod,
             transaction.shippingCost,
-            transaction.deliveryAddress
+            transaction.deliveryAddress,
+            transaction.posicion
         );
     }
 
     function getProductTransaction(uint _transactionProductId) public view returns (
         string memory idTransaction,
+        uint posicionTransaction,
         uint idProduct,
         string memory Name,
         uint Price,
@@ -117,6 +133,7 @@ contract Ecommerce {
         Product storage product = products[_transactionProductId];
         return (
             product.idTransaction,
+            product.positionTransaction,
             product.idProduct,
             product.Name,
             product.Price,

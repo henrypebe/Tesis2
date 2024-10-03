@@ -73,7 +73,7 @@ export default function DetalleTienda({setMostrarGestionAprobacionTienda, setMos
         }
     }
   return (
-    <Box sx={{padding:"20px", width:"82.5%", marginTop:"-1.9px", height:"88vh", display:"flex", flexDirection:"column"}}>
+    <Box sx={{padding:"20px", width:"82.5%", marginTop:"-1.9px", height:"89vh", display:"flex", flexDirection:"column"}}>
         <Box sx={{display:"flex", flexDirection:"row", width:"100%", justifyContent:"space-between"}}>    
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px", width:"52%"}}>Tienda en proceso de aprobación</Typography>
 

@@ -279,8 +279,8 @@ export default function EditarProducto({
         padding: "20px",
         width: "85.1%",
         marginTop: "-1.9px",
-        minHeight: "88vh",
-        maxHeight: "88vh",
+        minHeight: "89vh",
+        maxHeight: "89vh",
       }}
     >
       <Box

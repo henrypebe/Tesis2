@@ -16,9 +16,11 @@ export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMet
         setMetodoPagoAumento(false);
     }
 
-    const [llavePublica, setLlavePublica] = useState();
+    const [llavePublica, setLlavePublica] = useState(null);
+    const [stripePromise, setStripePromise] = useState(null);
+
     useEffect(() => {
-        const obtenerllave = async () => {
+        const obtenerLlave = async () => {
             try {
                 const response = await fetch(
                     `${BASE_URL}/ObtenerLlavePublicaStripe`,
@@ -32,18 +34,24 @@ export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMet
             
                 if (response.ok) {
                     const _llavePublica = await response.text();
-                    setLlavePublica(_llavePublica);
+                    setLlavePublica(_llavePublica.toString());
+                    setStripePromise(loadStripe(_llavePublica.toString())); // Inicializa Stripe cuando la llave está lista
                 }
             } catch (error) {
-                console.error("Error al obtener la llave publica de stripe", error);
-              throw new Error("Error al obtener la llave publica de stripe");
+                console.error("Error al obtener la llave pública de Stripe", error);
+                throw new Error("Error al obtener la llave pública de Stripe");
             }
         };
-        obtenerllave();
+        obtenerLlave();
     }, []);
-    const stripePromise = loadStripe(llavePublica);
+    
+    if (!llavePublica) {
+        // Mostrar un mensaje o un spinner mientras la llave pública se carga
+        return <Typography>Cargando métodos de pago...</Typography>;
+    }
+
   return (
-    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"88vh", maxHeight:"88vh"}}>
+    <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", minHeight:"89vh", maxHeight:"89vh"}}>
         <Box
             sx={{
             display: "flex",
@@ -95,9 +103,9 @@ export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMet
 
         <Box sx={{height:"60%"}}>
             <Elements stripe={stripePromise}>
-            <Box>
-                <StripePaymentForm opcion={2} handleChangeAgregar={handleChangeAgregar} idUsuario={idUsuario}/>
-            </Box>
+                <Box>
+                    <StripePaymentForm opcion={2} handleChangeAgregar={handleChangeAgregar} idUsuario={idUsuario}/>
+                </Box>
             </Elements>
         </Box>
 
@@ -107,5 +115,5 @@ export default function MetodoPagoAumento({setMostrarMetodoPagoAdicionar, setMet
             Agregar método de pago
         </Button> */}
     </Box>
-  )
+  );
 }
