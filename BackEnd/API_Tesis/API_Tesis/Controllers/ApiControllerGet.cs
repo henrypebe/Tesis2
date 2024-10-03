@@ -852,8 +852,8 @@ namespace API_Tesis.Controllers
             }
         }
         [HttpGet]
-        [Route("/ListarVendedoresAsistentes")]
-        public async Task<IActionResult> ListarVendedoresAsistentes(int idTienda)
+        [Route("/ListarVendedoresAsistentesPendientes")]
+        public async Task<IActionResult> ListarVendedoresAsistentesPendientes(int idTienda)
         {
             try
             {
@@ -868,6 +868,57 @@ namespace API_Tesis.Controllers
                         FROM Usuario u
                         INNER JOIN Vendedor v ON v.usuarioID = u.IdUsuario
                         WHERE v.TiendaID = @IdTienda AND v.Estado = 2";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdTienda", idTienda);
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int idUsuario = reader.GetInt32("IdUsuario");
+                                VendedorAsistente usuarioExistente = vendedoresAsistentes.FirstOrDefault(p => p.idUsuario == idUsuario);
+                                if (usuarioExistente == null)
+                                {
+                                    usuarioExistente = new VendedorAsistente
+                                    {
+                                        idUsuario = idUsuario,
+                                        Nombre = reader.GetString("Nombre"),
+                                        Apellido = reader.GetString("Apellido"),
+                                        Correo = reader.GetString("Correo"),
+                                        DNI = reader.GetInt32("DNI")
+                                    };
+
+                                    vendedoresAsistentes.Add(usuarioExistente);
+                                }
+                            }
+                            return Ok(vendedoresAsistentes);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("/ListarVendedoresAsistentesAceptados")]
+        public async Task<IActionResult> ListarVendedoresAsistentesAceptados(int idTienda)
+        {
+            try
+            {
+                List<VendedorAsistente> vendedoresAsistentes = new List<VendedorAsistente>();
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    string query = @"
+                       SELECT u.IdUsuario, u.Correo, u.Nombre, u.Apellido, u.DNI
+                        FROM Usuario u
+                        INNER JOIN Vendedor v ON v.usuarioID = u.IdUsuario
+                        WHERE v.TiendaID = @IdTienda AND v.Estado = 1 AND v.esAdministrador <> 1";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {

@@ -176,8 +176,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       setApellidoCambiado(informacionUsuario.apellido ?? "");
       setCorreoCambiado(informacionUsuario.correo ?? "");
       setCorreoAlternativoCambiado(informacionUsuario.correoAlternativo ?? "");
-      setTelefonoCambiado(informacionUsuario.telefono ?? "");
-      setDireccionCambiado(informacionUsuario.direccion ?? "");
+      setTelefonoCambiado(informacionUsuario.telefono || informacionUsuario.telefono === -1 ? "": informacionUsuario.telefono);
+      setDireccionCambiado(informacionUsuario.direccion || informacionUsuario.direccion === "a" ? "": informacionUsuario.direccion);
     }
     if (informacionTienda) {
       setNombreTiendaCambiado(informacionTienda.nombre ?? "");
@@ -374,8 +374,8 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       formData.append('nombre', nombreCambiado);
       formData.append('apellido', apellidoCambiado);
       formData.append('correo', correoCambiado);
-      formData.append('numero', TelefonoCambiado);
-      formData.append('direccion', DireccionCambiado);
+      formData.append('numero', TelefonoCambiado===""? -1:TelefonoCambiado);
+      formData.append('direccion', DireccionCambiado===""? "a":DireccionCambiado);
       formData.append('correoAlternativo', correoAlternativoCambiado===""? "a": correoAlternativoCambiado);
 
       const response = await fetch(

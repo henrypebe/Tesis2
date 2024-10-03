@@ -530,104 +530,147 @@ namespace API_Tesis.Controllers
         public async Task<ActionResult> EditarUsuario([FromForm] int idUsuario, [FromForm] string nombre, [FromForm] string apellido, [FromForm] string correo, [FromForm] int numero,
             [FromForm] string direccion, [FromForm] string correoAlternativo)
         {
-          
-                string connectionString = _configuration.GetConnectionString("DefaultConnection");
-                try
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    using (MySqlConnection connection = new MySqlConnection(connectionString))
-                    {
-                        connection.Open();
-                        string queryGetDireccion = "SELECT Direccion FROM Usuario WHERE IdUsuario = @IdUsuario";
-                        using (MySqlCommand commandGetDireccion = new MySqlCommand(queryGetDireccion, connection))
-                        {
-                            commandGetDireccion.Parameters.AddWithValue("@IdUsuario", idUsuario);
-                            string direccionActual = await commandGetDireccion.ExecuteScalarAsync() as string;
+                    connection.Open();
 
-                            if (direccionActual == direccion)
+                    // Obtener la dirección actual del usuario
+                    string queryGetDireccion = "SELECT Direccion FROM Usuario WHERE IdUsuario = @IdUsuario";
+                    using (MySqlCommand commandGetDireccion = new MySqlCommand(queryGetDireccion, connection))
+                    {
+                        commandGetDireccion.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        string direccionActual = await commandGetDireccion.ExecuteScalarAsync() as string;
+
+                        // Si la dirección es la misma, actualiza sin contar el cambio de dirección
+                        if (direccionActual == direccion)
+                        {
+                            string querySinCambioDireccion = "";
+                            if (correoAlternativo != "a")
                             {
-                                string querySinCambioDireccion = "";
-                                if (correoAlternativo != "a")
+                                querySinCambioDireccion = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
+                                    "Direccion = @Direccion, CorreoAlternativo = @CorreoAlternativo WHERE idUsuario = @IdUsuario AND Estado = 1";
+                            }
+                            else
+                            {
+                                querySinCambioDireccion = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
+                                "Direccion = @Direccion WHERE idUsuario = @IdUsuario AND Estado = 1";
+                            }
+
+                            using (MySqlCommand command = new MySqlCommand(querySinCambioDireccion, connection))
+                            {
+                                command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                                command.Parameters.AddWithValue("@Apellido", apellido);
+                                command.Parameters.AddWithValue("@Nombre", nombre);
+                                command.Parameters.AddWithValue("@Correo", correo);
+                                command.Parameters.AddWithValue("@Telefono", numero == -1 ? -1 : numero);
+                                command.Parameters.AddWithValue("@Direccion", direccion == "a" ? "" : direccion);
+                                if (correoAlternativo != "a") command.Parameters.AddWithValue("@CorreoAlternativo", correoAlternativo);
+
+                                int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                                if (rowsAffected > 0)
                                 {
-                                    querySinCambioDireccion = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
-                                        "Direccion = @Direccion, CorreoAlternativo = @CorreoAlternativo WHERE idUsuario = @IdUsuario AND Estado = 1";
+                                    // Verificar si el usuario es un vendedor
+                                    string queryCheckVendedor = "SELECT COUNT(*) FROM Vendedor WHERE usuarioId = @UsuarioId";
+                                    using (MySqlCommand commandCheckVendedor = new MySqlCommand(queryCheckVendedor, connection))
+                                    {
+                                        commandCheckVendedor.Parameters.AddWithValue("@UsuarioId", idUsuario);
+                                        int vendedorCount = Convert.ToInt32(await commandCheckVendedor.ExecuteScalarAsync());
+
+                                        // Si el usuario es un vendedor, actualizar el estado a 2
+                                        if (vendedorCount > 0)
+                                        {
+                                            string queryUpdateVendedor = "UPDATE Vendedor SET Estado = 2 WHERE usuarioId = @UsuarioId";
+                                            using (MySqlCommand commandUpdateVendedor = new MySqlCommand(queryUpdateVendedor, connection))
+                                            {
+                                                commandUpdateVendedor.Parameters.AddWithValue("@UsuarioId", idUsuario);
+                                                await commandUpdateVendedor.ExecuteNonQueryAsync();
+                                            }
+                                        }
+                                    }
+
+                                    connection.Close();
+                                    return Ok();
                                 }
                                 else
                                 {
-                                    querySinCambioDireccion = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
-                                    "Direccion = @Direccion WHERE idUsuario = @IdUsuario AND Estado = 1";
-                                }
-                                using (MySqlCommand command = new MySqlCommand(querySinCambioDireccion, connection))
-                                {
-                                    command.Parameters.AddWithValue("@IdUsuario", idUsuario);
-                                    command.Parameters.AddWithValue("@Apellido", apellido);
-                                    command.Parameters.AddWithValue("@Nombre", nombre);
-                                    command.Parameters.AddWithValue("@Correo", correo);
-                                    command.Parameters.AddWithValue("@Telefono", numero);
-                                    command.Parameters.AddWithValue("@Direccion", direccion);
-                                    if (correoAlternativo != "a") command.Parameters.AddWithValue("@CorreoAlternativo", correoAlternativo);
-
-                                    int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                                    if (rowsAffected > 0)
-                                    {
-                                        connection.Close();
-                                        return Ok();
-                                    }
-                                    else
-                                    {
-                                        connection.Close();
-                                        return NotFound();
-                                    }
+                                    connection.Close();
+                                    return NotFound();
                                 }
                             }
                         }
+                    }
 
-                        string query = "";
+                    // Si la dirección ha cambiado, actualiza y suma un cambio de dirección
+                    string query = "";
                     if (correoAlternativo != "a")
                     {
                         query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
-                            "Direccion = @Direccion,CorreoAlternativo = @CorreoAlternativo, CantCambiosDireccion = CantCambiosDireccion + 1 WHERE idUsuario = @IdUsuario AND Estado = 1";
+                            "Direccion = @Direccion, CorreoAlternativo = @CorreoAlternativo, CantCambiosDireccion = CantCambiosDireccion + 1 WHERE idUsuario = @IdUsuario AND Estado = 1";
                     }
                     else
                     {
                         query = "UPDATE Usuario SET Apellido = @Apellido, Nombre = @Nombre, Correo = @Correo, Telefono = @Telefono," +
                             "Direccion = @Direccion, CantCambiosDireccion = CantCambiosDireccion + 1 WHERE idUsuario = @IdUsuario AND Estado = 1";
                     }
+
                     using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                        command.Parameters.AddWithValue("@Apellido", apellido);
+                        command.Parameters.AddWithValue("@Nombre", nombre);
+                        command.Parameters.AddWithValue("@Correo", correo);
+                        command.Parameters.AddWithValue("@Telefono", numero);
+                        command.Parameters.AddWithValue("@Direccion", direccion);
+                        if (correoAlternativo != "a") command.Parameters.AddWithValue("@CorreoAlternativo", correoAlternativo);
+
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected > 0)
                         {
-                            command.Parameters.AddWithValue("@IdUsuario", idUsuario);
-                            command.Parameters.AddWithValue("@Apellido", apellido);
-                            command.Parameters.AddWithValue("@Nombre", nombre);
-                            command.Parameters.AddWithValue("@Correo", correo);
-                            command.Parameters.AddWithValue("@Telefono", numero);
-                            command.Parameters.AddWithValue("@Direccion", direccion);
-                            if (correoAlternativo != "a") command.Parameters.AddWithValue("@CorreoAlternativo", correoAlternativo);
-
-                            int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                            if (rowsAffected > 0)
+                            // Verificar si el usuario es un vendedor
+                            string queryCheckVendedor = "SELECT COUNT(*) FROM Vendedor WHERE usuarioId = @UsuarioId";
+                            using (MySqlCommand commandCheckVendedor = new MySqlCommand(queryCheckVendedor, connection))
                             {
-                                connection.Close();
-                                return Ok();
+                                commandCheckVendedor.Parameters.AddWithValue("@UsuarioId", idUsuario);
+                                int vendedorCount = Convert.ToInt32(await commandCheckVendedor.ExecuteScalarAsync());
+
+                                // Si el usuario es un vendedor, actualizar el estado a 2
+                                if (vendedorCount > 0)
+                                {
+                                    string queryUpdateVendedor = "UPDATE Vendedor SET Estado = 2 WHERE usuarioId = @UsuarioId";
+                                    using (MySqlCommand commandUpdateVendedor = new MySqlCommand(queryUpdateVendedor, connection))
+                                    {
+                                        commandUpdateVendedor.Parameters.AddWithValue("@UsuarioId", idUsuario);
+                                        await commandUpdateVendedor.ExecuteNonQueryAsync();
+                                    }
+                                }
                             }
-                            else
-                            {
-                                connection.Close();
-                                return NotFound();
-                            }
+
+                            connection.Close();
+                            return Ok();
+                        }
+                        else
+                        {
+                            connection.Close();
+                            return NotFound();
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Console.Write(ex.Message);
-                    return NotFound();
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+                return NotFound();
+            }
         }
         [HttpPut]
         [Route("/EditarTienda")]
         public async Task<ActionResult> EditarTienda([FromForm] int idTienda, [FromForm] string nombre, [FromForm] IFormFile image, [FromForm] string descripcion,
-    [FromForm] string direccion, [FromForm] string Provincia, [FromForm] string pais)
+            [FromForm] string direccion, [FromForm] string Provincia, [FromForm] string pais)
         {
             try
             {

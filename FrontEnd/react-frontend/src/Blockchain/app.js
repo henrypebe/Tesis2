@@ -87,6 +87,6 @@ async function getProductsByTransaction(transactionId) {
 
 // createAndVerifyTransaction();
 
-// getAllTransactions();
-getAllProducts();
+getAllTransactions();
+// getAllProducts();
 // getProductsByTransaction("0x7777081249eff865e7e8056e409a17886a87cadca370f74e99ddeb48c7e8671a");

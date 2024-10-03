@@ -5,7 +5,7 @@ import { BASE_URL } from "../../config";
 
 export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaVendedor, setMostrarVentas, setMostrarMisProductos,
   setMostrarSeguimientoVendedor, setMostrarBilletera, setMostrarReclamo, informacionTienda, setMostrarGestionVendedor, esVendedorAdministrador,
-  estadoVendedor}) {
+  estadoVendedor, idUsuario}) {
   
   const handleClickEstadistica = () =>{
     setMostrarInicio(false);
@@ -43,6 +43,7 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
   }
 
   const [Estadistica, setEstadistica] = React.useState();
+  const [EstadoVendedor, setEstadoVendedor] = React.useState();
   useEffect(() => {
     const handleInformacionInicioVendedor = async () => {
       try {
@@ -70,8 +71,37 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
         throw new Error("Error al obtener la lista de estadistica inicial");
       }
     };
+    const handleInformacionEstadoVendedor = async () => {
+      try {
+        const response = await fetch(
+          `${BASE_URL}/ObtenerEstadoVendedor?idVendedor=${idUsuario}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        if (response.ok) {
+          const EstadoVendedor = await response.json();
+          setEstadoVendedor(EstadoVendedor);
+        } else if (response.status === 404) {
+          throw new Error("Estado del vendedor no encontrado");
+        } else {
+          throw new Error("Error al obtener la Estado del vendedor");
+        }
+      } catch (error) {
+        console.error("Error al obtener la Estado del vendedor", error);
+        throw new Error("Error al obtener la Estado del vendedor");
+      }
+    };
     handleInformacionInicioVendedor();
-  }, [informacionTienda]);
+    const interval = setInterval(() => {
+      handleInformacionEstadoVendedor();
+    }, 100);
+    return () => clearInterval(interval);
+  }, [informacionTienda, idUsuario]);
 
   return (
     <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"88vh"}}>
@@ -229,9 +259,20 @@ export default function InicioVendedor({setMostrarInicio, setMostrarEstadisticaV
       ):
       (
       <>
-        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px"}}>
-          Aún no tiene autorización del Administrador de la tienda
-        </Typography>
+        {EstadoVendedor === 3?
+        (
+          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px"}}>
+            Propuesta <b style={{color:"red"}}>rechazada</b> por el administrador de la tienda: <b style={{color:"#35aba6"}}>pruebe modificando su perfil para poder 
+              tener otro intento</b>
+          </Typography>
+        )
+        :
+        (
+          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"30px"}}>
+            Propuesta <b style={{color:"#77882b"}}>pendiente</b> a revisar por el administrador de la tienda
+          </Typography>
+        )
+        }
       </>
     )}
     </Box>
