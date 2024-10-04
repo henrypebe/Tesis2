@@ -1052,7 +1052,8 @@ namespace API_Tesis.Controllers
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = t.UsuarioID
                         LEFT JOIN TallaVestimenta tv ON pr.IdProducto = tv.IdProducto
-                        WHERE p.UsuarioID = @IdUsuario ORDER BY c.FinalizarCliente ASC";
+                        WHERE p.UsuarioID = @IdUsuario 
+                        ORDER BY c.FinalizarCliente ASC, p.FechaEntrega DESC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -1121,7 +1122,7 @@ namespace API_Tesis.Controllers
                     INNER JOIN PedidoXProducto pp ON pp.PedidoID = p.IdPedido
                     WHERE u.IdUsuario = @IdUsuario AND (pp.TieneSeguimiento=true
                     OR pp.TieneReclamo = true OR p.Reclamo = 1)
-                    ORDER BY pp.TieneReclamo ASC";
+                    ORDER BY pp.TieneReclamo ASC, p.FechaEntrega DESC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -1136,7 +1137,8 @@ namespace API_Tesis.Controllers
                                     IdPedido = !reader.IsDBNull(reader.GetOrdinal("IdPedido")) ? reader.GetInt32("IdPedido") : (int?)null,
                                     FechaEntrega = reader.IsDBNull(reader.GetOrdinal("FechaEntrega")) ? (DateTime?)null : reader.GetDateTime("FechaEntrega"),
                                     Total = reader.IsDBNull(reader.GetOrdinal("Total")) ? (double?)null : reader.GetDouble("Total"),
-                                    ContieneReclamo = reader.IsDBNull(reader.GetOrdinal("TieneReclamo")) ? (bool?)null : reader.GetBoolean("TieneReclamo"),
+                                    ContieneReclamoProducto = reader.IsDBNull(reader.GetOrdinal("TieneReclamo")) ? (bool?)null : reader.GetBoolean("TieneReclamo"),
+                                    ContieneReclamoPedido = reader.IsDBNull(reader.GetOrdinal("Reclamo")) ? (bool?)null : reader.GetBoolean("Reclamo"),
                                 };
 
                                 if (!pedidosConReclamo.ContainsKey(idPedido))
@@ -2204,7 +2206,9 @@ namespace API_Tesis.Controllers
 
                     if (completados && !pendientes) query += " WHERE p.Estado = 2";
                     else if (!completados && pendientes) query += " WHERE p.Estado = 1";
-                    else query += "WHERE p.Estado = 2 OR p.Estado = 1";
+                    else query += " WHERE p.Estado = 2 OR p.Estado = 1";
+
+                    query += " ORDER BY p.FechaCreacion DESC";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -2288,7 +2292,8 @@ namespace API_Tesis.Controllers
                         INNER JOIN Tienda t ON t.IdTienda = pr.TiendaID
                         INNER JOIN Usuario u ON u.IdUsuario = p.UsuarioID
                         INNER JOIN Usuario us ON us.IdUsuario = t.UsuarioID
-                        WHERE pp.TieneReclamo = 1;
+                        WHERE pp.TieneReclamo = 1
+                        ORDER BY p.FechaCreacion DESC;
                      ";
 
                     using (MySqlCommand command = new MySqlCommand(query, connection))

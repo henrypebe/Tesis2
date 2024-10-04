@@ -8,7 +8,7 @@ import { BASE_URL } from "../../config";
 export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda}) {
     const [pageCompleto, setPageCompleto] = React.useState(0);
     const [pagePendiente, setPagePendiente] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(2);
+    const [rowsPerPage, setRowsPerPage] = React.useState(3);
     const [fechaHabilitada, setFechaHabitada] = React.useState(true);
 
     const [VentasCompleteList, setVentasCompleteList] = React.useState(null);
@@ -104,35 +104,44 @@ export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda
     return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{padding:"20px", width:"85.3%", marginTop:"-1.9px", height:"89vh"}}>
-        <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px"}}>Pedidos</Typography>
-
-        <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
-
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", marginRight:"20px"}}>Fecha:</Typography>
+          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px"}}>Pedidos</Typography>
 
-          <DateTimePicker
-            label="Ingrese la fecha"
-            views={['year', 'month', 'day']}
-            format="DD/MM/YYYY"
-            sx={{marginRight:"10px"}}
-            disabled={fechaHabilitada}
-            value={BusquedaFecha}
-            onChange={handleDateChange}
-          />
+          <Box sx={{
+            width: "2px",
+            height: "35px",
+            backgroundColor: "black",
+            margin: "0 10px",
+            marginLeft:"20px",
+            marginRight:"20px"
+          }} />
 
-          <Checkbox checked={!fechaHabilitada} onChange={() => setFechaHabitada(!fechaHabilitada)}/>
+          <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+            <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", marginRight:"20px"}}>Fecha:</Typography>
 
-          <Typography sx={{color:"black", fontSize:"20px", marginRight:"20px"}}>Filtrar por fecha</Typography>
+            <DateTimePicker
+              label="Ingrese la fecha"
+              views={['year', 'month', 'day']}
+              format="DD/MM/YYYY"
+              sx={{marginRight:"10px"}}
+              disabled={fechaHabilitada}
+              value={BusquedaFecha}
+              onChange={handleDateChange}
+            />
+
+            <Checkbox checked={!fechaHabilitada} onChange={() => setFechaHabitada(!fechaHabilitada)}/>
+
+            <Typography sx={{color:"black", fontSize:"20px", marginRight:"20px"}}>Filtrar por fecha</Typography>
+          </Box>
         </Box>
 
-        <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"15px", marginBottom:"15px"}} />
+        <hr style={{margin: "10px 0", border: "0", borderTop: "2px solid #ccc", marginTop:"10px", marginBottom:"15px"}} />
 
         <Typography sx={{color:"black", fontWeight:"bold", fontSize:"24px", marginBottom:"10px"}}>Pedidos completados:</Typography>
 
         {VentasCompleteList && VentasCompleteList.length>0?
         (
-          <Paper sx={{ width: '100%', overflow: 'hidden', height:"33%" }}>
+          <Paper sx={{ width: '100%', overflow: 'hidden', height:"38%" }}>
             <TableContainer sx={{ height:"84%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
@@ -200,7 +209,7 @@ export default function Ventas({HandleChangeVentaSeleccionado, informacionTienda
 
         {VentasPendienteList && VentasPendienteList.length > 0?
         (
-          <Paper sx={{ width: '100%', overflow: 'hidden', height:"33%" }}>
+          <Paper sx={{ width: '100%', overflow: 'hidden', height:"38%" }}>
             <TableContainer sx={{ height:"84%" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>

@@ -532,7 +532,7 @@ export default function BarraSuperior({ opcionAdministrador, idUsuario, esVended
       >
         <MenuBookIcon sx={{ color: "black", marginRight: "20px", fontSize:"30px" }} />
         <Typography sx={{ color: "black", width: "200%", fontWeight:"bold", fontSize:"25px"}}>
-          Tesis 2 - ¡Bienvenido{" "}
+          Ecommerce Tesis - ¡Bienvenido{" "}
           {informacionUsuario && informacionUsuario.nombre
             ? informacionUsuario.nombre
             : ""}{" "}

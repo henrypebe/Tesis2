@@ -5,6 +5,8 @@ import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 
 export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) {
 
+  console.log(reclamo);
+
   const handleReclamo = async() =>{
     try {
       const response = await fetch(
@@ -92,11 +94,11 @@ export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) 
           border: "2px solid black",
         }}
       />
-      <Button sx={{ width:"27%", borderRadius:"6px", backgroundColor:reclamo.contieneReclamo?"#850E0E":"#86882D", padding:"5px", height:"70px",
-        display:"flex", alignItems:"center", justifyContent:"center", '&:hover':{backgroundColor:reclamo.contieneReclamo?"#850E0E":"#86882D"}}}
+      <Button sx={{ width:"27%", borderRadius:"6px", backgroundColor:reclamo.ContieneReclamoProducto || reclamo.contieneReclamoPedido?"#850E0E":"#86882D", padding:"5px", height:"70px",
+        display:"flex", alignItems:"center", justifyContent:"center", '&:hover':{backgroundColor:reclamo.ContieneReclamoProducto || reclamo.contieneReclamoPedido?"#850E0E":"#86882D"}}}
         onClick={()=>{handleReclamo();}}
       >
-        {reclamo.contieneReclamo?
+        {(reclamo.ContieneReclamoProducto || reclamo.contieneReclamoPedido)?
         (
           <></>
         )
@@ -105,7 +107,7 @@ export default function CardReclamo({reclamo, HandleChangeReclamoSeleccionado}) 
           <ThumbDownOffAltIcon sx={{ fontSize: "50px", color: "white", marginRight:"10px" }} />
         )}
         <Typography sx={{color:"white", textAlign:"center", fontSize:"30px", fontWeight:"bold"}}>
-          {reclamo.contieneReclamo? "Contiene reclamo":"Realizar reclamo"}
+          {reclamo.ContieneReclamoProducto || reclamo.contieneReclamoPedido? "Contiene reclamo":"Realizar reclamo"}
         </Typography>
       </Button>
     </Box>

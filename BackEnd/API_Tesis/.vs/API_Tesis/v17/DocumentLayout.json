@@ -3,52 +3,52 @@
   "WorkspaceRootPath": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerGet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Controllers\\ApiControllerGet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\controllers\\apicontrollerget.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\controllers\\apicontrollerget.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Controllers\\ApiControllerPost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\controllers\\apicontrollerput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\controllers\\apicontrollerput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPut.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Controllers\\ApiControllerPut.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\controllers\\apicontrollerpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\controllers\\apicontrollerpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Datos\\ProductoPedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Datos\\ProductoPedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\datos\\productopedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\datos\\productopedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Datos\\ProductoReclamo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Datos\\ProductoReclamo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\datos\\productoreclamo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\datos\\productoreclamo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Datos\\Seguimiento.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Datos\\Seguimiento.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\datos\\seguimiento.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\datos\\seguimiento.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Datos\\Producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Datos\\Producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\datos\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\datos\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Datos\\DatoTallaVestimenta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Datos\\DatoTallaVestimenta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\datos\\datotallavestimenta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\datos\\datotallavestimenta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Datos\\ValoresRoles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Datos\\ValoresRoles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\datos\\valoresroles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\datos\\valoresroles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\API_Tesis.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\API_Tesis.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\api_tesis.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\api_tesis.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Properties\\launchSettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:API_Tesis\\Properties\\launchSettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|c:\\users\\henry\\onedrive\\desktop\\laptop\\10mo ciclo\\tesis 2\\tesis2\\backend\\api_tesis\\api_tesis\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{56E586BE-43FC-48D3-A981-9CC43AAF6C32}|API_Tesis\\API_Tesis.csproj|solutionrelative:api_tesis\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -68,7 +68,7 @@
               "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerGet.cs",
               "ToolTip": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerGet.cs",
               "RelativeToolTip": "API_Tesis\\Controllers\\ApiControllerGet.cs",
-              "ViewState": "AQIAALUCAAAAAAAAAAAwwM8CAABNAAAA",
+              "ViewState": "AQIAAOQIAAAAAAAAAIAwwPcIAAAYAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-11T19:42:20.567Z",
               "IsPinned": true,
@@ -76,7 +76,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "ApiControllerPost.cs",
               "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPost.cs",
               "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerPost.cs",
@@ -85,20 +85,22 @@
               "ViewState": "AQIAAP0AAAAAAAAAAAAAABsBAABTAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-09T19:47:55.402Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "ApiControllerPut.cs",
               "DocumentMoniker": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPut.cs",
               "RelativeDocumentMoniker": "API_Tesis\\Controllers\\ApiControllerPut.cs",
               "ToolTip": "C:\\Users\\henry\\OneDrive\\Desktop\\Laptop\\10mo Ciclo\\Tesis 2\\Tesis2\\BackEnd\\API_Tesis\\API_Tesis\\Controllers\\ApiControllerPut.cs",
               "RelativeToolTip": "API_Tesis\\Controllers\\ApiControllerPut.cs",
-              "ViewState": "AQIAAFQCAAAAAAAAAAAAAHcCAAAtAAAA",
+              "ViewState": "AQIAAAwAAAAAAAAAAAAAABoAAAAwAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-09T21:12:49.111Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
@@ -138,7 +140,8 @@
               "RelativeToolTip": "API_Tesis\\Datos\\ProductoPedido.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAuwAIAAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-13T22:00:11.294Z"
+              "WhenOpened": "2024-09-13T22:00:11.294Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -150,7 +153,8 @@
               "RelativeToolTip": "API_Tesis\\Datos\\ProductoReclamo.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAbAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-13T21:31:26.913Z"
+              "WhenOpened": "2024-09-13T21:31:26.913Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -162,7 +166,8 @@
               "RelativeToolTip": "API_Tesis\\Datos\\Seguimiento.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAuwAIAAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-13T21:22:04.729Z"
+              "WhenOpened": "2024-09-13T21:22:04.729Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -174,7 +179,8 @@
               "RelativeToolTip": "API_Tesis\\Datos\\Producto.cs",
               "ViewState": "AQIAAAkAAAAAAAAAAAA7wBcAAAAbAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-13T20:41:54.365Z"
+              "WhenOpened": "2024-09-13T20:41:54.365Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",

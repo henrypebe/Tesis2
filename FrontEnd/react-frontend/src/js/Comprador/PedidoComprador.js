@@ -170,7 +170,17 @@ export default function PedidoComprador({idUsuario, HandleChangePedidoSelecciona
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={{padding:"20px", width:"86.7%", marginTop:"-1.9px", height:"89vh"}}>
         <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", marginTop:"-12px"}}>
-          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", marginRight:"40px"}}>Pedidos</Typography>
+          <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px"}}>Pedidos</Typography>
+          
+          <Box sx={{
+            width: "2px",
+            height: "35px",
+            backgroundColor: "black",
+            margin: "0 10px",
+            marginLeft:"20px",
+            marginRight:"20px"
+          }} />
+          
           <Box sx={{display:"flex", flexDirection:"row", alignItems:"center", width:"60%"}}>
             <Typography sx={{color:"black", fontWeight:"bold", fontSize:"25px", marginRight:"20px"}}>Fecha de entrega:</Typography>
 

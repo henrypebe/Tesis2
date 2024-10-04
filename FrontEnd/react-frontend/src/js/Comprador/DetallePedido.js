@@ -96,6 +96,7 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
             }
     
             toast.success('El pedido fue reclamado', { autoClose: 2000 });
+            handleBackPedido();
         } catch (error) {
             toast.error(error.message, { autoClose: 2000 });
         }
@@ -240,7 +241,8 @@ export default function DetallePedido({setMostrarDetallePedido, setMostrarPedido
                 Estado:
             </Typography>
             <Typography sx={{color:"black", fontSize:"24px", width:"100%"}}>
-                {PedidoSeleccionado.estado === 1? "Pendiente" : PedidoSeleccionado.estado === 2? "Completado" : PedidoSeleccionado.estado === 3? "Rechazado" : ""}
+                {PedidoSeleccionado.estado === 1? "Pendiente a entregar" : PedidoSeleccionado.estado === 2? "Completado" : 
+                PedidoSeleccionado.estado === 3? "Rechazado" : PedidoSeleccionado.estado === 4? "Pendiente a confirmar" : ""}
             </Typography>
         </Box>
 
